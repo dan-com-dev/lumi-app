@@ -786,6 +786,7 @@
     let bookQuery = '';
     let toastTimer = null;
     let audioContext = null;
+    const mobileUiAudioPlayers = new Map();
     let audioUnlockPending = false;
     let audioUnlockTimer = null;
     let activeSpeechAudio = null;
@@ -1679,27 +1680,89 @@
     function haptic(kind) {
       try { if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(kind || 'light'); } catch (_) { /* no-op */ }
     }
-    function sound(type) {
+    function makeUiToneDataUri(type) {
+      // Tiny self-contained PCM sounds avoid remote requests and do not depend on
+      // WebAudio, which can remain suspended inside some Telegram mobile WebViews.
+      const sampleRate = 22050;
+      const notes = type === 'success'
+        ? [{ f:523.25, start:0, duration:.17 }, { f:659.25, start:.095, duration:.18 }, { f:783.99, start:.19, duration:.21 }]
+        : type === 'error'
+          ? [{ f:246.94, start:0, duration:.14 }, { f:185, start:.105, duration:.17 }]
+          : [{ f:660, start:0, duration:.105 }];
+      const duration = Math.max(...notes.map(note => note.start + note.duration)) + .025;
+      const sampleCount = Math.ceil(sampleRate * duration);
+      const bytes = new Uint8Array(44 + sampleCount * 2);
+      const view = new DataView(bytes.buffer);
+      const writeAscii = (offset, value) => { for (let i=0;i<value.length;i++) bytes[offset+i]=value.charCodeAt(i); };
+      writeAscii(0,'RIFF'); view.setUint32(4,36+sampleCount*2,true); writeAscii(8,'WAVE');
+      writeAscii(12,'fmt '); view.setUint32(16,16,true); view.setUint16(20,1,true);
+      view.setUint16(22,1,true); view.setUint32(24,sampleRate,true); view.setUint32(28,sampleRate*2,true);
+      view.setUint16(32,2,true); view.setUint16(34,16,true); writeAscii(36,'data'); view.setUint32(40,sampleCount*2,true);
+      for(let i=0;i<sampleCount;i++){
+        const time=i/sampleRate;
+        let sample=0;
+        for(const note of notes){
+          const local=time-note.start;
+          if(local<0||local>note.duration)continue;
+          const attack=Math.min(1,local/.008);
+          const release=Math.min(1,(note.duration-local)/.045);
+          const envelope=Math.max(0,Math.min(attack,release));
+          sample+=Math.sin(2*Math.PI*note.f*local)*envelope*.22;
+        }
+        view.setInt16(44+i*2,Math.max(-1,Math.min(1,sample))*32767,true);
+      }
+      let binary='';
+      for(let offset=0;offset<bytes.length;offset+=0x6000) binary+=String.fromCharCode(...bytes.subarray(offset,Math.min(bytes.length,offset+0x6000)));
+      return 'data:audio/wav;base64,'+window.btoa(binary);
+    }
+    function playMobileUiSound(type) {
       try {
-        const context = getOrCreateAudioContext();
-        if (!context) return;
-        if (context.state === 'suspended') Promise.resolve(context.resume()).catch(() => {});
-        const now = context.currentTime;
-        const notes = type === 'success' ? [523.25,659.25,783.99] : type === 'error' ? [240,190] : [420];
-        notes.forEach((frequency, index) => {
-          const osc = context.createOscillator();
-          const gain = context.createGain();
-          osc.type = type === 'error' ? 'sine' : 'sine';
-          osc.frequency.setValueAtTime(frequency, now + index * (type === 'success' ? .09 : .045));
-          if (type === 'success') osc.frequency.exponentialRampToValueAtTime(frequency * 1.18, now + index * .09 + .15);
-          gain.gain.setValueAtTime(.0001, now + index * (type === 'success' ? .09 : .045));
-          gain.gain.exponentialRampToValueAtTime(type === 'tap' ? .035 : .055, now + index * (type === 'success' ? .09 : .045) + .015);
-          gain.gain.exponentialRampToValueAtTime(.0001, now + index * (type === 'success' ? .09 : .045) + (type === 'tap' ? .09 : .22));
-          osc.connect(gain); gain.connect(context.destination);
-          osc.start(now + index * (type === 'success' ? .09 : .045));
-          osc.stop(now + index * (type === 'success' ? .09 : .045) + .24);
-        });
-      } catch (_) { /* Audio is optional; the app remains usable when disabled. */ }
+        const AudioCtor=window.Audio;
+        if(typeof AudioCtor!=='function')return false;
+        let pool=mobileUiAudioPlayers.get(type);
+        if(!pool){
+          const uri=makeUiToneDataUri(type);
+          pool={players:[new AudioCtor(uri),new AudioCtor(uri)],next:0};
+          pool.players.forEach(player=>{player.preload='auto';player.volume=.72;player.muted=false;player.playsInline=true;});
+          mobileUiAudioPlayers.set(type,pool);
+        }
+        const player=pool.players[pool.next++%pool.players.length];
+        player.pause();
+        try{player.currentTime=0;}catch(_){}
+        player.muted=false;player.volume=.72;
+        const result=player.play();
+        if(result&&typeof result.catch==='function')result.catch(()=>playWebAudioUiSound(type));
+        return true;
+      }catch(_){return false;}
+    }
+    function playWebAudioUiSound(type) {
+      try {
+        const context=getOrCreateAudioContext();
+        if(!context)return;
+        const play=()=>{
+          if(context.state!=='running')return;
+          const now=context.currentTime;
+          const notes=type==='success'?[523.25,659.25,783.99]:type==='error'?[240,190]:[420];
+          notes.forEach((frequency,index)=>{
+            const osc=context.createOscillator(),gain=context.createGain();
+            const offset=index*(type==='success'?.09:.045);
+            osc.type='sine';osc.frequency.setValueAtTime(frequency,now+offset);
+            if(type==='success')osc.frequency.exponentialRampToValueAtTime(frequency*1.18,now+offset+.15);
+            gain.gain.setValueAtTime(.0001,now+offset);
+            gain.gain.exponentialRampToValueAtTime(type==='tap'?.035:.055,now+offset+.015);
+            gain.gain.exponentialRampToValueAtTime(.0001,now+offset+(type==='tap'?.09:.22));
+            osc.connect(gain);gain.connect(context.destination);osc.start(now+offset);osc.stop(now+offset+.24);
+          });
+        };
+        if(context.state==='running')play();
+        else Promise.resolve(context.resume()).then(play).catch(()=>{});
+      }catch(_){/* Keep the app usable when audio is unavailable. */}
+    }
+    function sound(type) {
+      // On phones, play a tiny local HTMLAudio WAV directly in the user gesture.
+      // This bypasses suspended WebAudio and avoids all network dependencies.
+      if(isMobileAudioWebView()&&playMobileUiSound(type))return;
+      playWebAudioUiSound(type);
     }
     function tap() { unlockAudioFromGesture(); haptic('light'); sound('tap'); }
     function showToast(message) {
@@ -3453,7 +3516,7 @@
     function primeMobileRemoteAudio(url) {
       if (!url || !isMobileAudioWebView()) return null;
       const audio = document.getElementById('lumiPronunciationAudio') || new Audio();
-      const prime = { audio, failed:false };
+      const prime = { audio, failed:false, playPromise:null };
       try {
         if (activeSpeechAudio && activeSpeechAudio !== audio) { activeSpeechAudio.pause(); }
         activeSpeechAudio = audio;
@@ -3461,16 +3524,19 @@
         try { audio.currentTime = 0; } catch (_) {}
         audio.preload = 'auto';
         audio.volume = 1;
-        audio.muted = true;
+        audio.muted = false;
         audio.playsInline = true;
         audio.onended = null;
         audio.onerror = () => { prime.failed = true; };
         audio.src = url;
         audio.load();
-        // Prime while the real tap is still active. Muted playback is allowed in
-        // mobile WebViews; if native speech fails, the same stream is unmuted.
+        // Start the actual audible HTMLAudio playback synchronously inside the
+        // user's tap. Do not wait for SpeechSynthesis: some Telegram WebViews
+        // report native speech as started even when the user hears nothing.
         const primingPlay = audio.play();
-        if (primingPlay && typeof primingPlay.catch === 'function') primingPlay.catch(() => { prime.failed = true; });
+        prime.playPromise = primingPlay && typeof primingPlay.then === 'function'
+          ? primingPlay.then(() => true).catch(() => { prime.failed = true; return false; })
+          : Promise.resolve(true);
         return prime;
       } catch (_) { prime.failed = true; return prime; }
     }
@@ -3480,8 +3546,8 @@
       catch (_) { try { prime.audio.pause(); } catch (_) {} }
       if (activeSpeechAudio === prime.audio) activeSpeechAudio = null;
     }
-    function activatePrimedRemoteAudio(prime) {
-      if (!prime || !prime.audio || prime.failed) return Promise.resolve(false);
+    function activatePrimedRemoteAudio(prime, requestId=speechRequestId) {
+      if (!prime || !prime.audio || prime.failed || requestId !== speechRequestId) return Promise.resolve(false);
       return new Promise(resolve => {
         const audio = prime.audio;
         let settled = false, timeout = null;
@@ -3499,13 +3565,19 @@
           audio.onended = () => { if (activeSpeechAudio === audio) activeSpeechAudio = null; clearSpeechHighlight(); };
           audio.volume = 1;
           audio.muted = false;
-          try { audio.currentTime = 0; } catch (_) {}
           activeSpeechAudio = audio;
-          timeout = window.setTimeout(() => finish(false), 1800);
-          if (!audio.paused && !audio.ended) { finish(true); return; }
-          const playResult = audio.play();
-          if (playResult && typeof playResult.then === 'function') playResult.then(() => finish(true)).catch(() => finish(false));
-          else finish(true);
+          timeout = window.setTimeout(() => finish(false), 2600);
+          // Wait for the original tap-triggered play() promise. A merely
+          // unpaused element can still be loading and is not proof of playback.
+          const playback = prime.playPromise;
+          if (playback && typeof playback.then === 'function') {
+            playback.then(value => finish(value === true && requestId === speechRequestId && !audio.error)).catch(() => finish(false));
+          } else if (!audio.paused && !audio.ended) finish(true);
+          else {
+            const playResult = audio.play();
+            if (playResult && typeof playResult.then === 'function') playResult.then(() => finish(requestId === speechRequestId)).catch(() => finish(false));
+            else finish(true);
+          }
         } catch (_) { finish(false); }
       });
     }
@@ -3563,7 +3635,7 @@
           const preferred=voices.find(voice=>/^en-US(?:-|$)/i.test(voice.lang))||voices.find(voice=>/^en-GB(?:-|$)/i.test(voice.lang))||voices.find(voice=>/^en(?:-|$)/i.test(voice.lang));
           utterance.lang=preferred?.lang||'en-US';
           if(preferred)utterance.voice=preferred;
-          utterance.rate=.75;
+          utterance.rate=.65;
           utterance.pitch=1;
           utterance.volume=1;
           utterance.onstart=()=>{started=true;finish(true);};
@@ -3573,12 +3645,12 @@
           synth.speak(utterance);
           probe=window.setTimeout(()=>{
             if(!settled&&synth.speaking){started=true;finish(true);}
-          },220);
+          },160);
           // A silent/blocked WebView must not leave the user waiting several seconds.
           watchdog=window.setTimeout(()=>{
             if(!started&&!synth.speaking){try{synth.cancel();}catch(_){}finish(false);}
             else finish(true);
-          },950);
+          },650);
         }catch(_){finish(false);}
       });
     }
@@ -3633,22 +3705,26 @@
       stopActiveSpeechAudio();
       setSpeechHighlight(trigger);
       const primaryAudioUrl=googleTranslateAudioUrl(text);
-      // On phones, prime a muted remote stream during the tap itself. Some Telegram
-      // WebViews reject audio.play() after an awaited network/TTS delay, even though
-      // the same call is accepted inside the original touch event.
+      const mobileAudioFirst = isMobileAudioWebView();
+      // Mobile Telegram WebViews sometimes signal SpeechSynthesis.onstart while
+      // producing no audible output. Start real HTMLAudio playback on the tap first.
       const primedMobileAudio = primeMobileRemoteAudio(primaryAudioUrl);
       // Warm the single-word dictionary lookup in parallel, without delaying speech.
       const dictionaryAudioPromise = isSingleWord ? getDictionaryAudioUrl(text) : Promise.resolve(null);
-      // Native TTS is always requested synchronously from the user's tap.
-      const nativeAudioPromise = trySpeechSynthesis(text,requestId);
+      // Desktop speech remains local and starts synchronously in the original tap.
+      const nativeAudioPromise = mobileAudioFirst ? null : trySpeechSynthesis(text,requestId);
 
       const start = async () => {
-        let spoken = await nativeAudioPromise;
+        let spoken = false;
+        if (primedMobileAudio) spoken = await activatePrimedRemoteAudio(primedMobileAudio,requestId);
+        else if (nativeAudioPromise) spoken = await nativeAudioPromise;
         if (requestId !== speechRequestId) { discardPrimedRemoteAudio(primedMobileAudio); return; }
-        if (spoken) { discardPrimedRemoteAudio(primedMobileAudio); if (trigger) trigger.setAttribute('aria-busy','false'); return; }
-        // On mobile, unmute the already gesture-authorized stream before trying
-        // any delayed fallback. Desktop starts the remote stream only if needed.
-        if (primedMobileAudio) spoken = await activatePrimedRemoteAudio(primedMobileAudio);
+        if (spoken) { if (trigger) trigger.setAttribute('aria-busy','false'); return; }
+        // If the mobile stream is unavailable, stop its pending audio before trying
+        // native speech so two voices can never overlap. On desktop, the remote
+        // stream is the fallback after the local synthesizer.
+        if (primedMobileAudio && !spoken) discardPrimedRemoteAudio(primedMobileAudio);
+        if (mobileAudioFirst) spoken = await trySpeechSynthesis(text,requestId);
         else if (primaryAudioUrl) spoken = await tryPlayHtmlAudio(primaryAudioUrl);
         if (requestId !== speechRequestId || spoken) { if (spoken && trigger) trigger.setAttribute('aria-busy','false'); return; }
         discardPrimedRemoteAudio(primedMobileAudio);
