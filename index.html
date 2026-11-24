@@ -252,6 +252,13 @@
     .benefit b { font-size: 18px; }
     .price-card { padding: 15px; margin-top: 12px; }
     .price { font-size: 24px; font-weight: 950; color: var(--purple); margin: 6px 0; }
+    .price-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:13px; }
+    .price-option { min-width:0; padding:13px; border:1px solid var(--line); border-radius:15px; background:var(--card); }
+    .price-option h3 { margin:0; font-size:13px; }
+    .price-option .price { font-size:22px; }
+    .price-option .price-caption { min-height:43px; color:var(--muted); font-size:10px; line-height:1.4; }
+    .price-option .btn { margin-top:9px; padding-left:8px; padding-right:8px; font-size:11px; }
+    @media (max-width:360px) { .price-options { grid-template-columns:1fr; } .price-option .price-caption { min-height:0; } }
     .lesson-header { display: flex; align-items: center; gap: 10px; padding: 5px 0 13px; }
     .lesson-header .icon-btn { flex: 0 0 44px; }
     .lesson-progress { height: 9px; border-radius: 99px; background: #e9edf5; overflow: hidden; flex: 1; }
@@ -2261,7 +2268,7 @@
           ${proPlanets.map(planet => `<div class="card pro-feature"><b>${planet.icon}</b><strong>${escapeHtml(planet.name)}</strong><span>${escapeHtml(planet.subtitle)} · ${planet.lessons.length} урока</span></div>`).join('')}
         </div>
         ${renderLiveDialogs()}
-        <section class="card price-card"><div class="eyebrow">ПОДПИСКА TELEGRAM STARS</div><h2 style="margin-top:6px">Космический пропуск</h2><div class="price">⭐ 199 <span style="font-size:12px">Stars / месяц</span></div><p class="small muted">199 ⭐ каждые 30 дней через повторяющийся платёж Telegram Stars. Продление обрабатывает Telegram, доступ подтверждает серверный Worker.</p>${isTrialProEnabled()&&!state.proActive?`<p class="small muted">Подарочный доступ действует до <strong>${formatProDate(state.trial_pro_until)}</strong>. Ты можешь оформить платную подписку отдельно — подарочный статус не заменяет серверную проверку оплаты.</p>`:''}${(state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000))?`<p class="small muted">Текущая подписка действует до <strong>${formatProDate(proAccount.expiresAt)}</strong>. Повторное оформление будет доступно после окончания оплаченного срока.</p>`:''}<button class="btn purple full" id="buyPro" ${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'disabled':''}>${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'Lumi PRO уже активен ⭐':'Оформить PRO за 199 ⭐'}</button></section>
+        <section class="card price-card"><div class="eyebrow">ПОКУПКА TELEGRAM STARS</div><h2 style="margin-top:6px">Выбери тариф Lumi PRO</h2>${isTrialProEnabled()&&!state.proActive?`<p class="small muted">Подарочный доступ действует до <strong>${formatProDate(state.trial_pro_until)}</strong>. Платный тариф можно оформить отдельно.</p>`:''}${(state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000))?`<p class="small muted">Оплаченный PRO уже активен до <strong>${formatProDate(proAccount.expiresAt)}</strong>. Можно добавить ещё 7 дней — они начнутся после текущего срока.</p>`:''}<div class="price-options"><div class="price-option"><h3>🚀 На неделю</h3><div class="price">⭐ 50 <span style="font-size:11px">Stars</span></div><p class="price-caption">Разовая оплата. PRO на 7 дней без автопродления.</p><button class="btn purple full" id="buyProWeek">${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'Добавить 7 дней · 50 ⭐':'Купить на 7 дней · 50 ⭐'}</button></div><div class="price-option"><h3>🌌 На 30 дней</h3><div class="price">⭐ 199 <span style="font-size:11px">Stars</span></div><p class="price-caption">Повторяющийся платёж каждые 30 дней через Telegram Stars.</p><button class="btn purple full" id="buyProMonth" ${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'disabled':''}>${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'PRO уже активен ⭐':'Оформить на 30 дней · 199 ⭐'}</button></div></div></section>
         <section class="card pro-explainer"><strong>🔐 Как защищена покупка</strong><p class="small muted">Ссылка на оплату создаётся Cloudflare Worker с помощью Bot API. Доступ включается только после серверного подтверждения успешного платежа.</p></section>
         ${state.demoPro ? '<button class="btn green full" id="disableDemoPro" style="margin-top:12px">Выключить тестовый PRO</button>' : ''}
         <p class="small muted" style="text-align:center;margin:13px 6px 0">В браузерном предпросмотре используй ДЕМО-PRO в профиле. Для реальных Stars нужен настроенный Worker и webhook бота.</p>
@@ -2371,8 +2378,10 @@
         state = normalizeState({ ...defaultState, ...preservedAccountRewards, completedPlanets:[], completedLessons:[], learnedWords:[], wordMastery:{}, activeDays:[], errorWords:[], energy:ENERGY_MAX, energyUpdatedAt:Date.now(), energy_reset_at:null, proActive:false, demoPro:false, selectedSkin:'default' }); proAccount={startedAt:0,expiresAt:0,months:0,wasPro:false,autoRenew:true,billingState:'ok'};
         selectedGoal = 10; currentTab = 'map'; lessonSession = null; reviewSession = null; saveState(); render(); showToast('Прогресс сброшен на этом устройстве и в облаке');
       });
-      const buy = document.getElementById('buyPro');
-      if (buy) buy.addEventListener('click', handleProPurchase);
+      const buyWeek = document.getElementById('buyProWeek');
+      if (buyWeek) buyWeek.addEventListener('click', () => handleProPurchase('week'));
+      const buyMonth = document.getElementById('buyProMonth');
+      if (buyMonth) buyMonth.addEventListener('click', () => handleProPurchase('month'));
       const questChest = document.getElementById('claimDailyQuestChest');
       if (questChest) questChest.addEventListener('click', claimDailyQuestChest);
       const replayTutorial = document.getElementById('restartLumiTutorial');
@@ -2381,7 +2390,7 @@
         currentTab='map'; saveState(); render();
       });
       const unlockDialogs = document.getElementById('unlockDialogs');
-      if (unlockDialogs) unlockDialogs.addEventListener('click', () => document.getElementById('buyPro')?.scrollIntoView({behavior:'smooth',block:'center'}));
+      if (unlockDialogs) unlockDialogs.addEventListener('click', () => document.getElementById('buyProWeek')?.scrollIntoView({behavior:'smooth',block:'center'}));
       const toggleDemo = DEMO_PRO_ALLOWED ? document.getElementById('toggleDemoPro') : null;
       if (toggleDemo) toggleDemo.addEventListener('click', () => {
         tap(); state.demoPro = !state.demoPro;
@@ -2499,16 +2508,17 @@
       if(!tg||!tg.initData)throw new Error('Telegram не передал данные авторизации. Открой Mini App из бота.');
       return {'Authorization':`tma ${tg.initData}`,'Accept':'application/json'};
     }
-    async function handleProPurchase() {
+    async function handleProPurchase(plan = 'month') {
       if (purchaseInFlight) return;
+      if (plan !== 'week' && plan !== 'month') { showToast('Неизвестный тариф Lumi PRO.'); return; }
       tap();
-      if (state.proActive&&!state.demoPro && Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)) { showToast(`Lumi PRO уже активен до ${formatProDate(proAccount.expiresAt)}. Повторная покупка будет доступна после окончания срока.`); return; }
+      if (plan === 'month' && state.proActive&&!state.demoPro && Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)) { showToast(`Lumi PRO уже активен до ${formatProDate(proAccount.expiresAt)}. Можно добавить 7 дней или оформить месяц после окончания срока.`); return; }
       if (!tg) { showToast('Покупка Stars доступна при запуске приложения внутри Telegram.'); return; }
       if (typeof tg.openInvoice !== 'function') { showToast('В этом клиенте Telegram не поддерживается открытие счёта. Обнови приложение Telegram.'); return; }
       if (!workerIsConfigured()) { showToast('В начале index.html укажи настоящий URL Cloudflare Worker вместо адреса-заглушки.'); return; }
       const userId=telegramUserId(); if(!userId){showToast('Не удалось получить Telegram user.id. Запусти Mini App через бота.');return;}
-      const button = document.getElementById('buyPro');
-      const originalText = button ? button.textContent : 'Оформить PRO за 199 ⭐';
+      const button = document.getElementById(plan === 'week' ? 'buyProWeek' : 'buyProMonth');
+      const originalText = button ? button.textContent : (plan === 'week' ? 'Купить на 7 дней · 50 ⭐' : 'Оформить на 30 дней · 199 ⭐');
       const setBusy = busy => { if(!button||!button.isConnected)return;button.disabled=busy;button.textContent=busy?'Создаю защищённый счёт…':originalText; };
       purchaseInFlight=true;setBusy(true);let invoiceOpened=false;
       try {
@@ -2516,11 +2526,11 @@
         const latest=await requestProStatus();
         proAccount={startedAt:latest.startedAt||0,expiresAt:latest.expiresAt||0,months:latest.months||0,wasPro:latest.wasPro===true||latest.active===true,autoRenew:latest.autoRenew,billingState:latest.billingState||'ok'};
         state.proActive=latest.active===true;
-        if(latest.active){saveState();render();showToast(`Lumi PRO уже активен до ${formatProDate(latest.expiresAt)}. Новая покупка откроется после окончания срока.`);return;}
+        if(latest.active && plan !== 'week'){saveState();render();showToast(`Lumi PRO уже активен до ${formatProDate(latest.expiresAt)}. Можно добавить 7 дней или оформить месяц после окончания срока.`);return;}
         saveState();
         const base=new URL(WORKER_URL.trim());
-        const response=await fetch(`${base.href.replace(/\/$/,'')}/create-invoice?user_id=${encodeURIComponent(userId)}`,{
-          method:'POST',headers:{...workerAuthHeaders(),'Content-Type':'application/json'},body:JSON.stringify({user_id:userId})
+        const response=await fetch(`${base.href.replace(/\/$/,'')}/create-invoice?user_id=${encodeURIComponent(userId)}&plan=${encodeURIComponent(plan)}`,{
+          method:'POST',headers:{...workerAuthHeaders(),'Content-Type':'application/json'},body:JSON.stringify({user_id:userId,plan})
         });
         const payload=await response.json().catch(()=>({}));
         const invoiceLink=payload.invoice_link||payload.invoiceUrl;
