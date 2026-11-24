@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f4f6fb">
   <meta name="description" content="Космическая Академия Языков — изучай английский вместе с Луми.">
   <title>Lumi — Космическая Академия Языков</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script id="telegramWebAppSdk" async src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       --bg: #f4f6fb;
@@ -251,6 +251,8 @@
     .benefit:last-child { border-bottom: 0; }
     .benefit b { font-size: 18px; }
     .price-card { padding: 15px; margin-top: 12px; }
+    .renewal-control { padding:13px; margin-top:12px; border-color:#d9e9f2; background:linear-gradient(145deg,var(--card),#f4fbff); }
+    .renewal-control p { margin:6px 0 9px; }
     .price { font-size: 24px; font-weight: 950; color: var(--purple); margin: 6px 0; }
     .price-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-top:13px; }
     .price-option { min-width:0; padding:13px; border:1px solid var(--line); border-radius:15px; background:var(--card); }
@@ -413,9 +415,9 @@
     .book-word-main { min-width: 0; flex: 1; }
     .word-card { padding: 12px 13px; }
     .word-card-side { display: flex; align-items: center; gap: 7px; flex: 0 0 auto; }
-    .word-memory { width: 58px; }
+    .word-memory { width: 90px; flex: 0 0 90px; min-width: 0; }
     .word-memory .memory-track { height: 5px; margin-top: 5px; }
-    .word-memory-label { color: #9aa5b8; font-size: 9px; font-weight: 850; white-space: nowrap; }
+    .word-memory-label { display:block; color: #9aa5b8; font-size: 9px; font-weight: 850; white-space: normal; line-height: 1.2; overflow-wrap: anywhere; }
     .sound-mini { min-width: 42px; min-height: 42px; padding: 0; border: 0; border-radius: 13px; color: #078ca7; background: #eafbff; cursor: pointer; font-size: 17px; }
     .review-card { padding: 15px; margin: 13px 0; border: 1px solid #e4dcff; background: linear-gradient(145deg,#fff,#f7f3ff); }
     .review-card .review-title { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -430,12 +432,15 @@
     .word-popover .popover-speak { pointer-events: auto; flex: 0 0 38px; min-width: 38px; min-height: 38px; padding: 0; border: 0; border-radius: 11px; background: #1ab9c7; color: #fff; cursor: pointer; }
     .word-list-empty { padding: 21px 14px; text-align: center; color: var(--muted); line-height: 1.5; font-size: 12px; }
     @media (max-width: 380px) {
+      .hero { grid-template-columns: minmax(0,1fr) 106px; gap: 0; padding-left: 12px; padding-right: 10px; }
+      .hero-copy h1 { font-size: 18px; letter-spacing: -.55px; overflow-wrap: break-word; }
+      .hero-copy p { max-width: 100%; }
       .course-planet { padding: 11px; }
       .course-planet-icon { width: 46px; height: 46px; flex-basis: 46px; }
       .course-planet-copy h2 { font-size: 14px; }
       .word-bubble { padding: 0 10px; font-size: 12px; }
       .sentence-answer, .sentence-bubbles { gap: 6px; }
-      .word-memory { width: 48px; }
+      .word-memory { width: 86px; flex-basis: 86px; }
     }
 
     .empty { padding: 24px 12px; text-align: center; color: var(--muted); font-size: 12px; }
@@ -597,7 +602,57 @@
       .gift-capsule { width:78px; height:78px; font-size:40px; }
     }
 
-  </style>
+  
+
+    .grammar-forms { display:grid; gap:7px; margin:12px 0; min-width:0; }
+    .grammar-form-row { display:grid; grid-template-columns:27px minmax(76px, .72fr) minmax(0,1.8fr); align-items:start; gap:8px; padding:9px 10px; border:1px solid var(--line); border-radius:12px; background:color-mix(in srgb,var(--cyan) 4%,var(--card)); min-width:0; }
+    .grammar-form-sign { display:grid; place-items:center; width:25px; height:25px; border-radius:8px; background:var(--cyan); color:#fff; font-size:13px; font-weight:950; }
+    .grammar-form-label { font-size:11px; line-height:1.35; font-weight:850; color:var(--muted); padding-top:4px; }
+    .grammar-form-value { min-width:0; overflow-wrap:anywhere; font-size:12px; line-height:1.45; font-weight:850; color:var(--ink); padding-top:3px; }
+    .grammar-markers { margin:12px 0; }
+    .grammar-markers > strong { display:block; margin-bottom:7px; font-size:11px; }
+    .grammar-marker-list { display:flex; flex-wrap:wrap; gap:6px; }
+    .grammar-marker { max-width:100%; overflow-wrap:anywhere; border:1px solid var(--line); border-radius:999px; padding:5px 9px; color:var(--cyan-dark); background:color-mix(in srgb,var(--cyan) 6%,var(--card)); font-size:10px; font-weight:800; }
+    .grammar-example-line { display:flex; align-items:center; justify-content:space-between; gap:9px; min-width:0; }
+    .grammar-example-line > div { min-width:0; overflow-wrap:anywhere; }
+    .grammar-note { margin-top:12px; padding:11px 12px; border-left:3px solid var(--purple); border-radius:10px; background:color-mix(in srgb,var(--purple) 6%,var(--card)); }
+    .grammar-note > strong { font-size:11px; }
+    .grammar-note p { margin:5px 0 0; line-height:1.5; }
+    .sentence-audio-row { display:flex; justify-content:flex-end; margin-top:8px; }
+    .sound-mini { flex:0 0 auto; min-width:40px; width:auto; min-height:40px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--cyan-dark); font-size:16px; font-weight:800; cursor:pointer; }
+    .sentence-audio-row .sound-mini { padding:0 11px; font-size:11px; }
+    .dialog-lumi-line { display:flex; align-items:center; gap:8px; }
+    .dialog-lumi-line .dialog-lumi { flex:1; min-width:0; }
+    .dialog-answer-row { display:flex; gap:7px; align-items:stretch; min-width:0; }
+    .dialog-answer-row .dialog-answer { flex:1; min-width:0; overflow-wrap:anywhere; }
+    .dialog-choice-speak { width:40px; }
+    .tense-reference { padding:14px; margin-top:13px; }
+    .tense-reference h2 { margin:5px 0 5px; }
+    .tense-reference-group { margin-top:14px; }
+    .tense-reference-group h3 { margin-bottom:7px; }
+    .tense-reference-item { border:1px solid var(--line); border-radius:13px; padding:9px 10px; margin:7px 0; background:var(--card); min-width:0; }
+    .tense-reference-item summary { cursor:pointer; display:grid; gap:4px; list-style:none; min-width:0; }
+    .tense-reference-item summary::-webkit-details-marker { display:none; }
+    .tense-reference-item summary strong { font-size:12px; }
+    .tense-reference-item summary span { font-size:10px; line-height:1.4; color:var(--muted); overflow-wrap:anywhere; }
+    .tense-reference-item[open] summary { margin-bottom:8px; }
+    .tense-reference-item .grammar-form-row { grid-template-columns:24px minmax(68px,.66fr) minmax(0,1.8fr); }
+    .tense-reference-item .grammar-form-value { font-size:10px; }
+    .tense-reference-item .grammar-form-label { font-size:10px; }
+    .tense-reference-item .grammar-forms { gap:5px; }
+    .tense-reference-example { display:grid; gap:3px; border-radius:9px; padding:8px; background:color-mix(in srgb,var(--cyan) 5%,var(--card)); font-size:11px; overflow-wrap:anywhere; }
+    .tense-reference-example span { color:var(--muted); }
+    .tense-reference-locked { padding:12px; border-radius:13px; border:1px dashed var(--purple); margin-top:12px; }
+    .grammar-intro-card, .grammar-intro-card p, .grammar-intro-card strong { min-width:0; overflow-wrap:anywhere; }
+    @media (max-width:360px) {
+      .grammar-form-row { grid-template-columns:25px minmax(0,1fr); gap:6px; }
+      .grammar-form-value { grid-column:2; padding-top:0; }
+      .grammar-form-label { padding-top:4px; }
+      .tense-reference-item .grammar-form-row { grid-template-columns:24px minmax(0,1fr); }
+    }
+
+    [data-speak].pronunciation-speaking { outline: 2px solid var(--accent, #8b5cf6); outline-offset: 3px; box-shadow: 0 0 0 5px rgba(139,92,246,.13); }
+</style>
 </head>
 <body>
   <main class="app-frame" id="app">
@@ -611,7 +666,7 @@
         <button type="button" class="stat-pill energy-stat-pill" id="energyPill" aria-controls="energyInfo" aria-expanded="false" title="Показать восстановление энергии"><span class="stat-icon">⚡</span><span id="energyTop">5/5</span></button>
         <div class="stat-pill"><span class="stat-icon">💎</span><span id="gemsTop">0</span></div>
       </div>
-      <div class="energy-info" id="energyInfo" hidden role="status" aria-live="polite"><div class="energy-info-title">ВОССТАНОВЛЕНИЕ ЭНЕРГИИ</div><div class="energy-info-time" id="energyInfoTime">⏳ 24:00:00</div><div class="energy-info-note" id="energyInfoNote">Полное восстановление 5/5 через...</div></div>
+      <div class="energy-info" id="energyInfo" hidden role="status" aria-live="polite"><div class="energy-info-title">ВОССТАНОВЛЕНИЕ ЭНЕРГИИ</div><div class="energy-info-time" id="energyInfoTime">⏳ 01:00:00</div><div class="energy-info-note" id="energyInfoNote">Полное восстановление всех 5 жизней через...</div></div>
     </header>
     <section class="scroll-area" id="screen" aria-live="polite"></section>
     <nav class="bottom-nav" id="bottomNav" aria-label="Основная навигация" hidden>
@@ -626,6 +681,7 @@
     <div class="lumi-tour-overlay" id="tourOverlay" hidden aria-hidden="true"></div>
     <div class="welcome-gift-overlay" id="welcomeGiftOverlay" hidden aria-hidden="true"></div>
     <div class="pronunciation-fallback" id="pronunciationFallback" hidden aria-live="polite"></div>
+    <audio id="lumiPronunciationAudio" preload="none" playsinline aria-hidden="true"></audio>
   </main>
 
   <script>
@@ -634,23 +690,65 @@
     // Вставь сюда адрес опубликованного Cloudflare Worker.
     // Токен бота никогда не помещай в index.html — только в Worker Secret BOT_TOKEN.
     const WORKER_URL = "https://lumi-serve.danirondandan.workers.dev";
+    const SUPPORT_BOT_USERNAME = "LumiAcademySupportBot"; // Укажи username бота поддержки без символа @, когда он будет известен.
 
-    // Telegram Mini App integration. The same file also works in an ordinary browser.
-    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-    if (tg) {
-      try { tg.ready(); tg.expand(); tg.setHeaderColor('#f4f6fb'); tg.setBackgroundColor('#f4f6fb'); } catch (_) { /* Browser/older client fallback */ }
+    // Telegram SDK загружается асинхронно: даже медленный CDN не блокирует первый экран.
+    // Сетевые возможности подключаются после первого локального render().
+    let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    let telegramIntegrationReady = false;
+    let telegramSdkLoadTimer = null;
+    function attachTelegramWebApp() {
+      const webApp = window.Telegram && window.Telegram.WebApp;
+      if (!webApp) return false;
+      tg = webApp;
+      if (!telegramIntegrationReady) {
+        telegramIntegrationReady = true;
+        try { tg.ready(); tg.expand(); tg.setHeaderColor('#f4f6fb'); tg.setBackgroundColor('#f4f6fb'); } catch (_) { /* Browser/older client fallback */ }
+        window.dispatchEvent(new Event('lumi:telegram-ready'));
+      }
+      if (telegramSdkLoadTimer) { window.clearTimeout(telegramSdkLoadTimer); telegramSdkLoadTimer = null; }
+      return true;
+    }
+    if (!attachTelegramWebApp()) {
+      const telegramSdk = document.getElementById('telegramWebAppSdk');
+      if (telegramSdk) {
+        telegramSdk.addEventListener('load', attachTelegramWebApp, { once: true });
+        telegramSdk.addEventListener('error', () => {
+          if (telegramSdkLoadTimer) { window.clearTimeout(telegramSdkLoadTimer); telegramSdkLoadTimer = null; }
+        }, { once: true });
+        telegramSdkLoadTimer = window.setTimeout(() => {
+          // The app remains usable from localStorage if Telegram's SDK CDN is unavailable.
+          if (!tg && telegramSdk.isConnected) telegramSdk.remove();
+          telegramSdkLoadTimer = null;
+        }, 2500);
+      }
     }
 
     const STORAGE_KEY = 'lumi-cosmic-academy-v1';
+    // Every individual external request/callback has its own hard timeout <= 2.5 seconds.
+    // Multi-part cloud snapshots are processed in background batches after first paint.
+    const CLOUD_STORAGE_CALL_TIMEOUT_MS = 2200;
+    const CLOUD_STORAGE_STARTUP_TIMEOUT_MS = 15000;
+    const CLOUD_STORAGE_WRITE_TIMEOUT_MS = 90000;
+    const CLOUD_STORAGE_MAX_CHUNKS = 300;
+    const CLOUD_STORAGE_WRITE_CONCURRENCY = 8;
+    const WORKER_REQUEST_TIMEOUT_MS = 2500;
+    const WORKER_POST_PAYMENT_TIMEOUT_MS = 70000; // Overall webhook confirmation window; each request remains <= 2.5s.
+    const DICTIONARY_LOOKUP_TIMEOUT_MS = 900;
     // ДЕМО-PRO виден только при локальном тестировании. На публичном сайте его нельзя включить простым кликом.
     const DEMO_PRO_ALLOWED = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname === '[::1]';
     const ENERGY_MAX = 5;
     const LEGACY_ENERGY_REGEN_MS = 30 * 60 * 1000; // только для миграции старых сохранений
-    const ENERGY_CYCLE_MS = 60 * 60 * 1000; // все 5 жизней восстанавливаются одним циклом за 1 час
+    const PREVIOUS_ENERGY_CYCLE_MS = 24 * 60 * 60 * 1000; // длительность предыдущей версии, только для миграции сохранений
+    const ENERGY_CYCLE_SECONDS = 3 * 60 * 60; // 10 800 секунд от первой потери заряда
+    const ENERGY_CYCLE_MS = ENERGY_CYCLE_SECONDS * 1000; // 10 800 000 мс — полный цикл для всех 5 зарядов
+    const ENERGY_CYCLE_VERSION = 4;
+    const TRIAL_PRO_DURATION_SECONDS = 60 * 60; // 3 600 секунд
+    const TRIAL_PRO_DURATION_MS = TRIAL_PRO_DURATION_SECONDS * 1000; // 3 600 000 мс
     const defaultState = {
       goal: 10, goalChosen: false, crystals: 0, xp: 0, streak: 0, lessonsCompleted: 0,
       totalCorrect: 0, totalAnswered: 0, dailyMinutes: 0, dailyCompletedLessons: [], dailyGoalClaimedDate: '', vocabLearned: 0,
-      energy: ENERGY_MAX, energyUpdatedAt: Date.now(), energy_reset_at: null, energy_cycle_version: 2, proActive: false, demoPro: false,
+      energy: ENERGY_MAX, energyUpdatedAt: Date.now(), energy_reset_at: null, energy_cycle_version: ENERGY_CYCLE_VERSION, proActive: false, demoPro: false,
       trial_pro_until: 0, trial_pro_claimed: false,
       selectedSkin: 'default', ownedSkins: ['default'], selectedTheme: 'aurora', ownedThemes: ['aurora','ocean','lavender'], errorWords: [],
       lessonHistory: [], exerciseHistory: [], claimedAchievements: [], levelRewardsClaimed: [],
@@ -670,7 +768,13 @@
     let cloudWriteQueue = Promise.resolve();
     const CLOUD_STORAGE_KEY = 'lumi_progress_v1';
     let state = loadState();
-    let proAccount = { startedAt: 0, expiresAt: 0, months: 0, wasPro: false, autoRenew: true, billingState: 'ok' };
+    let localStateRevision = 0;
+    let proAccount = { startedAt: 0, expiresAt: 0, months: 0, wasPro: false, autoRenew: false, canCancelRenewal: false, billingState: 'ok', revoked: false };
+    let authoritativeProStatus = null;
+    let serverClockOffsetMs = 0;
+    let authoritativeTrialExpiresAt = 0;
+    let trialClaimInFlight = false;
+    let proCheckInFlight = false;
     let dialogSession = null;
     let dialogTimer = null;
     let currentTab = 'map';
@@ -681,18 +785,76 @@
     let bookQuery = '';
     let toastTimer = null;
     let audioContext = null;
-    let mobileAudioUnlocked = false;
-    let activeHtmlAudio = null;
+    let audioUnlockPending = false;
+    let audioUnlockTimer = null;
+    let activeSpeechAudio = null;
+    let activeSpeechTrigger = null;
+    let activeSpeechHighlightTimer = null;
+    let speechRequestId = 0;
     let energyInfoOpen = false;
     let lastProAccessState = null;
     let pronunciationFallbackTimer = null;
-    let englishSpeechVoice = null;
-    let activeSpeechRequest = 0;
     const dictionaryAudioCache = new Map();
-    const dictionaryAudioPlayers = new Map();
+    const DICTIONARY_CACHE_MAX = 200;
+    function setDictionaryAudioCache(key, value) {
+      if (dictionaryAudioCache.has(key)) dictionaryAudioCache.delete(key);
+      while (dictionaryAudioCache.size >= DICTIONARY_CACHE_MAX) dictionaryAudioCache.delete(dictionaryAudioCache.keys().next().value);
+      dictionaryAudioCache.set(key, value);
+    }
     let exitModalContext = null;
     let exitReturnFocus = null;
     let exitModalTimer = null;
+
+    function getOrCreateAudioContext() {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return null;
+      if (!audioContext || audioContext.state === 'closed') audioContext = new AudioCtx();
+      return audioContext;
+    }
+
+    function unlockAudioFromGesture() {
+      try {
+        const context = getOrCreateAudioContext();
+        if (!context || context.state === 'running' || audioUnlockPending) return;
+        audioUnlockPending = true;
+        // Both resume() and the silent buffer are invoked synchronously inside the
+        // user's pointer/touch/key event, which is important for iOS and Telegram WebView.
+        try {
+          const silentBuffer = context.createBuffer(1, 1, context.sampleRate || 44100);
+          const source = context.createBufferSource();
+          source.buffer = silentBuffer;
+          source.connect(context.destination);
+          source.onended = () => { try { source.disconnect(); } catch (_) {} };
+          source.start(0);
+        } catch (_) { /* resume() below is still attempted */ }
+        let resumeResult;
+        try { resumeResult = context.resume(); } catch (_) { resumeResult = null; }
+        if (audioUnlockTimer) window.clearTimeout(audioUnlockTimer);
+        // A few embedded WebViews can leave resume() pending forever. Release the
+        // latch so the next real user gesture can retry instead of deadlocking audio.
+        audioUnlockTimer = window.setTimeout(() => {
+          audioUnlockPending = false;
+          audioUnlockTimer = null;
+        }, 1200);
+        Promise.resolve(resumeResult).catch(() => {}).finally(() => {
+          audioUnlockPending = false;
+          if (audioUnlockTimer) window.clearTimeout(audioUnlockTimer);
+          audioUnlockTimer = null;
+        });
+      } catch (_) {
+        audioUnlockPending = false;
+        if (audioUnlockTimer) window.clearTimeout(audioUnlockTimer);
+        audioUnlockTimer = null;
+      }
+    }
+
+    // Capture the gesture before a button handler or Telegram WebView consumes it.
+    document.addEventListener('pointerdown', unlockAudioFromGesture, { capture: true, passive: true });
+    document.addEventListener('pointerup', unlockAudioFromGesture, { capture: true, passive: true });
+    document.addEventListener('touchstart', unlockAudioFromGesture, { capture: true, passive: true });
+    document.addEventListener('touchend', unlockAudioFromGesture, { capture: true, passive: true });
+    document.addEventListener('keydown', unlockAudioFromGesture, { capture: true });
+    document.addEventListener('click', unlockAudioFromGesture, { capture: true, passive: true });
 
     function localDateKey(date = new Date()) {
       const year = date.getFullYear();
@@ -749,7 +911,7 @@
         merged.welcomeGiftClaimed = merged.welcomeGiftClaimed === true;
         merged.trial_pro_until = safeInteger(merged.trial_pro_until,0,0,Number.MAX_SAFE_INTEGER);
         merged.trial_pro_claimed = merged.trial_pro_claimed === true || merged.trial_pro_until > 0;
-        // Older accounts that had already finished the tutorial must not get a retroactive 24-hour trial.
+        // Older accounts that had already finished the tutorial must not get a retroactive 1-hour trial.
         if (!Object.prototype.hasOwnProperty.call(saved,'trial_pro_claimed') && (saved.tutorialCompleted === true || saved.welcomeGiftClaimed === true)) merged.trial_pro_claimed = true;
         merged.bonusFreezeCharges = safeInteger(merged.bonusFreezeCharges,0,0,20);
         merged.freeDialogTrialUsed = merged.freeDialogTrialUsed === true;
@@ -792,19 +954,27 @@
         merged.energyUpdatedAt = safeInteger(merged.energyUpdatedAt,Date.now(),0,Number.MAX_SAFE_INTEGER);
         if (merged.energy >= ENERGY_MAX) {
           merged.energy_reset_at = null;
-          merged.energy_cycle_version = 2;
+          merged.energy_cycle_version = ENERGY_CYCLE_VERSION;
         } else if (Object.prototype.hasOwnProperty.call(saved,'energy_reset_at') && Number.isFinite(Number(saved.energy_reset_at)) && Number(saved.energy_reset_at) > 0) {
           const previousCycleVersion = safeInteger(saved.energy_cycle_version,0,0,10);
-          merged.energy_reset_at = previousCycleVersion < 2
-            ? Date.now() + ENERGY_CYCLE_MS
-            : safeInteger(saved.energy_reset_at,Date.now()+ENERGY_CYCLE_MS,1,Number.MAX_SAFE_INTEGER);
-          merged.energy_cycle_version = 2;
+          const savedResetAt = safeInteger(saved.energy_reset_at,Date.now()+ENERGY_CYCLE_MS,1,Number.MAX_SAFE_INTEGER);
+          if (previousCycleVersion >= 3 && previousCycleVersion < ENERGY_CYCLE_VERSION) {
+            // Version 3 used 24h: derive the original first-loss time from its deadline,
+            // then move the deadline to exactly 3h after that same first loss.
+            const firstLossAt = Math.max(0,savedResetAt - PREVIOUS_ENERGY_CYCLE_MS);
+            merged.energy_reset_at = Math.min(Number.MAX_SAFE_INTEGER,firstLossAt + ENERGY_CYCLE_MS);
+          } else if (previousCycleVersion < 3) {
+            merged.energy_reset_at = Date.now() + ENERGY_CYCLE_MS;
+          } else {
+            merged.energy_reset_at = savedResetAt;
+          }
+          merged.energy_cycle_version = ENERGY_CYCLE_VERSION;
         } else {
-          // Migration from older saves: start the new one-hour full-restoration cycle.
+          // Migration from saves without an explicit energy deadline.
           const legacyTimestamp = Number(merged.energyUpdatedAt);
           const legacyLossAt = Number.isFinite(legacyTimestamp) && legacyTimestamp > 0 ? Math.floor(legacyTimestamp) : Date.now();
           merged.energy_reset_at = Math.min(Number.MAX_SAFE_INTEGER,legacyLossAt + ENERGY_CYCLE_MS);
-          merged.energy_cycle_version = 2;
+          merged.energy_cycle_version = ENERGY_CYCLE_VERSION;
         }
         if (!['default','gold','cyber','hero'].includes(merged.selectedSkin) || !merged.ownedSkins.includes(merged.selectedSkin)) merged.selectedSkin = 'default';
         merged.onboardingDone = merged.onboardingDone === true;
@@ -878,10 +1048,19 @@
     }
 
     function callCloudStorage(method, ...args) {
+      return callCloudStorageUntil(method, args, Date.now() + CLOUD_STORAGE_CALL_TIMEOUT_MS);
+    }
+
+    function callCloudStorageUntil(method, args, deadline) {
       return new Promise((resolve, reject) => {
         const cloud = getCloudStorageApi();
         if (!cloud || typeof cloud[method] !== 'function') {
           reject(new Error('Telegram CloudStorage недоступен.'));
+          return;
+        }
+        const remaining = Math.max(0, deadline - Date.now());
+        if (!remaining) {
+          reject(new Error(`CloudStorage.${method}: общий лимит времени исчерпан.`));
           return;
         }
         let settled = false;
@@ -889,7 +1068,7 @@
           if (settled) return;
           settled = true;
           reject(new Error(`CloudStorage.${method}: превышено время ожидания.`));
-        }, 2500);
+        }, Math.min(CLOUD_STORAGE_CALL_TIMEOUT_MS, remaining));
         const callback = (error, result) => {
           if (settled) return;
           settled = true;
@@ -908,15 +1087,16 @@
       });
     }
 
-    function callCloudStorageBeforeDeadline(method, args, deadline) {
-      const remaining = deadline - Date.now();
-      if (remaining <= 0) return Promise.reject(new Error('CloudStorage: превышен общий лимит загрузки 2,5 секунды.'));
-      let timeoutId = null;
-      const timeoutPromise = new Promise((_, reject) => {
-        timeoutId = window.setTimeout(() => reject(new Error('CloudStorage: превышен общий лимит загрузки 2,5 секунды.')), remaining);
-      });
-      return Promise.race([callCloudStorage(method, ...args), timeoutPromise])
-        .finally(() => { if (timeoutId !== null) window.clearTimeout(timeoutId); });
+    async function getCloudStorageItems(keys, deadline) {
+      const cloud = getCloudStorageApi();
+      if (cloud && typeof cloud.getItems === 'function') {
+        const result = await callCloudStorageUntil('getItems', [keys], deadline);
+        if (!result || typeof result !== 'object' || Array.isArray(result)) throw new Error('CloudStorage.getItems вернул некорректный набор.');
+        return result;
+      }
+      const result = {};
+      for (const key of keys) result[key] = await callCloudStorageUntil('getItem', [key], deadline);
+      return result;
     }
 
     function updateStorageStatusUI() {
@@ -935,118 +1115,185 @@
       return messages[cloudStorageStatus] || messages.local;
     }
 
-    async function initializeProgressStorage(initialRevision = stateUpdatedAt) {
+    async function initializeProgressStorage(revisionAtStart = localStateRevision) {
+      // localStorage уже прочитан синхронно в loadState(). Повторно читаем его перед
+      // сетевым запросом, чтобы не потерять более свежую запись текущей сессии.
       const localSnapshot = readLocalProgressSnapshot();
+      if (localSnapshot && localSnapshot.updatedAt >= stateUpdatedAt) {
+        state = localSnapshot.state;
+        stateUpdatedAt = localSnapshot.updatedAt;
+      }
+      progressStorageReady = true;
       const cloud = getCloudStorageApi();
+      cloudStorageReady = false;
       if (!cloud) {
         cloudStorageReady = false;
         cloudStorageStatus = 'local';
+        updateStorageStatusUI();
+        return { stateApplied: false, cloudAvailable: false };
+      }
+
+      const deadline = Date.now() + CLOUD_STORAGE_STARTUP_TIMEOUT_MS;
+      try {
+        const cloudRaw = await callCloudStorageUntil('getItem', [CLOUD_STORAGE_KEY], deadline);
+        let cloudSnapshot = null;
+        try {
+          let cloudManifest = null;
+          try { cloudManifest = cloudRaw ? JSON.parse(cloudRaw) : null; } catch (_) { cloudManifest = null; }
+          if (cloudManifest && cloudManifest.format === 'lumi-cloud-manifest-v2' && Number.isInteger(cloudManifest.count) && cloudManifest.count > 0 && cloudManifest.count <= CLOUD_STORAGE_MAX_CHUNKS && /^[A-Za-z0-9_-]{1,80}$/.test(String(cloudManifest.generation || ''))) {
+            const keys = Array.from({length:cloudManifest.count}, (_,i) => `${CLOUD_STORAGE_KEY}_part_${cloudManifest.generation}_${i}`);
+            const parts = [];
+            for (let offset = 0; offset < keys.length; offset += 100) {
+              const batch = keys.slice(offset, offset + 100);
+              const values = await getCloudStorageItems(batch, deadline);
+              for (const key of batch) {
+                const part = values[key];
+                if (typeof part !== 'string') throw new Error('Отсутствует часть ' + key);
+                const bytes = new TextEncoder().encode(part).length;
+                if (bytes > 4096 || part.length > 4096) throw new Error('Часть CloudStorage превышает 4096 байт/символов.');
+                parts.push(part);
+              }
+            }
+            const combined = parts.join('');
+            const byteLength = new TextEncoder().encode(combined).length;
+            cloudSnapshot = parseProgressSnapshot(combined);
+            if (!cloudSnapshot || combined.length !== Number(cloudManifest.length) || (cloudManifest.byteLength != null && byteLength !== Number(cloudManifest.byteLength))) throw new Error('Облачное сохранение повреждено.');
+            cloudSnapshot.updatedAt = Math.max(cloudSnapshot.updatedAt, Number(cloudManifest.updatedAt) || 0);
+          } else {
+            // Migration: older Lumi versions stored the entire snapshot in one CloudStorage value.
+            cloudSnapshot = parseProgressSnapshot(cloudRaw);
+          }
+        } catch (cloudReadError) {
+          // API доступен, но облачный снимок не удалось прочитать целиком. Локальный снимок
+          // остаётся главным; при следующем сохранении облако будет записано заново.
+          console.warn('Lumi cloud snapshot could not be reconstructed; local copy will be used:', cloudReadError);
+          cloudSnapshot = null;
+        }
+
+        // Enable cloud writes only after the old snapshot has been fully inspected.
+        // Saves made while reading remain local and are reconciled below.
+        cloudStorageReady = true;
+        const localNow = readLocalProgressSnapshot();
+        const changedWhileSyncing = localStateRevision !== revisionAtStart;
+        let stateApplied = false;
+        if (changedWhileSyncing) {
+          // Пользователь уже продолжил занятие до ответа Telegram. Не заменяем его состояние
+          // ответом из сети посреди сессии. Если локальная версия новее облачной, безопасно
+          // сохранить её; если облако новее — не затираем его локальной копией.
+          if (localNow && (!cloudSnapshot || localNow.updatedAt >= cloudSnapshot.updatedAt)) {
+            state = localNow.state;
+            stateUpdatedAt = localNow.updatedAt;
+            cloudStorageReady = true;
+            cloudStorageStatus = cloudSnapshot ? 'local' : 'checking';
+            scheduleCloudProgressSave(0);
+          } else {
+            cloudStorageStatus = 'error';
+            cloudStorageReady = false;
+          }
+        } else if (cloudSnapshot && (!localNow || cloudSnapshot.updatedAt >= localNow.updatedAt)) {
+          state = cloudSnapshot.state;
+          stateUpdatedAt = cloudSnapshot.updatedAt;
+          applyAuthoritativeProStatus();
+          writeLocalProgressSnapshot();
+          stateApplied = true;
+          cloudStorageStatus = 'cloud';
+        } else if (localNow) {
+          state = localNow.state;
+          stateUpdatedAt = localNow.updatedAt;
+          cloudStorageStatus = cloudSnapshot ? 'local' : 'checking';
+          scheduleCloudProgressSave(0);
+        } else {
+          state = normalizeState(null);
+          stateUpdatedAt = Date.now();
+          cloudStorageStatus = 'checking';
+          scheduleCloudProgressSave(0);
+        }
+
         progressStorageReady = true;
         writeLocalProgressSnapshot();
         updateStorageStatusUI();
-        return;
-      }
-
-      // CloudStorage callbacks have no AbortSignal, so bound the entire read (manifest + chunks)
-      // with one deadline. The screen has already rendered from local state before this starts.
-      const deadline = Date.now() + 2500;
-      try {
-        const cloudRaw = await callCloudStorageBeforeDeadline('getItem', [CLOUD_STORAGE_KEY], deadline);
-        let cloudSnapshot = null;
-        let cloudManifest = null;
-        try { cloudManifest = cloudRaw ? JSON.parse(cloudRaw) : null; } catch (_) { cloudManifest = null; }
-
-        if (cloudManifest && cloudManifest.format === 'lumi-cloud-manifest-v2' && Number.isInteger(cloudManifest.count) && cloudManifest.count > 0 && cloudManifest.count <= 100) {
-          let combined = '';
-          for (let i = 0; i < cloudManifest.count; i++) {
-            const part = await callCloudStorageBeforeDeadline('getItem', [`${CLOUD_STORAGE_KEY}_part_${cloudManifest.generation}_${i}`], deadline);
-            if (typeof part !== 'string') throw new Error('Отсутствует часть ' + i);
-            combined += part;
-          }
-          cloudSnapshot = parseProgressSnapshot(combined);
-          if (!cloudSnapshot || combined.length !== cloudManifest.length) throw new Error('Облачное сохранение повреждено.');
-          cloudSnapshot.updatedAt = Math.max(cloudSnapshot.updatedAt, Number(cloudManifest.updatedAt) || 0);
-        } else {
-          // Migration: older Lumi versions stored the entire snapshot in one CloudStorage value.
-          cloudSnapshot = parseProgressSnapshot(cloudRaw);
-        }
-
-        cloudStorageReady = true;
-        cloudStorageStatus = 'cloud';
-
-        // Never replace progress created while the cloud read was in flight.
-        const userChangedStateDuringLoad = stateUpdatedAt !== initialRevision;
-        if (!userChangedStateDuringLoad && cloudSnapshot && (!localSnapshot || cloudSnapshot.updatedAt >= localSnapshot.updatedAt)) {
-          state = cloudSnapshot.state;
-          stateUpdatedAt = cloudSnapshot.updatedAt;
-          selectedGoal = state.goal || 10;
-          writeLocalProgressSnapshot();
-        } else if (!userChangedStateDuringLoad && localSnapshot) {
-          state = localSnapshot.state;
-          stateUpdatedAt = Math.max(localSnapshot.updatedAt, Date.now());
-          selectedGoal = state.goal || 10;
-          scheduleCloudProgressSave(0);
-        } else if (!userChangedStateDuringLoad && !localSnapshot) {
-          // A brand-new Telegram account has no cloud key yet. Keep the fresh default state
-          // and create its first cloud snapshot without blocking the first render.
-          state = normalizeState(null);
-          selectedGoal = state.goal || 10;
-          stateUpdatedAt = Math.max(stateUpdatedAt, Date.now());
-          scheduleCloudProgressSave(0);
-        } else {
-          // The learner has already started interacting; keep their newer in-memory state.
-          scheduleCloudProgressSave(0);
-        }
+        return { stateApplied, cloudAvailable: true, changedWhileSyncing };
       } catch (error) {
         cloudStorageReady = false;
-        cloudStorageStatus = 'local';
-        if (stateUpdatedAt === initialRevision && localSnapshot) {
-          state = localSnapshot.state;
-          stateUpdatedAt = localSnapshot.updatedAt;
-        } else if (stateUpdatedAt === initialRevision && !localSnapshot) {
-          state = normalizeState(null);
-        }
-        console.warn('Lumi CloudStorage load skipped; using localStorage:', error);
+        cloudStorageStatus = 'error';
+        progressStorageReady = true;
+        // Не сбрасываем уже отображённый и используемый локальный прогресс.
+        writeLocalProgressSnapshot();
+        console.warn('Lumi CloudStorage load failed; using localStorage:', error);
+        updateStorageStatusUI();
+        return { stateApplied: false, cloudAvailable: false, error };
       }
-      progressStorageReady = true;
-      writeLocalProgressSnapshot();
-      updateStorageStatusUI();
     }
 
     function splitCloudValueUtf8(value, maxBytes = 3500) {
-      const encoder = typeof TextEncoder !== 'undefined' ? new TextEncoder() : null;
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+      const bytes = encoder.encode(String(value));
       const chunks = [];
-      let current = '', bytes = 0;
-      for (const character of value) {
-        const size = encoder ? encoder.encode(character).length : unescape(encodeURIComponent(character)).length;
-        if (bytes + size > maxBytes && current) { chunks.push(current); current = ''; bytes = 0; }
-        current += character; bytes += size;
+      if (!bytes.length) return [''];
+      let start = 0;
+      while (start < bytes.length) {
+        let end = Math.min(start + maxBytes, bytes.length);
+        // Never split in the middle of a UTF-8 continuation sequence.
+        if (end < bytes.length) while (end > start && (bytes[end] & 0xC0) === 0x80) end--;
+        if (end === start) throw new Error('Не удалось безопасно разделить UTF-8 сохранение Lumi.');
+        chunks.push(decoder.decode(bytes.subarray(start, end)));
+        start = end;
       }
-      if (current || !chunks.length) chunks.push(current);
       return chunks;
     }
 
     async function writeCloudProgressSnapshot() {
       if (!cloudStorageReady) return;
       const raw = JSON.stringify(createProgressEnvelope(true));
-      // CloudStorage values are limited to 4096 characters. Store immutable chunks,
-      // then atomically switch the manifest only after every chunk was accepted.
-      const generation = `${stateUpdatedAt || Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+      const rawBytes = new TextEncoder().encode(raw).length;
+      // Two deterministic slots keep CloudStorage below 1024 keys even if an old
+      // cleanup callback fails repeatedly. Only the inactive slot is overwritten.
+      let previousManifest = null;
       const chunks = splitCloudValueUtf8(raw, 3500);
+      if (chunks.length > CLOUD_STORAGE_MAX_CHUNKS) throw new Error(`Облачный снимок слишком велик: ${chunks.length} частей при лимите ${CLOUD_STORAGE_MAX_CHUNKS}.`);
+      for (let i = 0; i < chunks.length; i++) {
+        const bytes = new TextEncoder().encode(chunks[i]).length;
+        if (bytes > 4096 || chunks[i].length > 4096) throw new Error(`Часть ${i + 1} превышает лимит CloudStorage.`);
+      }
+
       cloudWriteQueue = cloudWriteQueue.catch(() => {}).then(async () => {
-        const previousRaw = await callCloudStorage('getItem', CLOUD_STORAGE_KEY).catch(() => null);
-        let previousManifest = null;
-        try { previousManifest = previousRaw ? JSON.parse(previousRaw) : null; } catch (_) {}
-        for (let i = 0; i < chunks.length; i++) {
-          const stored = await callCloudStorage('setItem', `${CLOUD_STORAGE_KEY}_part_${generation}_${i}`, chunks[i]);
-          if (stored === false) throw new Error(`Telegram не подтвердил часть ${i + 1}.`);
+        const deadline = Date.now() + CLOUD_STORAGE_WRITE_TIMEOUT_MS;
+        const previousRaw = await callCloudStorageUntil('getItem', [CLOUD_STORAGE_KEY], deadline).catch(() => null);
+        try { previousManifest = previousRaw ? JSON.parse(previousRaw) : null; } catch (_) { previousManifest = null; }
+        const generation = previousManifest?.generation === 'g0' ? 'g1' : 'g0';
+
+        // Values are written in bounded parallel batches. Each callback still has a hard 2.2s timeout.
+        for (let offset = 0; offset < chunks.length; offset += CLOUD_STORAGE_WRITE_CONCURRENCY) {
+          const batch = chunks.slice(offset, offset + CLOUD_STORAGE_WRITE_CONCURRENCY);
+          await Promise.all(batch.map(async (value, localIndex) => {
+            const index = offset + localIndex;
+            const key = `${CLOUD_STORAGE_KEY}_part_${generation}_${index}`;
+            const stored = await callCloudStorageUntil('setItem', [key, value], deadline);
+            if (stored === false) throw new Error(`Telegram не подтвердил часть ${index + 1}.`);
+          }));
         }
-        const manifest = JSON.stringify({format:'lumi-cloud-manifest-v2',generation,count:chunks.length,length:raw.length,updatedAt:stateUpdatedAt});
-        const committed = await callCloudStorage('setItem', CLOUD_STORAGE_KEY, manifest);
+
+        const manifest = JSON.stringify({format:'lumi-cloud-manifest-v2',generation,count:chunks.length,length:raw.length,byteLength:rawBytes,updatedAt:stateUpdatedAt});
+        const manifestBytes = new TextEncoder().encode(manifest).length;
+        if (manifestBytes > 4096 || manifest.length > 4096) throw new Error('Индекс CloudStorage превышает допустимый размер.');
+        const committed = await callCloudStorageUntil('setItem', [CLOUD_STORAGE_KEY, manifest], deadline);
         if (committed === false) throw new Error('Telegram не подтвердил индекс сохранения.');
-        if (previousManifest && previousManifest.format === 'lumi-cloud-manifest-v2' && previousManifest.generation !== generation && Number.isInteger(previousManifest.count)) {
-          for (let i = 0; i < Math.min(previousManifest.count,100); i++) {
-            try { await callCloudStorage('removeItem', `${CLOUD_STORAGE_KEY}_part_${previousManifest.generation}_${i}`); } catch (_) { break; }
+
+        // Migrate away from the older random-generation format. Cleanup occurs only
+        // after the new manifest is committed; even if it fails, the two fixed slots
+        // plus one legacy generation remain below Telegram's 1024-key account limit.
+        if (previousManifest && previousManifest.format === 'lumi-cloud-manifest-v2' && !['g0','g1'].includes(String(previousManifest.generation || '')) && Number.isInteger(previousManifest.count)) {
+          const legacyKeys = Array.from({length:Math.min(previousManifest.count, CLOUD_STORAGE_MAX_CHUNKS)}, (_,i) => `${CLOUD_STORAGE_KEY}_part_${previousManifest.generation}_${i}`);
+          for (let offset = 0; offset < legacyKeys.length; offset += 100) {
+            const batch = legacyKeys.slice(offset, offset + 100);
+            try {
+              if (typeof getCloudStorageApi()?.removeItems === 'function') await callCloudStorageUntil('removeItems', [batch], deadline);
+              else for (const key of batch) await callCloudStorageUntil('removeItem', [key], deadline);
+            } catch (error) {
+              console.warn('Lumi legacy cloud chunk cleanup deferred:', error);
+              break;
+            }
           }
         }
       });
@@ -1106,12 +1353,12 @@
     const DIALOG_SCENARIOS = [
       {id:'coffee',icon:'☕',title:'Заказ кофе в Лондоне',subtitle:'Кафе, вежливые просьбы и оплата',turns:[
         {prompt:'Hi there! What can I get for you?',task:'Попроси флэт уайт, пожалуйста.',choices:['Could I have a flat white, please?','I am coffee yesterday.','Where is the coffee sleeping?'],correct:0},
-        {prompt:'Of course. Would you like it to take away?',task:'Ответь, что возьмёшь кофе с собой.',choices:['I take it yesterday.','To go, please.','No, I am an airport.'],correct:1},
+        {prompt:'Of course. Is that for here or to take away?',task:'Ответь, что возьмёшь кофе с собой.',choices:['I take it yesterday.','To take away, please.','No, I am an airport.'],correct:1},
         {prompt:'Anything else for you today?',task:'Вежливо скажи, что это всё.',choices:['That is all, thank you.','I have all yesterday.','Give me the street.'],correct:0},
-        {prompt:"That's £3.80, please.",task:'Передай оплату и поблагодари.',choices:['Here you go. Thanks!','I am paying tomorrow last year.','The cup is under London.'],correct:0}
+        {prompt:"That'll be three pounds eighty, please.",task:'Передай оплату и поблагодари.',choices:['Here you go. Thanks!','I am paying tomorrow last year.','The cup is under London.'],correct:0}
       ]},
       {id:'gaming',icon:'🎮',title:'Знакомство в онлайн-игре',subtitle:'Начать разговор и найти напарника',turns:[
-        {prompt:'Hey! Is this your first match with us?',task:'Скажи, что играешь с этой командой впервые.',choices:['Yes, first time with this team.','I play yesterday tomorrow.','My computer is delicious.'],correct:0},
+        {prompt:'Hey! Is this your first match with us?',task:'Скажи, что играешь с этой командой впервые.',choices:['Yes, it is my first time playing with this team.','I play yesterday tomorrow.','My computer is delicious.'],correct:0},
         {prompt:'Cool! What role do you usually play?',task:'Расскажи, что обычно играешь за поддержку.',choices:['I am usually play support.','I usually play support.','Support is under my bed.'],correct:1},
         {prompt:'Want to team up after this round?',task:'Согласись и попроси прислать приглашение.',choices:['Sure, send me an invite!','No, I am a sandwich.','I sent you last week tomorrow.'],correct:0},
         {prompt:'Nice! That was a really good game.',task:'Ответь дружелюбно: «И тебе! Было весело».',choices:['You too! That was fun.','You are too game good.','Fun was yesterday at airport.'],correct:0}
@@ -1236,14 +1483,61 @@
       saveState(); render(); showToast(`Тема «${theme.name}» применена!`);
     }
 
-    function isTrialProEnabled() { return Number(state.trial_pro_until) > Date.now(); }
-    function isProEnabled() { return state.proActive === true || (DEMO_PRO_ALLOWED && state.demoPro === true) || isTrialProEnabled(); }
-    function isServerPaidProEnabled() { return state.proActive === true; }
+    function isTrialProEnabled() {
+      // In production, localStorage is never authoritative for a paid-like entitlement.
+      // Fail closed outside a verified Telegram Mini App; demo preview remains local.
+      if (!DEMO_PRO_ALLOWED) {
+        if (!tg?.initData) return false;
+        const serverNow = Math.floor((Date.now() + serverClockOffsetMs) / 1000);
+        return authoritativeTrialExpiresAt > serverNow;
+      }
+      return Number(state.trial_pro_until) > Date.now();
+    }
+    function isServerPaidProEnabled() {
+      const expiresAt = Math.floor(Number(proAccount.expiresAt || 0));
+      const serverNow = Math.floor((Date.now() + serverClockOffsetMs) / 1000);
+      return state.proActive === true && proAccount.revoked !== true && expiresAt > 0 && expiresAt > serverNow;
+    }
+    function isProEnabled() { return isServerPaidProEnabled() || (DEMO_PRO_ALLOWED && state.demoPro === true) || isTrialProEnabled(); }
+    async function requestTrialProClaim() {
+      if (trialClaimInFlight || !tg?.initData || !workerIsConfigured()) return false;
+      trialClaimInFlight = true;
+      try {
+        const userId = telegramUserId();
+        if (!userId) throw new Error('Не удалось подтвердить Telegram user.id для подарка PRO.');
+        const base = new URL(WORKER_URL.trim());
+        const {response, data} = await fetchWorkerJson(`${base.href.replace(/\/$/,'')}/claim-trial-pro?user_id=${encodeURIComponent(userId)}`, {
+          method:'POST', headers:{...workerAuthHeaders(),'Content-Type':'application/json'},
+          body:JSON.stringify({user_id:userId})
+        });
+        if (!response.ok || !Number.isFinite(Number(data.trial_expires_at))) throw new Error(data.error || 'Сервер не подтвердил подарочный PRO.');
+        authoritativeTrialExpiresAt = Number(data.trial_expires_at);
+        serverClockOffsetMs = Number(data.server_time || 0) * 1000 - Date.now();
+        state.trial_pro_claimed = true;
+        state.trial_pro_until = authoritativeTrialExpiresAt * 1000;
+        saveState();
+        render();
+        const giftStatus = document.querySelector('#welcomeGiftOverlay .trial-pro-gift small');
+        if (giftStatus) giftStatus.textContent = `Пробный доступ действует до ${formatProDate(state.trial_pro_until)}.`;
+        if (isProEnabled()) {
+          celebrateProActivation();
+          showToast(`Подарочный Lumi PRO подтверждён до ${formatProDate(state.trial_pro_until)} ⭐`);
+        }
+        return data.claimed === true;
+      } catch (error) {
+        console.warn('Lumi trial PRO claim failed:', error);
+        showToast('Подарок будет подтверждён при следующем подключении к Telegram.');
+        return false;
+      } finally { trialClaimInFlight = false; }
+    }
     function grantTrialProOnce() {
       if (state.trial_pro_claimed || Number(state.trial_pro_until) > 0) return false;
-      state.trial_pro_until = Date.now() + 24 * 60 * 60 * 1000;
       state.trial_pro_claimed = true;
+      // This provisional timestamp is for the gift dialog only. In production,
+      // premium access is granted only after the Worker confirms a one-time claim.
+      state.trial_pro_until = Date.now() + TRIAL_PRO_DURATION_MS;
       saveState();
+      if (tg?.initData && !DEMO_PRO_ALLOWED) requestTrialProClaim();
       return true;
     }
     function formatEnergyCountdown(now = Date.now()) {
@@ -1271,7 +1565,7 @@
       }
       if (state.energy >= ENERGY_MAX) {
         if (time) time.textContent = '❤️ 5/5';
-        if (note) note.textContent = 'Энергия полная. Таймер запустится после первой потери жизни.';
+        if (note) note.textContent = 'Энергия полная. Таймер на 3 часа запустится после первой потери жизни.';
         if (inline) inline.textContent = '5/5';
       } else {
         const countdown = formatEnergyCountdown();
@@ -1336,12 +1630,33 @@
       return state.ownedSkins.includes(state.selectedSkin) && state.selectedSkin !== 'default' ? `skin-${state.selectedSkin}` : '';
     }
     function saveState() {
+      localStateRevision++;
       stateUpdatedAt = Math.max(Date.now(), stateUpdatedAt + 1);
       const localSaved = writeLocalProgressSnapshot();
       if (cloudStorageReady && progressStorageReady) scheduleCloudProgressSave();
       if (!localSaved && !cloudStorageReady) showToast('Не удалось сохранить прогресс: хранилище недоступно');
       updateTopStats();
       updateStorageStatusUI();
+    }
+
+    // PRO приходит только от Worker и не является изменением учебного прогресса.
+    // Сохраняем локальные UI-последствия без изменения updatedAt и cloud revision.
+    function saveAccessStateLocally() {
+      writeLocalProgressSnapshot();
+      updateTopStats();
+      updateStorageStatusUI();
+    }
+
+    function applyAuthoritativeProStatus() {
+      if (authoritativeProStatus === null) return false;
+      const previousAccess = isProEnabled();
+      const previousTheme = state.selectedTheme;
+      state.proActive = authoritativeProStatus === true;
+      if (!isProEnabled() && ['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme = 'aurora';
+      const changed = previousAccess !== isProEnabled() || previousTheme !== state.selectedTheme;
+      lastProAccessState = isProEnabled();
+      if (changed) saveAccessStateLocally();
+      return changed;
     }
     function updateTopStats() {
       const streak = document.getElementById('streakTop');
@@ -1357,58 +1672,29 @@
     function haptic(kind) {
       try { if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(kind || 'light'); } catch (_) { /* no-op */ }
     }
-    function unlockMobileAudio() {
-      if (mobileAudioUnlocked) return;
-      mobileAudioUnlocked = true;
-      try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        if (!audioContext) audioContext = new AudioCtx();
-        // resume() and a silent one-sample buffer are both invoked inside the first trusted gesture.
-        if (audioContext.state === 'suspended') {
-          const resumed = audioContext.resume();
-          if (resumed && typeof resumed.catch === 'function') resumed.catch(() => {});
-        }
-        const silentBuffer = audioContext.createBuffer(1, 1, audioContext.sampleRate || 44100);
-        const source = audioContext.createBufferSource();
-        source.buffer = silentBuffer;
-        source.connect(audioContext.destination);
-        source.start(0);
-      } catch (_) { /* Some WebViews do not expose Web Audio; HTML5 audio may still work. */ }
-    }
-    document.addEventListener('touchstart', unlockMobileAudio, { once:true, capture:true, passive:true });
-    document.addEventListener('click', unlockMobileAudio, { once:true, capture:true });
-
     function sound(type) {
       try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        if (!audioContext) audioContext = new AudioCtx();
-        const scheduleSound = () => {
-          if (!audioContext || audioContext.state !== 'running') return;
-          const now = audioContext.currentTime;
-          const notes = type === 'success' ? [523.25,659.25,783.99] : type === 'error' ? [240,190] : [420];
-          notes.forEach((frequency, index) => {
-            const osc = audioContext.createOscillator();
-            const gain = audioContext.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(frequency, now + index * (type === 'success' ? .09 : .045));
-            if (type === 'success') osc.frequency.exponentialRampToValueAtTime(frequency * 1.18, now + index * .09 + .15);
-            gain.gain.setValueAtTime(.0001, now + index * (type === 'success' ? .09 : .045));
-            gain.gain.exponentialRampToValueAtTime(type === 'tap' ? .035 : .055, now + index * (type === 'success' ? .09 : .045) + .015);
-            gain.gain.exponentialRampToValueAtTime(.0001, now + index * (type === 'success' ? .09 : .045) + (type === 'tap' ? .09 : .22));
-            osc.connect(gain); gain.connect(audioContext.destination);
-            osc.start(now + index * (type === 'success' ? .09 : .045));
-            osc.stop(now + index * (type === 'success' ? .09 : .045) + .24);
-          });
-        };
-        if (audioContext.state === 'suspended') {
-          const resumed = audioContext.resume();
-          if (resumed && typeof resumed.then === 'function') resumed.then(scheduleSound).catch(() => {});
-        } else scheduleSound();
+        const context = getOrCreateAudioContext();
+        if (!context) return;
+        if (context.state === 'suspended') Promise.resolve(context.resume()).catch(() => {});
+        const now = context.currentTime;
+        const notes = type === 'success' ? [523.25,659.25,783.99] : type === 'error' ? [240,190] : [420];
+        notes.forEach((frequency, index) => {
+          const osc = context.createOscillator();
+          const gain = context.createGain();
+          osc.type = type === 'error' ? 'sine' : 'sine';
+          osc.frequency.setValueAtTime(frequency, now + index * (type === 'success' ? .09 : .045));
+          if (type === 'success') osc.frequency.exponentialRampToValueAtTime(frequency * 1.18, now + index * .09 + .15);
+          gain.gain.setValueAtTime(.0001, now + index * (type === 'success' ? .09 : .045));
+          gain.gain.exponentialRampToValueAtTime(type === 'tap' ? .035 : .055, now + index * (type === 'success' ? .09 : .045) + .015);
+          gain.gain.exponentialRampToValueAtTime(.0001, now + index * (type === 'success' ? .09 : .045) + (type === 'tap' ? .09 : .22));
+          osc.connect(gain); gain.connect(context.destination);
+          osc.start(now + index * (type === 'success' ? .09 : .045));
+          osc.stop(now + index * (type === 'success' ? .09 : .045) + .24);
+        });
       } catch (_) { /* Audio is optional; the app remains usable when disabled. */ }
     }
-    function tap() { haptic('light'); sound('tap'); }
+    function tap() { unlockAudioFromGesture(); haptic('light'); sound('tap'); }
     function showToast(message) {
       const el = document.getElementById('toast');
       if (!el) return;
@@ -1522,7 +1808,7 @@
       lumi:   { id:'lumi', en:'Lumi', ipa:'/ˈluːmi/', ru:'Луми (имя)', note:'Имя нашего космического напарника.', emoji:'🦎', category:'Общение' },
       hi:     { id:'hi', en:'hi', ipa:'/haɪ/', ru:'привет (неформально)', note:'Короткое, неформальное приветствие.', emoji:'😊', category:'Общение' },
       you:    { id:'you', en:'you', ipa:'/juː/', ru:'ты; вы', note:'Местоимение для обращения к собеседнику или группе людей.', emoji:'👉', category:'Общение' },
-      are:    { id:'are', en:'are', ipa:'/ɑː/', ru:'форма глагола to be после you', note:'Форма глагола-связки, которая помогает описать собеседника или группу.', emoji:'🔗', category:'Общение' },
+      are:    { id:'are', en:'are', ipa:'/ə, ɑː/', ru:'форма глагола to be после you', note:'В безударной речи часто звучит как /ə/; сильная форма — /ɑː/. Помогает описать собеседника или группу.', emoji:'🔗', category:'Общение' },
       my:     { id:'my', en:'my', ipa:'/maɪ/', ru:'мой; моя; моё', note:'Притяжательное слово, показывающее принадлежность говорящему.', emoji:'💜', category:'Общение' },
       friend: { id:'friend', en:'friend', ipa:'/frend/', ru:'друг; подруга', note:'Человек, с которым ты дружишь.', emoji:'🫶', category:'Общение' },
       good:   { id:'good', en:'good', ipa:'/ɡʊd/', ru:'хороший; добрый', note:'Прилагательное с положительным значением; здесь часть вечернего пожелания.', emoji:'🌟', category:'Общение' },
@@ -1536,7 +1822,7 @@
       apple:  { id:'apple', en:'apple', ipa:'/ˈæpəl/', ru:'яблоко', note:'Яблоко; распространённый фрукт.', emoji:'🍎', category:'Еда' },
       and:    { id:'and', en:'and', ipa:'/ænd/', ru:'и', note:'Союз, который соединяет слова или части предложения.', emoji:'➕', category:'Еда' },
       want:   { id:'want', en:'want', ipa:'/wɒnt/', ru:'хотеть', note:'Глагол желания: показывает, чего хочет человек.', emoji:'🙌', category:'Еда' },
-      the:    { id:'the', en:'the', ipa:'/ðə/', ru:'определённый артикль', note:'Указывает на уже известный или конкретный предмет.', emoji:'🔎', category:'Еда' },
+      the:    { id:'the', en:'the', ipa:'/ðə, ðiː/', ru:'определённый артикль', note:'Обычно /ðə/ перед согласным звуком и /ði/ перед гласным; под ударением возможна сильная форма /ðiː/. Указывает на уже известный или конкретный предмет.', emoji:'🔎', category:'Еда' },
       pizza:  { id:'pizza', en:'pizza', ipa:'/ˈpiːtsə/', ru:'пицца', note:'Блюдо из теста с начинкой.', emoji:'🍕', category:'Еда' },
       now:    { id:'now', en:'now', ipa:'/naʊ/', ru:'сейчас', note:'Наречие времени, указывающее на настоящий момент.', emoji:'⏱️', category:'Еда' },
       where:  { id:'where', en:'where', ipa:'/weə/', ru:'где', note:'Вопросительное слово, которое помогает спросить о месте.', emoji:'📍', category:'Путешествия' },
@@ -1631,7 +1917,7 @@
       reply:{ id:'reply', en:'reply', ipa:'/rɪˈplaɪ/', ru:'отвечать; ответ', note:'Ответить на сообщение или вопрос.', emoji:'↩️', category:'Цифровой мир' },
       online:{ id:'online', en:'online', ipa:'/ˌɒnˈlaɪn/', ru:'в сети; онлайн', note:'О состоянии подключения к интернету или доступности в сети.', emoji:'🌐', category:'Цифровой мир' },
       screen:{ id:'screen', en:'screen', ipa:'/skriːn/', ru:'экран', note:'Поверхность устройства, на которой отображается изображение.', emoji:'📱', category:'Цифровой мир' },
-      share:{ id:'share', en:'share', ipa:'/ʃeə/', ru:'делиться; отправлять общий доступ', note:'Предоставлять другим людям доступ к файлу или информации.', emoji:'🔗', category:'Цифровой мир' },
+      share:{ id:'share', en:'share', ipa:'/ʃeə/', ru:'делиться; предоставлять доступ', note:'Предоставлять другим людям доступ к файлу или информации.', emoji:'🔗', category:'Цифровой мир' },
       connect:{ id:'connect', en:'connect', ipa:'/kəˈnekt/', ru:'подключать; соединять', note:'Устанавливать связь между устройствами или людьми.', emoji:'🔌', category:'Цифровой мир' },
       file:{ id:'file', en:'file', ipa:'/faɪl/', ru:'файл', note:'Отдельный цифровой документ, изображение, программа или другой набор данных.', emoji:'📁', category:'Цифровой мир' },
       music:{ id:'music', en:'music', ipa:'/ˈmjuːzɪk/', ru:'музыка', note:'Искусство звуков и ритма; обычно неисчисляемое существительное.', emoji:'🎵', category:'Хобби' },
@@ -1651,18 +1937,58 @@
       was:{ id:'was', en:'was', ipa:'/wɒz/', ru:'был; была; было', note:'Прошедшая форма to be для I, he, she и it.', emoji:'⏳', category:'Грамматика' },
       must:{ id:'must', en:'must', ipa:'/mʌst/', ru:'должен; необходимо', note:'Модальный глагол. После must используется начальная форма глагола без to.', emoji:'📌', category:'Грамматика' },
       if:{ id:'if', en:'if', ipa:'/ɪf/', ru:'если', note:'Союз условия. В First Conditional после if обычно используем Present Simple.', emoji:'🔀', category:'Грамматика' },
-      rain:{ id:'rain', en:'rain', ipa:'/reɪn/', ru:'дождь; идти (о дожде)', note:'В третьем лице единственного числа Present Simple: it rains.', emoji:'🌧️', category:'Грамматика' },
+      rain:{ id:'rain', en:'rain', ipa:'/reɪn/', ru:'дождь; идти (о дожде)', note:'Базовая форма глагола: rain. С it в Present Simple: rains.', emoji:'🌧️', category:'Грамматика' },
+      rains:{ id:'rains', en:'rains', ipa:'/reɪnz/', ru:'идёт (о дожде)', note:'Форма Present Simple с it: it rains.', emoji:'🌧️', category:'Грамматика' },
       it:{ id:'it', en:'it', ipa:'/ɪt/', ru:'это; оно', note:'Местоимение для предметов, животных и ситуаций.', emoji:'🔹', category:'Грамматика' },
       stay:{ id:'stay', en:'stay', ipa:'/steɪ/', ru:'оставаться', note:'Глагол, который означает оставаться в каком-либо месте или состоянии.', emoji:'🏠', category:'Грамматика' },
       at:{ id:'at', en:'at', ipa:'/æt/', ru:'в; у (место)', note:'Предлог, который помогает указать конкретное место.', emoji:'📍', category:'Грамматика' },
-      home:{ id:'home', en:'home', ipa:'/həʊm/', ru:'дом; дома', note:'В выражении at home означает «дома».', emoji:'🏡', category:'Грамматика' }
+      sleep:{ id:'sleep', en:'sleep', ipa:'/sliːp/', ru:'спать; сон', note:'Глагол sleep — спать. В пожелании Sleep well! означает «Спи крепко!»', emoji:'🌙', category:'Повседневность' },
+      well:{ id:'well', en:'well', ipa:'/wel/', ru:'хорошо; крепко', note:'В сочетании sleep well означает «спи крепко / хорошо».', emoji:'✨', category:'Повседневность' },
+      home:{ id:'home', en:'home', ipa:'/həʊm/', ru:'дом; дома', note:'В выражении at home означает «дома».', emoji:'🏡', category:'Грамматика' },
+
+      she:{ id:'she', en:'she', ipa:'/ʃiː/', ru:'она', note:'Местоимение для женщины или девочки; с ним в Present Simple обычно используется окончание -s/-es.', emoji:'👩', category:'Грамматика' },
+      works:{ id:'works', en:'works', ipa:'/wɜːks/', ru:'работает (форма work для he / she / it)', note:'Форма Present Simple с he, she или it: к work добавляется -s.', emoji:'⚙️', category:'Грамматика' },
+      every:{ id:'every', en:'every', ipa:'/ˈevri/', ru:'каждый; всякий', note:'Используется для регулярности: every day — каждый день.', emoji:'🔁', category:'Грамматика' },
+      day:{ id:'day', en:'day', ipa:'/deɪ/', ru:'день', note:'В сочетании every day обозначает ежедневную регулярность.', emoji:'☀️', category:'Грамматика' },
+      write:{ id:'write', en:'write', ipa:'/raɪt/', ru:'писать', note:'Неправильный глагол: write — wrote — written.', emoji:'✍️', category:'Грамматика' },
+      writing:{ id:'writing', en:'writing', ipa:'/ˈraɪtɪŋ/', ru:'пишущий; процесс письма (форма V-ing от write)', note:'Форма V-ing: к write добавляется -ing, конечная e опускается.', emoji:'📝', category:'Грамматика' },
+      right:{ id:'right', en:'right', ipa:'/raɪt/', ru:'прямо; именно (в right now)', note:'В выражении right now усиливает значение «прямо сейчас».', emoji:'⏱️', category:'Грамматика' },
+      visit:{ id:'visit', en:'visit', ipa:'/ˈvɪzɪt/', ru:'посещать; навещать', note:'Правильный глагол: visited — прошедшая форма и V3.', emoji:'📍', category:'Грамматика' },
+      visited:{ id:'visited', en:'visited', ipa:'/ˈvɪzɪtɪd/', ru:'посетил; посещённый (V2 / V3 от visit)', note:'Правильная форма V2/V3: к visit добавляется -ed.', emoji:'🗺️', category:'Грамматика' },
+      call:{ id:'call', en:'call', ipa:'/kɔːl/', ru:'звонить; позвать', note:'Правильный глагол: called — форма V2 и V3.', emoji:'📞', category:'Грамматика' },
+      called:{ id:'called', en:'called', ipa:'/kɔːld/', ru:'позвонил; позванный (V2 / V3 от call)', note:'Прошедшая форма правильного глагола call.', emoji:'📲', category:'Грамматика' },
+      reading:{ id:'reading', en:'reading', ipa:'/ˈriːdɪŋ/', ru:'читающий; чтение (форма V-ing от read)', note:'Форма V-ing от read. В этом значении read произносится /riːd/.', emoji:'📖', category:'Грамматика' },
+      that:{ id:'that', en:'that', ipa:'/ðæt/', ru:'тот; та; то; что', note:'Указательное слово, которое помогает уточнить предмет или момент.', emoji:'👉', category:'Грамматика' },
+      moment:{ id:'moment', en:'moment', ipa:'/ˈməʊmənt/', ru:'момент', note:'At that moment — «в тот момент».', emoji:'⌛', category:'Грамматика' },
+      just:{ id:'just', en:'just', ipa:'/dʒʌst/', ru:'только что; просто', note:'В Present Perfect часто ставится между have/has и V3: have just finished.', emoji:'✨', category:'Грамматика' },
+      finished:{ id:'finished', en:'finished', ipa:'/ˈfɪnɪʃt/', ru:'закончил; завершённый (V2 / V3 от finish)', note:'Третья форма правильного глагола finish; после have/has/had используем finished.', emoji:'🏁', category:'Грамматика' },
+      had:{ id:'had', en:'had', ipa:'/hæd/', ru:'имел; вспомогательный глагол Past Perfect', note:'Одинаковая форма had используется со всеми подлежащими в Past Perfect и Past Perfect Continuous.', emoji:'⏳', category:'Грамматика' },
+      before:{ id:'before', en:'before', ipa:'/bɪˈfɔː/', ru:'до; прежде чем', note:'Помогает связать более раннее действие с более поздним моментом или событием.', emoji:'↩️', category:'Грамматика' },
+      noon:{ id:'noon', en:'noon', ipa:'/nuːn/', ru:'полдень', note:'By noon — «к полудню», то есть не позднее этого момента.', emoji:'🌞', category:'Грамматика' },
+      this:{ id:'this', en:'this', ipa:'/ðɪs/', ru:'этот; эта; это', note:'В выражении this time tomorrow задаёт точку отсчёта в будущем.', emoji:'👉', category:'Грамматика' },
+      time:{ id:'time', en:'time', ipa:'/taɪm/', ru:'время', note:'This time tomorrow — «завтра в это же время».', emoji:'🕒', category:'Грамматика' },
+      be:{ id:'be', en:'be', ipa:'/biː/', ru:'быть; начальная форма глагола to be', note:'После will используется начальная форма be: will be working.', emoji:'🔗', category:'Грамматика' },
+      working:{ id:'working', en:'working', ipa:'/ˈwɜːkɪŋ/', ru:'работающий; работа (форма V-ing от work)', note:'Форма V-ing от work: will be working — будет работать в определённый момент.', emoji:'💻', category:'Грамматика' },
+      been:{ id:'been', en:'been', ipa:'/biːn/', ru:'третья форма глагола be', note:'V3 от be. В perfect continuous используется в конструкции have/has/had been + V-ing.', emoji:'🧩', category:'Грамматика' },
+      studying:{ id:'studying', en:'studying', ipa:'/ˈstʌdiɪŋ/', ru:'изучающий; занимающийся (форма V-ing от study)', note:'Форма V-ing от study: study заканчивается на согласную + y, поэтому y сохраняется и добавляется -ing.', emoji:'📚', category:'Грамматика' },
+      for:{ id:'for', en:'for', ipa:'/fə/', ru:'в течение; на протяжении', note:'С длительностью: for two hours — в течение двух часов.', emoji:'⌛', category:'Грамматика' },
+      two:{ id:'two', en:'two', ipa:'/tuː/', ru:'два; две', note:'Числительное. Two hours — два часа.', emoji:'2️⃣', category:'Грамматика' },
+      hours:{ id:'hours', en:'hours', ipa:'/ˈaʊəz/', ru:'часы; часов', note:'Множественное число от hour. В выражении for two hours обозначает длительность.', emoji:'⏰', category:'Грамматика' },
+      waiting:{ id:'waiting', en:'waiting', ipa:'/ˈweɪtɪŋ/', ru:'ожидающий; ожидание (форма V-ing от wait)', note:'Форма V-ing от wait: ждать в течение некоторого времени.', emoji:'⌛', category:'Грамматика' },
+      an:{ id:'an', en:'an', ipa:'/ən/', ru:'неопределённый артикль перед гласным звуком', note:'Используется перед hour, потому что h в этом слове не произносится: an hour.', emoji:'🔤', category:'Грамматика' },
+      hour:{ id:'hour', en:'hour', ipa:'/ˈaʊə/', ru:'час', note:'В слове hour буква h не произносится, поэтому используется an hour.', emoji:'🕐', category:'Грамматика' },
+      completed:{ id:'completed', en:'completed', ipa:'/kəmˈpliːtɪd/', ru:'завершил; завершённый (V2 / V3 от complete)', note:'Правильная форма V3: will have completed — завершит к указанному будущему сроку.', emoji:'✅', category:'Грамматика' },
+      course:{ id:'course', en:'course', ipa:'/kɔːs/', ru:'курс; учебная программа', note:'A course — учебный курс или программа занятий.', emoji:'🎓', category:'Грамматика' },
+      friday:{ id:'friday', en:'Friday', ipa:'/ˈfraɪdeɪ/', ru:'пятница', note:'Дни недели в английском языке пишутся с заглавной буквы.', emoji:'📅', category:'Грамматика' },
+      three:{ id:'three', en:'three', ipa:'/θriː/', ru:'три', note:'Числительное. Three hours — три часа.', emoji:'3️⃣', category:'Грамматика' },
+      here:{ id:'here', en:'here', ipa:'/hɪə/', ru:'здесь; сюда', note:'Уточняет место действия: working here — работать здесь.', emoji:'📍', category:'Грамматика' }
     };
 
     const planets = [
       { id:'greetings', name:'Планета Приветствий', subtitle:'Знакомство, приветствия и дружба', icon:'👋', color:'linear-gradient(135deg,#b7f1f5,#65d5e2)', lessons:[
-        { id:'greetings-1', title:'Первый контакт', subtitle:'Я и Луми', words:['i','am','lumi','hi'], sentenceTokens:[['i','I'],['am','am'],['lumi','Lumi.']], meaning:'Я — Луми.', rule:'В простом утверждении сначала ставим того, о ком говорим, затем форму am и имя.', },
+        { id:'greetings-1', title:'Первый контакт', subtitle:'Я и Луми', words:['i','am','lumi','hi'], sentenceTokens:[['hi','Hi!'],['i','I'],['am','am'],['lumi','Lumi.']], meaning:'Привет! Я Луми.', rule:'Hi! — короткое приветствие. В простом утверждении сначала ставим того, о ком говорим, затем форму am и имя.' },
         { id:'greetings-2', title:'Новый друг', subtitle:'Обращаемся друг к другу', words:['you','are','my','friend'], sentenceTokens:[['you','You'],['are','are'],['my','my'],['friend','friend.']], meaning:'Ты мой друг.', rule:'Связка You are помогает сказать «Ты…». My ставится перед словом, которое обозначает близкого человека или предмет.' },
-        { id:'greetings-3', title:'Вечернее приветствие', subtitle:'Добрые слова и извинения', words:['good','night','sorry'], sentenceTokens:[['good','Good'],['night','night,'],['my','my'],['friend','friend,'],['lumi','Lumi.']], meaning:'Спокойной ночи, мой друг, Луми.', rule:'Good night — устойчивое пожелание перед сном. Sorry используют, чтобы извиниться.' }
+        { id:'greetings-3', title:'Вечернее приветствие', subtitle:'Пожелание перед сном', words:['good','night','sleep','well'], sentenceTokens:[['good','Good'],['night','night!'],['sleep','Sleep'],['well','well,'],['my','my'],['friend','friend.']], meaning:'Спокойной ночи! Спи крепко, мой друг.', rule:'Good night! — пожелание перед сном. Sleep well! — естественное пожелание хорошо выспаться.' }
       ]},
       { id:'food', name:'Галактика Еды и Кафе', subtitle:'Напитки, продукты и заказ еды', icon:'🍓', color:'linear-gradient(135deg,#ffd0e3,#ff91b9)', lessons:[
         { id:'food-1', title:'Любимый напиток', subtitle:'Чай или кофе?', words:['like','tea','coffee'], sentenceTokens:[['i','I'],['like','like'],['tea','tea.']], meaning:'Мне нравится чай.', rule:'I like… — простой способ сказать, что тебе что-то нравится.' },
@@ -1670,13 +1996,13 @@
         { id:'food-3', title:'Заказ пиццы', subtitle:'Говорим о том, чего хотим', words:['want','the','pizza','now'], sentenceTokens:[['i','I'],['want','want'],['the','the'],['pizza','pizza'],['now','now.']], meaning:'Я хочу эту пиццу сейчас.', rule:'I want… означает «Я хочу…». The указывает на конкретную пиццу, о которой собеседникам уже известно.' }
       ]},
       { id:'travel', name:'Орбита Путешествий', subtitle:'Вокзал, билеты и дорога', icon:'🛸', color:'linear-gradient(135deg,#d8d0ff,#a99afa)', lessons:[
-        { id:'travel-1', title:'Ищем вокзал', subtitle:'Спрашиваем, где находится место', words:['where','is','station','train'], sentenceTokens:[['where','Where'],['is','is'],['the','the'],['station','station?']], meaning:'Где находится вокзал?', rule:'Where is…? — вопрос «Где находится…?». После is можно назвать место.' },
+        { id:'travel-1', title:'Ищем вокзал', subtitle:'Спрашиваем, где находится место', words:['where','is','station','train'], requiresWords:['the'], sentenceTokens:[['where','Where'],['is','is'],['the','the'],['train','train'],['station','station?']], meaning:'Где находится железнодорожная станция?', rule:'Where is…? — вопрос «Где находится…?». Train station — железнодорожная станция; train стоит перед station как определение.' },
         { id:'travel-2', title:'Покупаем билет', subtitle:'Говорим, что нам нужно', words:['need','a','ticket'], sentenceTokens:[['i','I'],['need','need'],['a','a'],['ticket','ticket.']], meaning:'Мне нужен билет.', rule:'I need… — «Мне нужен / нужно…». Артикль a ставится перед одним исчисляемым предметом.' },
         { id:'travel-3', title:'Путь в аэропорт', subtitle:'Строим фразу о направлении', words:['we','go','to','airport'], sentenceTokens:[['we','We'],['go','go'],['to','to'],['the','the'],['airport','airport'],['now','now.']], meaning:'Мы сейчас едем в аэропорт.', rule:'Go to показывает движение к месту. В этом предложении the указывает на конкретный аэропорт.' }
       ]},
       { id:'daily', name:'Планета Повседневности', subtitle:'Утро, учёба и вечерние привычки', icon:'🌅', color:'linear-gradient(135deg,#ffe6b8,#ffc18a)', lessons:[
-        { id:'daily-1', title:'Доброе утро', subtitle:'Начинаем день и завтракаем', words:['morning','wake','breakfast','early'], requiresWords:['i','want','now'], sentenceTokens:[['i','I'],['want','want'],['breakfast','breakfast'],['now','now.']], meaning:'Я хочу завтракать сейчас.', rule:'После want можно поставить предмет желания. Breakfast — «завтрак», а now уточняет, что это нужно сейчас.' },
-        { id:'daily-2', title:'Время учиться', subtitle:'Читаем и изучаем новое', words:['study','read','book'], requiresWords:['we','a'], sentenceTokens:[['we','We'],['read','read'],['a','a'],['book','book.']], meaning:'Мы читаем книгу.', rule:'Read в настоящем времени произносится /riːd/. Перед одним исчисляемым предметом, о котором ещё не говорили, используем артикль a.' },
+        { id:'daily-1', title:'Доброе утро', subtitle:'Начинаем день и завтракаем', words:['morning','wake','breakfast','early','have'], requiresWords:['i'], sentenceTokens:[['i','I'],['have','have'],['breakfast','breakfast'],['early','early.']], meaning:'Я рано завтракаю.', rule:'Have breakfast — естественное сочетание «завтракать». Early уточняет, что действие происходит рано. Wake — «просыпаться», morning — «утро».' },
+        { id:'daily-2', title:'Время учиться', subtitle:'Читаем и изучаем новое', words:['study','read','book'], requiresWords:['we','a','and'], sentenceTokens:[['we','We'],['study','study'],['and','and'],['read','read'],['a','a'],['book','book.']], meaning:'Мы учимся и читаем книгу.', rule:'Study — учиться или изучать; read — читать. В настоящем времени с we используем начальную форму глагола. Перед одним исчисляемым предметом ставим a.' },
         { id:'daily-3', title:'Спокойный вечер', subtitle:'Говорим об усталости и отдыхе', words:['tired','in','evening','sleep'], requiresWords:['i','am','the'], sentenceTokens:[['i','I'],['am','am'],['tired','tired'],['in','in'],['the','the'],['evening','evening.']], meaning:'Вечером я чувствую усталость.', rule:'Для состояния используем I am + прилагательное. In the evening — устойчивое сочетание «вечером».' }
       ]},
       { id:'city', name:'Городская Орбита', subtitle:'Улицы, парки и городской транспорт', icon:'🏙️', color:'linear-gradient(135deg,#c6f0d8,#79d8b7)', lessons:[
@@ -1689,27 +2015,35 @@
         { id:'nature-2', title:'Тёплый день', subtitle:'Говорим о погоде сегодня', words:['warm','today','cloudy'], requiresWords:['the','is','weather'], sentenceTokens:[['the','The'],['weather','weather'],['is','is'],['warm','warm'],['today','today.']], meaning:'Сегодня погода тёплая.', rule:'Today обычно ставится в конце такого предложения. После weather используем is, потому что weather — неисчисляемое существительное в единственном числе.' },
         { id:'nature-3', title:'Цветущий сад', subtitle:'Описываем деревья и цветы', words:['tree','flower','green','beautiful'], requiresWords:['the','is','and'], sentenceTokens:[['the','The'],['flower','flower'],['is','is'],['beautiful','beautiful'],['and','and'],['the','the'],['tree','tree'],['is','is'],['green','green.']], meaning:'Цветок красивый, а дерево зелёное.', rule:'Beautiful и green — прилагательные: в английском они обычно стоят перед существительным или после is.' }
       ]},
-      { id:'grammar-basics', name:'Галактика Грамматики', subtitle:'Четыре базовых времени английского', icon:'📘', color:'linear-gradient(135deg,#c9d7ff,#8c9df1)', lessons:[
-        { id:'grammar-present-simple', title:'Present Simple — привычки и факты', subtitle:'Что происходит обычно', grammar:{tense:'Present Simple',structure:'I / you / we / they + V1; he / she / it + V-s',usage:'Используй для привычек, регулярных действий и фактов. В вопросах и отрицаниях помогают do / does.',example:'I like tea.',exampleRu:'Мне нравится чай.',question:{prompt:'Выбери предложение в Present Simple.',options:['I like tea.','I am liking tea.','I liked tea.'],correct:0,explanation:'Present Simple использует начальную форму глагола: I like.'}}, words:['i','like','tea'], sentenceTokens:[['i','I'],['like','like'],['tea','tea.']], meaning:'Мне нравится чай.', rule:'Present Simple описывает привычки, повторяющиеся действия и факты. С I/you/we/they используем V1; с he/she/it обычно добавляем -s или -es.' },
-        { id:'grammar-present-continuous', title:'Present Continuous — прямо сейчас', subtitle:'Что происходит в момент речи', grammar:{tense:'Present Continuous',structure:'am / is / are + V-ing',usage:'Используй для действия, которое происходит сейчас или в текущий период.',example:'I am studying now.',exampleRu:'Я сейчас учусь.',question:{prompt:'Как правильно сказать «Я сейчас учусь»?',options:['I am studying now.','I study yesterday.','I am study now.'],correct:0,explanation:'После am/is/are нужен глагол с окончанием -ing: studying.'}}, words:['i','am','study','now'], requiresWords:['i'], sentenceTokens:[['i','I'],['am','am'],['study','studying'],['now','now.']], meaning:'Я сейчас учусь.', rule:'Present Continuous строится по схеме am/is/are + глагол с окончанием -ing. Не забывай вспомогательный глагол.' },
-        { id:'grammar-past-simple', title:'Past Simple — завершённое прошлое', subtitle:'Что произошло вчера или раньше', grammar:{tense:'Past Simple',structure:'подлежащее + V2 / глагол + -ed',usage:'Используй для завершённых действий в прошлом. У правильных глаголов обычно -ed, неправильные формы нужно запоминать.',example:'We went to the airport yesterday.',exampleRu:'Вчера мы поехали в аэропорт.',question:{prompt:'Какое предложение правильно описывает поездку вчера?',options:['We went to the airport yesterday.','We go to the airport yesterday.','We will go to the airport yesterday.'],correct:0,explanation:'Go — неправильный глагол: его форма Past Simple — went.'}}, words:['we','go','to','the','airport','yesterday'], requiresWords:['we','go','to','the','airport'], sentenceTokens:[['we','We'],['go','went'],['to','to'],['the','the'],['airport','airport'],['yesterday','yesterday.']], meaning:'Вчера мы поехали в аэропорт.', rule:'Past Simple описывает завершённое действие в прошлом. У go неправильная форма — went; правильные глаголы часто получают окончание -ed.' },
-        { id:'grammar-future-simple', title:'Future Simple — будущее', subtitle:'Планы, обещания и прогнозы', grammar:{tense:'Future Simple',structure:'will + начальная форма глагола (V1)',usage:'Используй для решений, обещаний и прогнозов о будущем.',example:'I will study tomorrow.',exampleRu:'Завтра я буду учиться.',question:{prompt:'Выбери правильную форму Future Simple.',options:['I will study tomorrow.','I studied tomorrow.','I will studying tomorrow.'],correct:0,explanation:'После will ставим начальную форму глагола: will study, без -s и без -ing.'}}, words:['i','will','study','tomorrow'], requiresWords:['i','study'], sentenceTokens:[['i','I'],['will','will'],['study','study'],['tomorrow','tomorrow.']], meaning:'Завтра я буду учиться.', rule:'Future Simple строится с will + начальная форма глагола. После will не добавляем -s и не используем to.' }
-      ]}
+      { id:'grammar-basics', name:'Галактика Грамматики', subtitle:'Шесть базовых времён — от настоящего к совершенному', icon:'📘', color:'linear-gradient(135deg,#c9d7ff,#8c9df1)', lessons:[
+        { id:'grammar-present-simple', title:'1. Present Simple — привычки и факты', subtitle:'Что происходит обычно и регулярно', words:['she','works','every','day'], sentenceTokens:[['she','She'],['works','works'],['every','every'],['day','day.']], meaning:'Она работает каждый день.', rule:'Present Simple описывает привычки, расписания и постоянные факты. В утвердительной форме с he / she / it к смысловому глаголу обычно добавляем -s или -es. В вопросах и отрицаниях используем do / does, а после does глагол возвращается к V1.', grammar:{tense:'Present Simple',structure:'S + V1 (he / she / it: V-s / V-es)',forms:{positive:'I / you / we / they + V1; he / she / it + V-s / V-es',negative:'S + do / does not + V1',question:'Do / Does + S + V1?'},markers:['always','usually','often','sometimes','never','every day / week'],usage:'Используй для привычек, повторяющихся действий, расписаний и общеизвестных фактов. Не добавляй -s к глаголу после does: Does she work…?, а не Does she works…?',example:'She works every day.',exampleRu:'Она работает каждый день.',note:'В третьем лице единственного числа: work → works, watch → watches, study → studies. В вопросах и отрицаниях окончание остаётся у does: Does she work? She does not work.',question:{prompt:'Выбери правильный вопрос в Present Simple.',options:['Does she work every day?','Does she works every day?','Do she work every day?'],correct:0,explanation:'С she используем does, а после does — начальную форму work без окончания -s.'}}},
+        { id:'grammar-present-continuous', title:'2. Present Continuous — прямо сейчас', subtitle:'Действие в момент речи или временный процесс', words:['write','writing','right'], requiresWords:['i','am','now'], sentenceTokens:[['i','I'],['am','am'],['writing','writing'],['right','right'],['now','now.']], meaning:'Я пишу прямо сейчас.', rule:'Present Continuous показывает действие, которое происходит сейчас или временно продолжается в текущий период. Нужны две части: подходящая форма to be и смысловой глагол с -ing.', grammar:{tense:'Present Continuous',structure:'S + am / is / are + V-ing',forms:{positive:'S + am / is / are + V-ing',negative:'S + am / is / are + not + V-ing',question:'Am / Is / Are + S + V-ing?'},markers:['now','right now','at the moment','currently','today / this week (временная ситуация)'],usage:'Используй для действия в момент речи или временной ситуации вокруг настоящего. Глаголы состояния (know, like, believe) обычно не ставятся в Continuous в обычном значении.',example:'I am writing right now.',exampleRu:'Я пишу прямо сейчас.',note:'После am / is / are всегда нужна форма V-ing: am writing. Не говори am write. Для I — am, для he / she / it — is, для you / we / they — are.',question:{prompt:'Какое предложение грамматически верно?',options:['I am writing right now.','I am write right now.','I writing right now.'],correct:0,explanation:'Present Continuous требует am / is / are перед формой V-ing: am writing.'}}},
+        { id:'grammar-past-simple', title:'3. Past Simple — завершённое прошлое', subtitle:'Что произошло вчера или раньше', words:['visit','visited','yesterday'], requiresWords:['i','the','park'], sentenceTokens:[['i','I'],['visited','visited'],['the','the'],['park','park'],['yesterday','yesterday.']], meaning:'Вчера я посетил парк.', rule:'Past Simple описывает завершённое действие в прошлом. У правильных глаголов обычно добавляется -ed, неправильные формы V2 нужно запоминать. В вопросах и отрицаниях используется did + V1.', grammar:{tense:'Past Simple',structure:'S + V2 (правильный глагол: V-ed)',forms:{positive:'S + V2 / V-ed',negative:'S + did not + V1',question:'Did + S + V1?'},markers:['yesterday','last night / week / year','… ago','in 2019 (завершённый период)'],usage:'Используй для завершённых действий в прошлом, когда время известно или подразумевается. После did / did not ставь V1, а не V2.',example:'I visited the park yesterday.',exampleRu:'Вчера я посетил парк.',note:'Правильный глагол: visit → visited. Неправильный: go → went. В вопросе Did you go? и отрицании I did not go используется V1.',question:{prompt:'Выбери правильное предложение о завершённом прошлом.',options:['I visited the park yesterday.','I visit the park yesterday.','I have visited the park yesterday.'],correct:0,explanation:'Yesterday указывает на завершённое время в прошлом, поэтому здесь нужен Past Simple: visited.'}}},
+        { id:'grammar-future-simple', title:'4. Future Simple — будущее', subtitle:'Прогнозы, обещания и спонтанные решения', words:['will','call','tomorrow'], requiresWords:['i','you'], sentenceTokens:[['i','I'],['will','will'],['call','call'],['you','you'],['tomorrow','tomorrow.']], meaning:'Я позвоню тебе завтра.', rule:'Future Simple образуется с will и начальной формой V1. Will не меняется по лицам; после него не ставим -s, -ed, -ing или to.', grammar:{tense:'Future Simple',structure:'S + will + V1',forms:{positive:'S + will + V1',negative:'S + will not (won’t) + V1',question:'Will + S + V1?'},markers:['tomorrow','next week / month / year','soon','in two days','I think / probably'],usage:'Используй для прогнозов, обещаний, предложений и решений, принятых в момент речи. Для заранее организованных планов часто подходят и другие конструкции (be going to / Present Continuous).',example:'I will call you tomorrow.',exampleRu:'Я позвоню тебе завтра.',note:'После will всегда V1: will call. В отрицании — will not / won’t call. Вопрос начинается с Will: Will you call?',question:{prompt:'Выбери правильную форму Future Simple.',options:['I will call you tomorrow.','I will called you tomorrow.','I will calling you tomorrow.'],correct:0,explanation:'После will нужна начальная форма глагола V1: call.'}}},
+        { id:'grammar-past-continuous', title:'5. Past Continuous — процесс в прошлом', subtitle:'Что было в процессе в определённый момент', words:['was','reading','at','that','moment'], requiresWords:['i','a','book'], sentenceTokens:[['i','I'],['was','was'],['reading','reading'],['a','a'],['book','book'],['at','at'],['that','that'],['moment','moment.']], meaning:'В тот момент я читал книгу.', rule:'Past Continuous показывает действие, которое уже было в процессе в определённый момент прошлого. Часто используется как фон для короткого события в Past Simple.', grammar:{tense:'Past Continuous',structure:'S + was / were + V-ing',forms:{positive:'S + was / were + V-ing',negative:'S + was / were + not + V-ing',question:'Was / Were + S + V-ing?'},markers:['at 8 p.m. yesterday','at that moment','while','when (для события, прерывающего процесс)'],usage:'Используй для действия в процессе в конкретный момент прошлого или для двух параллельных процессов. С I / he / she / it — was; с you / we / they — were.',example:'I was reading a book at that moment.',exampleRu:'В тот момент я читал книгу.',note:'Was / were — прошедшая форма to be, после неё нужна форма V-ing: was reading. Событие, которое прерывает процесс, часто выражается Past Simple: I was reading when you called.',question:{prompt:'Выбери правильное предложение в Past Continuous.',options:['I was reading a book.','I were reading a book.','I was read a book.'],correct:0,explanation:'С I используется was, затем форма V-ing: was reading.'}}},
+        { id:'grammar-present-perfect', title:'6. Present Perfect — связь прошлого с настоящим', subtitle:'Опыт и результат к текущему моменту', words:['have','just','finished'], requiresWords:['i'], sentenceTokens:[['i','I'],['have','have'],['just','just'],['finished','finished.']], meaning:'Я только что закончил.', rule:'Present Perfect связывает прошлое действие с настоящим: важен результат сейчас, жизненный опыт или период, который ещё продолжается. Не используй его с точным завершённым временем вроде yesterday или last year.', grammar:{tense:'Present Perfect',structure:'S + have / has + V3',forms:{positive:'S + have / has + V3',negative:'S + have / has + not + V3',question:'Have / Has + S + V3?'},markers:['already','just','ever / never','yet (обычно вопрос / отрицание)','so far','since + точка начала / for + длительность'],usage:'Используй для результата к настоящему, опыта без точной даты и действий в периоде, который ещё не завершился. Have — с I / you / we / they; has — с he / she / it.',example:'I have just finished.',exampleRu:'Я только что закончил.',note:'После have / has нужна третья форма V3: finish → finished. He has finished; I have finished. Не говори has finish. С yesterday обычно нужен Past Simple.',question:{prompt:'Выбери правильную форму Present Perfect.',options:['I have just finished.','I has just finished.','I have just finish.'],correct:0,explanation:'С I используется have, а после have — третья форма finished.'}}}
+      ]},
     ];
     const proPlanets = [
-      { id:'grammar-advanced', name:'Продвинутая Грамматика', subtitle:'Сложные конструкции и уверенная речь', icon:'🧠', color:'linear-gradient(135deg,#e3d1ff,#aa86e8)', pro:true, lessons:[
-        { id:'grammar-present-perfect', title:'Present Perfect — результат к настоящему', subtitle:'Опыт и уже завершённые действия', grammar:{tense:'Present Perfect',structure:'have / has + V3 (третья форма)',usage:'Используй, когда важен результат к настоящему или жизненный опыт, а точное время не называется.',example:'I have finished already.',exampleRu:'Я уже закончил.',question:{prompt:'Выбери предложение в Present Perfect.',options:['I have finished already.','I finished already yesterday.','I am finish already.'],correct:0,explanation:'Present Perfect требует have/has и третью форму глагола: have finished.'}}, words:['i','have','finish','already'], sentenceTokens:[['i','I'],['have','have'],['finish','finished'],['already','already.']], meaning:'Я уже закончил.', rule:'Present Perfect строится по схеме have/has + V3. Он связывает прошлое действие с настоящим результатом или опытом.' },
-        { id:'grammar-past-continuous', title:'Past Continuous — процесс в прошлом', subtitle:'Что происходило в определённый момент', grammar:{tense:'Past Continuous',structure:'was / were + V-ing',usage:'Используй для действия, которое было в процессе в конкретный момент прошлого.',example:'I was reading a book.',exampleRu:'Я читал книгу (в тот момент).',question:{prompt:'Как правильно сказать «Я читал книгу в тот момент»?',options:['I was reading a book.','I were read a book.','I am reading a book yesterday.'],correct:0,explanation:'С I используется was, затем глагол с -ing: was reading.'}}, words:['i','was','read','a','book'], sentenceTokens:[['i','I'],['was','was'],['read','reading'],['a','a'],['book','book.']], meaning:'Я читал книгу (в тот момент).', rule:'Past Continuous показывает процесс в прошлом: was/were + глагол с окончанием -ing.' },
-        { id:'grammar-modals', title:'Modal verbs — can, must, should', subtitle:'Умение, обязанность и совет', grammar:{tense:'Модальные глаголы',structure:'can / must / should + V1 (без to)',usage:'Can — умение или возможность; must — строгая необходимость; should — совет.',example:'You must practice English.',exampleRu:'Ты должен практиковать английский.',question:{prompt:'Как правильно использовать must?',options:['You must practice English.','You must to practice English.','You must practices English.'],correct:0,explanation:'После модального глагола используется начальная форма без to и без окончания -s.'}}, words:['you','must','practice','english'], sentenceTokens:[['you','You'],['must','must'],['practice','practice'],['english','English.']], meaning:'Ты должен практиковать английский.', rule:'После can, must и should используется начальная форма глагола без to: can go, must study, should rest.' },
-        { id:'grammar-first-conditional', title:'First Conditional — реальное условие', subtitle:'Что произойдёт, если условие выполнится', grammar:{tense:'First Conditional',structure:'If + Present Simple, will + V1',usage:'Используй для реального или вероятного условия в будущем.',example:'If it rains, we will stay at home.',exampleRu:'Если пойдёт дождь, мы останемся дома.',question:{prompt:'Выбери правильное предложение First Conditional.',options:['If it rains, we will stay at home.','If it will rain, we stay at home.','If it rain, we will staying at home.'],correct:0,explanation:'В части после if используется Present Simple; в главной части — will + V1.'}}, words:['if','it','rain','we','will','stay','at','home'], sentenceTokens:[['if','If'],['it','it'],['rain','rains,'],['we','we'],['will','will'],['stay','stay'],['at','at'],['home','home.']], meaning:'Если пойдёт дождь, мы останемся дома.', rule:'В First Conditional после if используем Present Simple, а в главной части — will + начальную форму: If it rains, we will stay.' }
+      { id:'grammar-advanced', name:'Галактика Продвинутых Времён', subtitle:'Шесть времён для точной речи о прошлом и будущем', icon:'🧠', color:'linear-gradient(135deg,#e3d1ff,#aa86e8)', pro:true, lessons:[
+        { id:'grammar-past-perfect', title:'7. Past Perfect — раньше другого прошлого', subtitle:'Что уже произошло к прошлому моменту', words:['had','before','noon'], requiresWords:['i','finished'], sentenceTokens:[['i','I'],['had','had'],['finished','finished'],['before','before'],['noon','noon.']], meaning:'Я закончил ещё до полудня.', rule:'Past Perfect показывает действие, которое завершилось до другого момента или события в прошлом. Это не просто «очень далёкое прошлое»: важна связь двух прошлых точек.', grammar:{tense:'Past Perfect',structure:'S + had + V3',forms:{positive:'S + had + V3',negative:'S + had not (hadn’t) + V3',question:'Had + S + V3?'},markers:['by the time + Past Simple','before / after','already','by + момент в прошлом'],usage:'Используй, когда нужно подчеркнуть, что одно действие уже завершилось до другого прошлого события. Had одинаково для всех лиц.',example:'I had finished before noon.',exampleRu:'Я закончил ещё до полудня.',note:'Had + V3: had finished, had gone. В вопросе Had you finished?; в отрицании I had not finished. Если порядок событий и так ясен, Past Perfect нужен не всегда.',question:{prompt:'Как правильно сказать, что действие завершилось до прошлого момента?',options:['I had finished before noon.','I have finished before noon yesterday.','I had finish before noon.'],correct:0,explanation:'Past Perfect строится как had + V3: had finished.'}}},
+        { id:'grammar-future-continuous', title:'8. Future Continuous — процесс в будущем', subtitle:'Что будет происходить в определённый момент', words:['this','time','be','working'], requiresWords:['i','will','tomorrow'], sentenceTokens:[['this','This'],['time','time'],['tomorrow','tomorrow,'],['i','I'],['will','will'],['be','be'],['working','working.']], meaning:'Завтра в это время я буду работать.', rule:'Future Continuous показывает действие, которое будет в процессе в определённый момент будущего. Он подчёркивает ход действия, а не его завершение.', grammar:{tense:'Future Continuous',structure:'S + will be + V-ing',forms:{positive:'S + will be + V-ing',negative:'S + will not (won’t) be + V-ing',question:'Will + S + be + V-ing?'},markers:['at this time tomorrow','this time next week','at 8 p.m. tomorrow'],usage:'Используй для действия, которое будет происходить в конкретный будущий момент, или для вежливого вопроса о планах.',example:'This time tomorrow, I will be working.',exampleRu:'Завтра в это время я буду работать.',note:'После will ставим be, а затем V-ing: will be working. Не пропускай be и не используй V1 после be.',question:{prompt:'Выбери правильное предложение в Future Continuous.',options:['I will be working at this time tomorrow.','I will working at this time tomorrow.','I will be work at this time tomorrow.'],correct:0,explanation:'Формула Future Continuous — will + be + V-ing.'}}},
+        { id:'grammar-present-perfect-continuous', title:'9. Present Perfect Continuous — длительность до настоящего', subtitle:'Как долго действие продолжается', words:['been','studying','for','two','hours'], requiresWords:['i','have'], sentenceTokens:[['i','I'],['have','have'],['been','been'],['studying','studying'],['for','for'],['two','two'],['hours','hours.']], meaning:'Я занимаюсь уже два часа.', rule:'Present Perfect Continuous подчёркивает длительность действия, начавшегося в прошлом и продолжающегося до настоящего или только что закончившегося с заметным результатом.', grammar:{tense:'Present Perfect Continuous',structure:'S + have / has been + V-ing',forms:{positive:'S + have / has been + V-ing',negative:'S + have / has not been + V-ing',question:'Have / Has + S + been + V-ing?'},markers:['for + период времени','since + точка начала','all day / all morning','lately / recently'],usage:'Используй, когда важно «как долго» продолжается действие. Have/has согласуется с подлежащим, been не меняется, смысловой глагол получает -ing.',example:'I have been studying for two hours.',exampleRu:'Я занимаюсь уже два часа.',note:'Три части после подлежащего: have/has + been + V-ing. Сравни: I have studied three chapters (результат) и I have been studying for two hours (длительность).',question:{prompt:'Какая формула соответствует Present Perfect Continuous?',options:['I have been studying for two hours.','I have studying for two hours.','I have been study for two hours.'],correct:0,explanation:'Нужны have/has + been + форма V-ing: have been studying.'}}},
+        { id:'grammar-past-perfect-continuous', title:'10. Past Perfect Continuous — длительность до прошлого момента', subtitle:'Что продолжалось до другого события в прошлом', words:['waiting','an','hour','called'], requiresWords:['i','had','been','for','before','you'], sentenceTokens:[['i','I'],['had','had'],['been','been'],['waiting','waiting'],['for','for'],['an','an'],['hour','hour'],['before','before'],['you','you'],['called','called.']], meaning:'Я ждал целый час, прежде чем ты позвонил.', rule:'Past Perfect Continuous подчёркивает, как долго действие продолжалось до определённого момента или события в прошлом. Часто объясняет причину прошлого результата.', grammar:{tense:'Past Perfect Continuous',structure:'S + had been + V-ing',forms:{positive:'S + had been + V-ing',negative:'S + had not (hadn’t) been + V-ing',question:'Had + S + been + V-ing?'},markers:['for + период до прошлого момента','since + точка начала','before + Past Simple','until then'],usage:'Используй для длительного процесса, который продолжался до другого прошлого события. Had одинаково для всех лиц.',example:'I had been waiting for an hour before you called.',exampleRu:'Я ждал целый час, прежде чем ты позвонил.',note:'Формула: had + been + V-ing. Не путай с Past Perfect: I had waited подчёркивает факт/результат, I had been waiting — длительность процесса.',question:{prompt:'Выбери правильную форму Past Perfect Continuous.',options:['I had been waiting before you called.','I had waiting before you called.','I have been waiting before you called.'],correct:0,explanation:'В Past Perfect Continuous нужны had + been + V-ing: had been waiting.'}}},
+        { id:'grammar-future-perfect', title:'11. Future Perfect — результат к будущему сроку', subtitle:'Что будет завершено к определённому моменту', words:['completed','course','friday'], requiresWords:['i','will','have','by'], sentenceTokens:[['i','I'],['will','will'],['have','have'],['completed','completed'],['the','the'],['course','course'],['by','by'],['friday','Friday.']], meaning:'К пятнице я завершу курс.', rule:'Future Perfect показывает действие, которое будет завершено к определённому моменту в будущем. Важен достигнутый результат к сроку.', grammar:{tense:'Future Perfect',structure:'S + will have + V3',forms:{positive:'S + will have + V3',negative:'S + will not (won’t) have + V3',question:'Will + S + have + V3?'},markers:['by Friday / by tomorrow','by then','before + будущий момент','by the time + Present Simple'],usage:'Используй, когда говоришь о результате, который будет готов к будущему сроку. После will — have, затем V3.',example:'I will have completed the course by Friday.',exampleRu:'К пятнице я завершу курс.',note:'Формула: will + have + V3. Не используй has после will: правильно will have completed, а не will has completed. В придаточной части времени после by the time обычно используется Present Simple.',question:{prompt:'Выбери правильное предложение в Future Perfect.',options:['I will have completed the course by Friday.','I will has completed the course by Friday.','I will have complete the course by Friday.'],correct:0,explanation:'После will ставим have, затем V3: will have completed.'}}},
+        { id:'grammar-future-perfect-continuous', title:'12. Future Perfect Continuous — длительность к будущему сроку', subtitle:'Как долго действие будет продолжаться к моменту в будущем', words:['three','here'], requiresWords:['by','noon','i','will','have','been','working','for','hours'], sentenceTokens:[['by','By'],['noon','noon,'],['i','I'],['will','will'],['have','have'],['been','been'],['working','working'],['here','here'],['for','for'],['three','three'],['hours','hours.']], meaning:'К полудню будет уже три часа, как я здесь работаю.', rule:'Future Perfect Continuous подчёркивает длительность процесса к определённому моменту в будущем. Эта форма часто отвечает на вопрос «как долго к тому времени?».', grammar:{tense:'Future Perfect Continuous',structure:'S + will have been + V-ing',forms:{positive:'S + will have been + V-ing',negative:'S + will not (won’t) have been + V-ing',question:'Will + S + have been + V-ing?'},markers:['for + длительность + by + будущий срок','by then','by next year','by the time + Present Simple'],usage:'Используй, когда к будущему сроку важно показать длительность процесса. Это наиболее длинная форма из 12 учебных времён; в обычной речи она встречается реже.',example:'By noon, I will have been working here for three hours.',exampleRu:'К полудню будет уже три часа, как я здесь работаю.',note:'Формула: will + have + been + V-ing. Не путай с Future Perfect (will have + V3), где акцент на завершённом результате, а здесь — на продолжительности.',question:{prompt:'Какая фраза правильно показывает длительность к будущему сроку?',options:['By noon, I will have been working here for three hours.','By noon, I will have working here for three hours.','By noon, I will have been work here for three hours.'],correct:0,explanation:'Future Perfect Continuous строится как will + have + been + V-ing.'}}}
       ]},
-      { id:'slang', name:'Туманность Сленга и Живого Общения', subtitle:'Живые фразы, настроение и общение', icon:'🗯️', color:'linear-gradient(135deg,#ffe1a8,#ff9a9e)', pro:true, lessons:[
+      { id:'grammar-structures', name:'Лаборатория Грамматических Конструкций', subtitle:'Модальные глаголы и условные предложения', icon:'🧪', color:'linear-gradient(135deg,#d8e9ff,#9bb9f0)', pro:true, lessons:[
+        { id:'grammar-modals', title:'Модальные глаголы — can, must, should', subtitle:'Умение, обязанность и совет', grammar:{tense:'Модальные глаголы',structure:'can / must / should + V1 (без to)',forms:{positive:'S + can / must / should + V1',negative:'S + cannot / must not / should not + V1',question:'Can / Must / Should + S + V1?'},markers:['can — умение / возможность','must — необходимость','should — совет'],usage:'Can — умение или возможность; must — строгая необходимость; should — совет. После модального глагола используется V1 без to.',example:'You must practice English.',exampleRu:'Ты должен практиковать английский.',note:'Не добавляй -s после модального глагола: She can swim, а не She can swims. Must not означает запрет, should not — совет не делать.',question:{prompt:'Как правильно использовать must?',options:['You must practice English.','You must to practice English.','You must practices English.'],correct:0,explanation:'После модального глагола используется начальная форма без to и без окончания -s.'}}, words:['you','must','practice','english'], sentenceTokens:[['you','You'],['must','must'],['practice','practice'],['english','English.']], meaning:'Ты должен практиковать английский.', rule:'После can, must и should используется начальная форма глагола без to: can go, must study, should rest.'},
+        { id:'grammar-first-conditional', title:'First Conditional — реальное условие', subtitle:'Что произойдёт, если условие выполнится', grammar:{tense:'First Conditional',structure:'If + Present Simple, will + V1',forms:{positive:'If + Present Simple, S + will + V1',negative:'If + Present Simple, S + will not + V1',question:'What will + S + V1 if + Present Simple?'},markers:['if','when','unless (с учётом смысла)','tomorrow / next week'],usage:'Используй для реального или вероятного условия в будущем. В части с if ставится Present Simple, а в главной части — will + V1.',example:'If it rains, we will stay at home.',exampleRu:'Если пойдёт дождь, мы останемся дома.',note:'Не ставь will сразу после if в обычном First Conditional: If it rains, we will stay. После it в Present Simple добавляется -s: rains.',question:{prompt:'Выбери правильное предложение First Conditional.',options:['If it rains, we will stay at home.','If it will rain, we stay at home.','If it rain, we will staying at home.'],correct:0,explanation:'После if используем Present Simple, а в главной части — will + V1.'}}, words:['if','it','rains','we','will','stay','at','home'], requiresWords:['we','will'], sentenceTokens:[['if','If'],['it','it'],['rains','rains,'],['we','we'],['will','will'],['stay','stay'],['at','at'],['home','home.']], meaning:'Если пойдёт дождь, мы останемся дома.', rule:'В First Conditional после if используем Present Simple, а в главной части — will + начальную форму: If it rains, we will stay.'}
+      ]},
+            { id:'slang', name:'Туманность Сленга и Живого Общения', subtitle:'Живые фразы, настроение и общение', icon:'🗯️', color:'linear-gradient(135deg,#ffe1a8,#ff9a9e)', pro:true, lessons:[
         { id:'slang-1', title:'Крутая атмосфера', subtitle:'Сленг для ярких впечатлений', words:['cool','awesome','vibe'], sentenceTokens:[['cool','Cool'],['vibe','vibe!']], meaning:'Классная атмосфера!', rule:'Cool — «классный», а vibe — «атмосфера». В коротком восклицании прилагательное ставится перед существительным.' },
-        { id:'slang-2', title:'Отдыхай с друзьями', subtitle:'Фразовые глаголы в разговоре', words:['chill','hang','out'], sentenceTokens:[['chill','Chill'],['out','out!']], meaning:'Расслабься! / Отдыхай!', rule:'Chill out — устойчивое разговорное выражение «расслабься». Hang out — отдельное выражение со значением «проводить время вместе».' }
+        { id:'slang-2', title:'Отдыхай с друзьями', subtitle:'Фразовые глаголы в разговоре', words:['chill','hang','out'], requiresWords:['and'], sentenceTokens:[['hang','Hang'],['out','out'],['and','and'],['chill','chill!']], meaning:'Проводите время вместе и расслабляйтесь!', rule:'Hang out — «проводить время вместе», chill — «расслабляться». В повелительной фразе используем начальную форму глагола.' }
       ]},
       { id:'itgames', name:'Кибер-Английский для IT и Игр', subtitle:'Код, баги, игры и уровни', icon:'🕹️', color:'linear-gradient(135deg,#b9e7ff,#9c9aff)', pro:true, lessons:[
-        { id:'it-1', title:'Охота на баги', subtitle:'Разбираемся с ошибками в коде', words:['code','has','bugs'], sentenceTokens:[['code','Code'],['has','has'],['bugs','bugs.']], meaning:'В коде есть ошибки.', rule:'Code — подлежащее в единственном числе, поэтому используем has. Bugs — множественное число от bug.' },
-        { id:'it-2', title:'Новый уровень', subtitle:'Прокачиваем игровой словарь', words:['fix','game','level','up'], sentenceTokens:[['level','Level'],['up','up!']], meaning:'Повышай уровень! / На новый уровень!', rule:'Level up — устойчивое выражение из игр: «повысить уровень» или «прокачаться». Fix означает «исправить», а game — «игра».' }
+        { id:'it-1', title:'Охота на баги', subtitle:'Разбираемся с ошибками в коде', words:['code','has','bugs'], sentenceTokens:[['the','The'],['code','code'],['has','has'],['bugs','bugs.']], meaning:'В этом коде есть ошибки.', rule:'The code — подлежащее в единственном числе, поэтому используем has. Bugs — множественное число от bug.' },
+        { id:'it-2', title:'Новый уровень', subtitle:'Прокачиваем игровой словарь', words:['fix','game','level','up'], requiresWords:['the','and'], sentenceTokens:[['fix','Fix'],['the','the'],['game','game'],['and','and'],['level','level'],['up','up!']], meaning:'Исправь игру и повышай уровень!', rule:'Fix the game — «исправь игру», level up — устойчивое игровое выражение «повышай уровень».' }
       ]},
       { id:'movies', name:'Созвездие Фильмов и Сериалов', subtitle:'Кино, актёры и любимые эпизоды', icon:'🎞️', color:'linear-gradient(135deg,#ffc9e6,#c1b7ff)', pro:true, lessons:[
         { id:'movie-1', title:'Вечер кино', subtitle:'Описываем фильм и актёра', words:['movie','funny','actor'], sentenceTokens:[['funny','Funny'],['movie','movie!']], meaning:'Смешной фильм!', rule:'Funny — прилагательное «смешной», movie — «фильм». В английском прилагательное обычно стоит перед существительным.' },
@@ -1725,15 +2059,15 @@
       ]},
       { id:'learning', name:'Академия Учёбы и Работы', subtitle:'Практика, вопросы и ответы', icon:'🧠', color:'linear-gradient(135deg,#d8d2ff,#a99de9)', pro:true, lessons:[
         { id:'learning-1', title:'Учимся вместе', subtitle:'Говорим об изучении языка', words:['learn','practice','english','together'], requiresWords:['we'], sentenceTokens:[['we','We'],['learn','learn'],['english','English'],['together','together.']], meaning:'Мы вместе учим английский.', rule:'Learn — «учить/изучать». Названия языков, включая English, пишутся с заглавной буквы.' },
-        { id:'learning-2', title:'Простой вопрос', subtitle:'Разбираемся с заданиями', words:['question','answer','easy','difficult'], requiresWords:['is','the'], sentenceTokens:[['the','The'],['question','question'],['is','is'],['easy','easy.']], meaning:'Этот вопрос лёгкий.', rule:'The question — вопрос, о котором уже известно из контекста. После is ставится прилагательное easy; difficult означает противоположное — «сложный».'}
+        { id:'learning-2', title:'Простой вопрос', subtitle:'Разбираемся с заданиями', words:['question','answer','easy','difficult'], requiresWords:['is','the'], sentenceTokens:[['the','The'],['question','question'],['is','is'],['easy','easy.'],['the','The'],['answer','answer'],['is','is'],['difficult','difficult.']], meaning:'Вопрос лёгкий. Ответ сложный.', rule:'The question — вопрос, о котором уже известно из контекста. После is ставится прилагательное: easy — лёгкий, difficult — сложный.'}
       ]},
       { id:'digital', name:'Киберсеть и Цифровое Общение', subtitle:'Сообщения, файлы и онлайн-связь', icon:'📡', color:'linear-gradient(135deg,#b8eaff,#86bcf5)', pro:true, lessons:[
-        { id:'digital-1', title:'Отправь сообщение', subtitle:'Общаемся в сети', words:['message','send','reply','online'], requiresWords:['a','now'], sentenceTokens:[['send','Send'],['a','a'],['message','message'],['now','now.']], meaning:'Отправь сообщение сейчас.', rule:'В повелительном предложении можно начать с глагола: Send… — «Отправь…». A ставится перед одним исчисляемым существительным.' },
-        { id:'digital-2', title:'Поделись файлом', subtitle:'Работаем с экраном и файлами', words:['screen','share','connect','file'], requiresWords:['we','a','online'], sentenceTokens:[['we','We'],['share','share'],['a','a'],['file','file'],['online','online.']], meaning:'Мы делимся файлом онлайн.', rule:'Share a file — «поделиться файлом». Online обычно стоит в конце и уточняет, что действие происходит в сети.'}
+        { id:'digital-1', title:'Отправь сообщение', subtitle:'Общаемся в сети', words:['message','send','reply','online'], requiresWords:['a','and'], sentenceTokens:[['send','Send'],['a','a'],['message','message'],['and','and'],['reply','reply'],['online','online.']], meaning:'Отправь сообщение и ответь онлайн.', rule:'В повелительном предложении можно начать с глагола: Send… — «Отправь…». Reply — «ответь», online — «в сети».' },
+        { id:'digital-2', title:'Поделись файлом', subtitle:'Работаем с экраном и файлами', words:['screen','share','connect','file'], requiresWords:['we','the','and','a'], sentenceTokens:[['we','We'],['connect','connect'],['the','the'],['screen','screen'],['and','and'],['share','share'],['a','a'],['file','file.']], meaning:'Мы подключаем экран и делимся файлом.', rule:'Connect the screen — «подключить экран», share a file — «поделиться файлом». В этой фразе and соединяет два действия.'}
       ]},
       { id:'hobbies', name:'Арена Хобби и Спорта', subtitle:'Музыка, творчество и движение', icon:'🎨', color:'linear-gradient(135deg,#ffd0e8,#ffa6c8)', pro:true, lessons:[
-        { id:'hobbies-1', title:'Музыка и творчество', subtitle:'Говорим о любимых занятиях', words:['music','dance','draw','sing'], requiresWords:['i','like','and'], sentenceTokens:[['i','I'],['like','like'],['music','music'],['and','and'],['dance','dance.']], meaning:'Мне нравятся музыка и танцы.', rule:'После like можно назвать занятие. Music — неисчисляемое существительное; dance здесь обозначает танец или танцевание.' },
-        { id:'hobbies-2', title:'Играем в команде', subtitle:'Спорт и совместная игра', words:['team','play','run','swim'], requiresWords:['i','with','my'], sentenceTokens:[['i','I'],['play','play'],['with','with'],['my','my'],['team','team.']], meaning:'Я играю со своей командой.', rule:'В простом настоящем времени с I используется начальная форма play. With my team означает «со своей командой».'}
+        { id:'hobbies-1', title:'Музыка и творчество', subtitle:'Говорим о любимых занятиях', words:['music','dance','draw','sing'], requiresWords:['i','like','and'], sentenceTokens:[['i','I'],['like','like'],['music','music.'],['i','I'],['dance','dance,'],['draw','draw'],['and','and'],['sing','sing.']], meaning:'Я люблю музыку. Я танцую, рисую и пою.', rule:'Like + noun сообщает, что нравится. Во второй фразе dance, draw и sing — однородные глаголы в Present Simple с подлежащим I; в английском перечислении ставим запятые.' },
+        { id:'hobbies-2', title:'Играем в команде', subtitle:'Спорт и совместная игра', words:['team','play','run','swim'], requiresWords:['i','with','my','and'], sentenceTokens:[['i','I'],['play','play,'],['run','run'],['and','and'],['swim','swim'],['with','with'],['my','my'],['team','team.']], meaning:'Я играю, бегаю и плаваю со своей командой.', rule:'В Present Simple с I используем начальную форму play, run, swim. В английском перечислении однородные глаголы разделяем запятыми. With my team означает «со своей командой».'}
       ]}
     ];
     const allPlanets = [...planets, ...proPlanets];
@@ -1762,11 +2096,34 @@
         if (lesson.grammar) {
           const question=lesson.grammar.question;
           if (!lesson.grammar.tense || !lesson.grammar.structure || !lesson.grammar.usage || !lesson.grammar.example || !question || !Array.isArray(question.options) || question.options.length < 2 || !Number.isInteger(question.correct) || question.correct < 0 || question.correct >= question.options.length) throw new Error(`Некорректная структура грамматического урока: ${lesson.id}`);
+          if (!lesson.grammar.forms || !['positive','negative','question'].every(key=>typeof lesson.grammar.forms[key]==='string' && lesson.grammar.forms[key].trim())) throw new Error(`В уроке ${lesson.id} отсутствует формула + / − / ?`);
+          if (!Array.isArray(lesson.grammar.markers) || !lesson.grammar.markers.length || !lesson.grammar.exampleRu) throw new Error(`В уроке ${lesson.id} отсутствуют маркеры времени или перевод примера`);
+          if (/[\u0400-\u04FF]/.test(lesson.grammar.example) || /[\u0400-\u04FF]/.test(lesson.grammar.question.options.join(' '))) throw new Error(`В английской озвучке урока ${lesson.id} обнаружен русский текст`);
         }
         lesson.words.forEach(wordId => seen.add(wordId));
       }
     }
     try { validateCurriculum(); } catch (error) { console.error('Lumi curriculum validation:', error); }
+    function validateSpeechCatalog() {
+      const ids = new Set();
+      for (const entry of Object.values(wordCatalog)) {
+        if (!entry.id || ids.has(entry.id)) throw new Error(`Повторяется ID слова: ${entry.id}`);
+        ids.add(entry.id);
+        if (!entry.en || /[\u0400-\u04FF]/.test(entry.en) || !/^[A-Za-z][A-Za-z0-9'’ -]*$/.test(entry.en)) throw new Error(`Неанглийский или пустой текст озвучки: ${entry.id}`);
+        if (!/^\/.+\/$/.test(entry.ipa || '')) throw new Error(`Некорректная IPA-транскрипция: ${entry.id}`);
+      }
+      const normalizeSpokenForm = value => String(value || '').toLocaleLowerCase('en').replace(/[^a-z0-9]/g,'');
+      for (const planet of allPlanets) for (const lesson of planet.lessons) {
+        for (const [id,display] of lesson.sentenceTokens) {
+          const entry = wordCatalog[id];
+          if (!entry) throw new Error(`Нет слова ${id} в ${lesson.id}`);
+          if (!display || /[\u0400-\u04FF]/.test(display)) throw new Error(`Неверный язык token ${id} в ${lesson.id}`);
+          if (normalizeSpokenForm(entry.en) !== normalizeSpokenForm(display)) throw new Error(`В ${lesson.id} карточка ${id} озвучивает «${entry.en}», а на экране написано «${display}»`);
+        }
+      }
+      return true;
+    }
+    try { validateSpeechCatalog(); } catch (error) { console.error('Lumi speech/catalog validation:', error); }
 
     function setNavVisible(visible) {
       document.getElementById('bottomNav').hidden = !visible;
@@ -1776,7 +2133,7 @@
       {title:'Твоя карта планет 🪐',text:'Здесь твои планеты знаний! Проходи уроки по порядку — новые слова добавляются по чуть-чуть, а если нажать на любое английское слово в задании, я сразу подскажу его перевод.',selector:'.course-planet .course-planet-head'},
       {title:'Учебник и Звёздная Лига 📚',text:'Во вкладке «Учебник» копятся все твои слова для повторения, а в «Звёздной Лиге» ты соревнуешься с другими кадетами за первое место.',selector:'#bottomNav'},
       {title:'Твой профиль 👩‍🚀',text:'В «Профиле» живёт твой огонёк ударного режима, статистика и гардероб моих космических костюмов.',selector:'#bottomNav [data-tab="profile"]'},
-      {title:'Отсек Lumi PRO ⭐',text:'А здесь находится отсек PRO! В обычном режиме у тебя 5 зарядов энергии, а с Lumi PRO — бесконечная энергия, крио-защита огонька, двойной опыт (2x XP), закрытые планеты и живые диалоги со мной.',selector:'#bottomNav [data-tab="pro"]'}
+      {title:'Отсек Lumi PRO ⭐',text:'А здесь находится отсек PRO! В обычном режиме у тебя 5 зарядов энергии, а с Lumi PRO — бесконечная энергия, крио-защита огонька, двойной опыт (2x XP), закрытые планеты и живые диалоги со мной. Заверши все четыре шага обучения, и после инструктажа получишь 1 час Lumi PRO в подарок.',selector:'#bottomNav [data-tab="pro"]'}
     ];
     let tutorialActive = false;
     function startPendingTutorial() {
@@ -1834,22 +2191,22 @@
       if(!overlay)return;
       const newlyAwarded=awardWelcomeGift();
       if(!newlyAwarded && !trialAwarded){showToast('Обучение завершено! Теперь можно исследовать Академию 🚀');return;}
-      const trialBlock = trialAwarded ? `<div class="trial-pro-gift"><div class="eyebrow">🎉 ПОДАРОК ОТ ЛУМИ</div><strong>24 часа Lumi PRO бесплатно!</strong><p>Поздравляю с окончанием инструктажа! Я дарю тебе 24 часа Lumi PRO, чтобы ты опробовал все закрытые планеты, живые диалоги и бесконечную энергию!</p><small>Пробный доступ действует до ${formatProDate(state.trial_pro_until)}.</small></div>` : '';
+      const trialBlock = trialAwarded ? `<div class="trial-pro-gift"><div class="eyebrow">🎉 ПОДАРОК ОТ ЛУМИ</div><strong>1 час Lumi PRO бесплатно!</strong><p>Поздравляю с окончанием инструктажа! Я дарю тебе 1 час Lumi PRO, чтобы ты опробовал все закрытые планеты, живые диалоги и бесконечную энергию!</p><small>${isTrialProEnabled() ? `Пробный доступ действует до ${formatProDate(state.trial_pro_until)}.` : 'Подарок активируется на сервере. 1 час начнётся после подтверждения Telegram.'}</small></div>` : '';
       const capsuleBlock = newlyAwarded ? `<div class="gift-capsule">🎁</div><div class="eyebrow">СТАРТОВЫЙ НАБОР КАДЕТА</div><h2 id="giftTitle">Космический бокс от Луми!</h2><p>Ты отлично справился с первым полётом. Я приготовил небольшой запас для новых открытий!</p><div class="gift-rewards"><div class="gift-reward">Кристаллы<strong>+25 💎</strong></div><div class="gift-reward">Крио-заморозка<strong>+1 ❄️</strong></div></div>` : `<div class="gift-capsule">⭐</div><div class="eyebrow">ПРОБНЫЙ ПОЛЁТ</div><h2 id="giftTitle">Тебе открыт Lumi PRO!</h2>`;
       overlay.innerHTML=`<section class="gift-dialog" role="dialog" aria-modal="true" aria-labelledby="giftTitle">${capsuleBlock}${trialBlock}<button class="btn full" id="claimWelcomeGift">${trialAwarded?'Открыть Академию 🚀':'Забрать подарок 🚀'}</button></section>`;
       overlay.hidden=false; overlay.setAttribute('aria-hidden','false');
-      overlay.querySelector('#claimWelcomeGift').addEventListener('click',()=>{tap();overlay.hidden=true;overlay.setAttribute('aria-hidden','true');overlay.innerHTML='';render();showToast(trialAwarded?'Все возможности PRO открыты на 24 часа! ⭐':newlyAwarded?'Подарок уже в твоём инвентаре! ✨':'Обучение завершено! 🚀');});
+      overlay.querySelector('#claimWelcomeGift').addEventListener('click',()=>{tap();overlay.hidden=true;overlay.setAttribute('aria-hidden','true');overlay.innerHTML='';render();showToast(trialAwarded?(isTrialProEnabled()?'Все возможности PRO открыты на 1 час! ⭐':'Подарок PRO ожидает подтверждения Telegram. Он включится после ответа сервера.') :newlyAwarded?'Подарок уже в твоём инвентаре! ✨':'Обучение завершено! 🚀');});
     }
     function finishInteractiveTour(skipped=false) {
       const overlay=document.getElementById('tourOverlay');
       if(overlay){overlay.hidden=true;overlay.setAttribute('aria-hidden','true');overlay.innerHTML='';}
       tutorialActive=false;
       state.tutorialCompleted=true; state.tutorialPending=false; state.tutorialStep=0;
-      // Skipping is allowed, but the automatic 24-hour PRO trial is a reward for finishing all four steps.
+      // Skipping is allowed, but the automatic 1-hour PRO trial is a reward for finishing all four steps.
       const trialAwarded = !skipped && grantTrialProOnce();
       saveState();
       showWelcomeGift(trialAwarded);
-      if(trialAwarded){celebrateProActivation();}
+      if(trialAwarded && isProEnabled()){celebrateProActivation();}
       if(skipped) haptic('soft');
     }
 
@@ -2206,7 +2563,7 @@
       const filtered = learned.filter(item => (selectedBookFilter === 'Все' || item.category === selectedBookFilter) && (item.en + ' ' + item.ru).toLowerCase().includes(bookQuery.toLowerCase()));
       const totalMastery = learned.length ? Math.round(learned.reduce((sum,item) => sum + masteryValue(item.id),0) / (learned.length * 5) * 100) : 0;
       const latestLesson = [...allLessons].reverse().find(lesson => state.completedLessons.includes(lesson.id));
-      const grammar = latestLesson ? `<section class="card rule-card"><div class="eyebrow">ПРАВИЛО ИЗ ПОСЛЕДНЕГО УРОКА</div><h2 style="margin-top:6px">${escapeHtml(latestLesson.title)}</h2>${latestLesson.grammar?`<p class="small" style="font-weight:800">${escapeHtml(latestLesson.grammar.structure)}</p><p class="small muted">${escapeHtml(latestLesson.grammar.usage)}</p>`:''}<p class="small muted" style="margin-bottom:8px">${escapeHtml(latestLesson.rule)}</p><div class="rule-example">${renderEnglishTokens(latestLesson.sentenceTokens)}<div class="small muted" style="margin-top:7px">${escapeHtml(latestLesson.meaning)}</div></div></section>` : '';
+      const grammar = latestLesson ? `<section class="card rule-card"><div class="eyebrow">ПРАВИЛО ИЗ ПОСЛЕДНЕГО УРОКА</div><h2 style="margin-top:6px">${escapeHtml(latestLesson.title)}</h2>${latestLesson.grammar?`<p class="small" style="font-weight:800">${escapeHtml(latestLesson.grammar.structure)}</p>${renderGrammarForms(latestLesson.grammar)}${renderGrammarMarkers(latestLesson.grammar)}<p class="small muted">${escapeHtml(latestLesson.grammar.usage)}</p>`:''}<p class="small muted" style="margin-bottom:8px">${escapeHtml(latestLesson.rule)}</p><div class="rule-example">${renderEnglishTokens(latestLesson.sentenceTokens)}<div class="small muted" style="margin-top:7px">${escapeHtml(latestLesson.meaning)}</div></div></section>` : '';
       return `<div class="page">
         <div class="page-head"><div class="eyebrow">ТВОЯ КОСМИЧЕСКАЯ БАЗА ЗНАНИЙ</div><h1>Учебник 📚</h1><p>Здесь появляются только слова, карточки которых ты уже прошёл.</p></div>
         <section class="card textbook-progress"><div class="textbook-progress-line"><span>Изучено слов</span><strong>${learned.length} / ${Object.keys(wordCatalog).length}</strong></div><div class="progress-line" style="margin-top:8px"><span>Среднее запоминание</span><span>${totalMastery}%</span></div><div class="memory-track"><span style="width:${totalMastery}%"></span></div></section>
@@ -2221,6 +2578,7 @@
           return `<article class="card word-card"><div class="book-word-main"><div class="word-en">${escapeHtml(item.emoji)} ${renderEnglishTokens([[item.id,item.en]],'lesson-prompt-word')}</div><div class="word-ru">${escapeHtml(item.ipa)} · ${escapeHtml(item.ru)}</div><div class="word-memory"><div class="memory-track"><span style="width:${level/5*100}%"></span></div><span class="word-memory-label">Запоминание ${level}/5</span></div></div><div class="word-card-side"><button class="sound-mini" data-speak="${item.id}" aria-label="Озвучить ${escapeHtml(item.en)}">🔊</button><span class="word-tag">${escapeHtml(item.category)}</span></div></article>`;
         }).join('') : `<div class="card word-list-empty">${learned.length ? 'Ничего не найдено. Попробуй изменить поиск или категорию 🔭' : 'Пока здесь пусто. Пройди первую карточку на карте планет — Луми сохранит слова сюда 🌱'}</div>`}</div>
         ${grammar}
+        ${renderTenseQuickReference()}
         ${renderExerciseHistory()}
         ${renderLessonHistory()}
         <div class="footer-note">Повторяй слова понемногу — так они надёжнее остаются в памяти 🌟</div>
@@ -2289,6 +2647,7 @@
         ${DEMO_PRO_ALLOWED ? `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : isTrialProEnabled() ? '🎁 Подарочный PRO активен' : state.demoPro ? '🧪 Включён ДЕМО-PRO' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Статус подписки подтверждён сервером Telegram.' : isTrialProEnabled() ? `Пробный доступ действует до ${formatProDate(state.trial_pro_until)}.` : state.demoPro ? 'Все премиум-функции включены только на этом устройстве для проверки.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><div class="eyebrow">ТЕСТОВЫЙ ДОСТУП</div><h3 style="margin:5px 0">Проверить все платные функции</h3><p class="small muted" style="margin:0">Демо-PRO открывает секретные планеты, бесконечную энергию, двойной XP, продвинутый учебник и все скины. Оплата не требуется.</p><button class="btn ${state.demoPro?'secondary':'purple'} full" id="toggleDemoPro">${state.demoPro?'Выключить ДЕМО-PRO':'Включить ДЕМО-PRO (для теста)'}</button></section>` : `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Подписка подтверждена сервером Telegram.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><button class="btn purple full" data-tab-go="pro">Посмотреть возможности Lumi PRO ⭐</button></section>`}
         <section class="card" style="padding:14px;margin-top:13px"><div class="section-row"><h3 style="margin:0">⭐ Lumi PRO и спутник</h3><strong>${state.proActive?`Месяцев в PRO: ${Math.max(1,proAccount.months||1)}`:state.demoPro?'ДЕМО-PRO':isTrialProEnabled()?'ПРОБНЫЙ PRO':'FREE'}</strong></div>${state.proActive?`<p class="small muted" style="margin:6px 0 0">Оплаченная подписка подтверждена сервером и действует до ${formatProDate(proAccount.expiresAt)}. Статус продления: ${proAccount.billingState==='payment_failed'?'платёж не прошёл':proAccount.autoRenew===false?'отключено':'включено'}. Мини-дрон Луми 🛸 активен.</p>`:isTrialProEnabled()?`<p class="small muted" style="margin:6px 0 0">🎁 Подарочный Lumi PRO действует до ${formatProDate(state.trial_pro_until)}. Все закрытые планеты, живые диалоги, двойной XP и бесконечная энергия открыты на время пробного доступа.</p>`:state.demoPro?'<p class="small muted" style="margin:6px 0 0">Все премиум-функции включены только на этом устройстве для тестирования.</p>':proAccount.wasPro?'<div class="profile-expired-note">Луми немного грустит: подписка закончилась, а мини-дрон и крио-защита ушли в спящий режим. Возобнови Lumi PRO, чтобы снова отправиться в полёт вместе с ними.</div><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Вернуть спутника и защиту ⭐</button>':'<p class="small muted" style="margin:6px 0 0">Подключи Lumi PRO, чтобы открыть мини-дрона-спутника, крио-защиту и новые режимы.</p><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Узнать о Lumi PRO</button>'}</section>
         <section class="card tutorial-settings"><div class="eyebrow">ПОМОЩЬ ОТ ЛУМИ</div><h3 style="margin:5px 0">Хочешь освежить правила?</h3><p class="small muted" style="margin:0 0 9px">Я снова покажу карту, учебник, профиль и возможности PRO — всего четыре шага.</p><button class="btn secondary full" id="restartLumiTutorial">Пройти обучение с Луми заново</button></section>
+        <section class="card support-card"><div class="eyebrow">МЫ НА СВЯЗИ</div><h3 style="margin:5px 0">Нужна помощь?</h3><p class="small muted" style="margin:0 0 9px">Напиши команде Lumi Academy, если у тебя возник вопрос или ты заметил проблему.</p><button type="button" class="btn secondary full" id="openSupport">Написать в поддержку</button></section>
         ${renderWardrobe()}
         ${renderCrystalShop()}
         ${renderThemeShop()}
@@ -2309,7 +2668,7 @@
       return `<div class="page">
         <section class="card pro-hero"><div class="pro-hero-layout"><div class="pro-copy"><div class="eyebrow">КОСМИЧЕСКИЙ ПРЕМИУМ</div><h1>Lumi PRO ⭐</h1><p>Открой секретные миры, забудь об ограничениях и прокачивай английский с Луми.</p><span class="pro-plan-status">${state.proActive ? '⭐ ОПЛАЧЕННЫЙ PRO АКТИВЕН' : isTrialProEnabled() ? '🎁 ПРОБНЫЙ PRO АКТИВЕН' : state.demoPro ? '🧪 ДЕМО-PRO АКТИВЕН' : '✦ Премиум-режим Академии'}</span></div><div class="pro-mascot">${lumiArt('skin-gold')}</div></div></section>
         <div class="tariff-grid">
-          <section class="card tariff-card"><h3>🪐 Бесплатно</h3><p>• ${planets.length} тематических планет и ${planets.reduce((n,p)=>n+p.lessons.length,0)} уроков</p><p>• 5 энергетических сердечек</p><p>• Восстановление энергии со временем</p><p>• Базовый учебник и повторение</p></section>
+          <section class="card tariff-card"><h3>🪐 Бесплатно</h3><p>• ${planets.length} тематических планет и ${planets.reduce((n,p)=>n+p.lessons.length,0)} уроков</p><p>• 5 энергетических сердечек</p><p>• Все 5 зарядов восстанавливаются за 3 часа после первой потери</p><p>• Базовый учебник и повторение</p></section>
           <section class="card tariff-card pro-choice"><h3>⭐ Lumi PRO</h3><p>• ${proPlanets.length} эксклюзивных планет и ${proPlanets.reduce((n,p)=>n+p.lessons.length,0)} уроков</p><p>• Бесконечная энергия</p><p>• 2× XP и премиум-гардероб</p><p>• Грамматика и тренажёр ошибок</p></section>
         </div>
         <section class="card pro-benefits"><h2>Что входит в PRO?</h2>
@@ -2327,6 +2686,7 @@
         </div>
         ${renderLiveDialogs()}
         <section class="card price-card"><div class="eyebrow">ПОКУПКА TELEGRAM STARS</div><h2 style="margin-top:6px">Выбери тариф Lumi PRO</h2>${isTrialProEnabled()&&!state.proActive?`<p class="small muted">Подарочный доступ действует до <strong>${formatProDate(state.trial_pro_until)}</strong>. Платный тариф можно оформить отдельно.</p>`:''}${(state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000))?`<p class="small muted">Оплаченный PRO уже активен до <strong>${formatProDate(proAccount.expiresAt)}</strong>. Можно добавить ещё 7 дней — они начнутся после текущего срока.</p>`:''}<div class="price-options"><div class="price-option"><h3>🚀 На неделю</h3><div class="price">⭐ 50 <span style="font-size:11px">Stars</span></div><p class="price-caption">Разовая оплата. PRO на 7 дней без автопродления.</p><button class="btn purple full" id="buyProWeek">${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'Добавить 7 дней · 50 ⭐':'Купить на 7 дней · 50 ⭐'}</button></div><div class="price-option"><h3>🌌 На 30 дней</h3><div class="price">⭐ 199 <span style="font-size:11px">Stars</span></div><p class="price-caption">Повторяющийся платёж каждые 30 дней через Telegram Stars.</p><button class="btn purple full" id="buyProMonth" ${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'disabled':''}>${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'PRO уже активен ⭐':'Оформить на 30 дней · 199 ⭐'}</button></div></div></section>
+        ${state.proActive && proAccount.autoRenew && proAccount.canCancelRenewal ? `<section class="card renewal-control"><div class="eyebrow">АВТОПРОДЛЕНИЕ</div><p class="small muted">Следующее списание отключается, но текущий оплаченный PRO останется активен до ${formatProDate(proAccount.expiresAt)}.</p><button class="btn secondary full" id="cancelProRenewal">Отключить автопродление</button></section>` : state.proActive && proAccount.autoRenew === false && proAccount.billingState === 'canceled' ? `<section class="card renewal-control"><div class="eyebrow">АВТОПРОДЛЕНИЕ ОТКЛЮЧЕНО</div><p class="small muted">Новых списаний не будет. Lumi PRO остаётся активен до ${formatProDate(proAccount.expiresAt)}.</p></section>` : ''}
         <section class="card pro-explainer"><strong>🔐 Как защищена покупка</strong><p class="small muted">Ссылка на оплату создаётся Cloudflare Worker с помощью Bot API. Доступ включается только после серверного подтверждения успешного платежа.</p></section>
         ${state.demoPro ? '<button class="btn green full" id="disableDemoPro" style="margin-top:12px">Выключить тестовый PRO</button>' : ''}
         <p class="small muted" style="text-align:center;margin:13px 6px 0">В браузерном предпросмотре используй ДЕМО-PRO в профиле. Для реальных Stars нужен настроенный Worker и webhook бота.</p>
@@ -2348,7 +2708,8 @@
       const scenario=DIALOG_SCENARIOS.find(item=>item.id===dialogSession.scenarioId);
       const turn=dialogSession.turns[dialogSession.index];
       const timerLeft=Math.max(0,Math.ceil((dialogSession.deadline-Date.now())/1000));
-      screen.innerHTML=`<div class="page"><section class="card dialog-stage"><div class="dialog-stage-top"><div><div class="eyebrow">${scenario.icon} ${dialogSession.freeTrial?'ПРОБНЫЙ ДИАЛОГ':'ЖИВОЙ ДИАЛОГ · PRO'}</div><strong>${escapeHtml(scenario.title)}</strong></div><div class="dialog-timer ${timerLeft<=5?'urgent':''}" id="dialogTimer">${timerLeft}с</div></div><div class="dialog-progress"><span style="width:${(dialogSession.index/dialogSession.turns.length)*100}%"></span></div><p class="small muted">Реплика ${dialogSession.index+1} из ${dialogSession.turns.length} · Верно: ${dialogSession.correct}</p><div class="dialog-lumi">Луми: ${escapeHtml(turn.prompt)}</div><div class="dialog-task">ТВОЯ ЗАДАЧА: ${escapeHtml(turn.task)}</div><div class="dialog-answer-list">${turn.choices.map((choice,index)=>`<button class="dialog-answer ${dialogSession.answered&&index===turn.correct?'correct':''} ${dialogSession.answered&&index===dialogSession.selected&&index!==turn.correct?'wrong':''}" data-dialog-answer="${index}" ${dialogSession.answered?'disabled':''}>${String.fromCharCode(65+index)}. ${escapeHtml(choice)}</button>`).join('')}</div>${dialogSession.answered?`<div class="dialog-feedback">${dialogSession.selected===turn.correct?'✅ Отличный естественный ответ!':'💡 Лучше сказать: «'+escapeHtml(turn.choices[turn.correct])+'»'}${dialogSession.timedOut?' · Время вышло.':''}</div><button class="btn purple full" id="dialogNext" style="margin-top:11px">${dialogSession.index===dialogSession.turns.length-1?'Завершить разговор':'Следующая реплика →'}</button>`:''}<button class="btn secondary full" id="dialogExit" style="margin-top:9px">Выйти из диалога</button></section></div>`;
+      screen.innerHTML=`<div class="page"><section class="card dialog-stage"><div class="dialog-stage-top"><div><div class="eyebrow">${scenario.icon} ${dialogSession.freeTrial?'ПРОБНЫЙ ДИАЛОГ':'ЖИВОЙ ДИАЛОГ · PRO'}</div><strong>${escapeHtml(scenario.title)}</strong></div><div class="dialog-timer ${timerLeft<=5?'urgent':''}" id="dialogTimer">${timerLeft}с</div></div><div class="dialog-progress"><span style="width:${(dialogSession.index/dialogSession.turns.length)*100}%"></span></div><p class="small muted">Реплика ${dialogSession.index+1} из ${dialogSession.turns.length} · Верно: ${dialogSession.correct}</p><div class="dialog-lumi-line"><div class="dialog-lumi">Луми: ${escapeHtml(turn.prompt)}</div><button type="button" class="sound-mini" data-speak-text="${escapeHtml(turn.prompt)}" aria-label="Озвучить реплику Луми">🔊</button></div><div class="dialog-task">ТВОЯ ЗАДАЧА: ${escapeHtml(turn.task)}</div><div class="dialog-answer-list">${turn.choices.map((choice,index)=>`<div class="dialog-answer-row"><button class="dialog-answer ${dialogSession.answered&&index===turn.correct?'correct':''} ${dialogSession.answered&&index===dialogSession.selected&&index!==turn.correct?'wrong':''}" data-dialog-answer="${index}" ${dialogSession.answered?'disabled':''}>${String.fromCharCode(65+index)}. ${escapeHtml(choice)}</button><button type="button" class="sound-mini dialog-choice-speak" data-speak-text="${escapeHtml(choice)}" aria-label="Озвучить вариант ответа">🔊</button></div>`).join('')}</div>${dialogSession.answered?`<div class="dialog-feedback">${dialogSession.selected===turn.correct?'✅ Отличный естественный ответ!':'💡 Лучше сказать: «'+escapeHtml(turn.choices[turn.correct])+'»'}${dialogSession.timedOut?' · Время вышло.':''}</div><button class="btn purple full" id="dialogNext" style="margin-top:11px">${dialogSession.index===dialogSession.turns.length-1?'Завершить разговор':'Следующая реплика →'}</button>`:''}<button class="btn secondary full" id="dialogExit" style="margin-top:9px">Выйти из диалога</button></section></div>`;
+      bindSpeechButtons(screen);
       screen.querySelectorAll('[data-dialog-answer]').forEach(button=>button.addEventListener('click',()=>answerDialog(Number(button.dataset.dialogAnswer))));
       const next=document.getElementById('dialogNext'); if(next) next.addEventListener('click',advanceDialog);
       const exit=document.getElementById('dialogExit'); if(exit) exit.addEventListener('click',()=>{stopDialogTimer();dialogSession=null;render();});
@@ -2433,15 +2794,27 @@
       if (reset) reset.addEventListener('click', () => {
         tap(); if (!window.confirm('Сбросить весь прогресс на этом устройстве и в облаке Telegram?')) return;
         const preservedAccountRewards = { trial_pro_until:state.trial_pro_until, trial_pro_claimed:state.trial_pro_claimed, welcomeGiftClaimed:state.welcomeGiftClaimed, bonusFreezeCharges:state.bonusFreezeCharges };
-        state = normalizeState({ ...defaultState, ...preservedAccountRewards, completedPlanets:[], completedLessons:[], learnedWords:[], wordMastery:{}, activeDays:[], errorWords:[], energy:ENERGY_MAX, energyUpdatedAt:Date.now(), energy_reset_at:null, proActive:false, demoPro:false, selectedSkin:'default' }); proAccount={startedAt:0,expiresAt:0,months:0,wasPro:false,autoRenew:true,billingState:'ok'};
+        state = normalizeState({ ...defaultState, ...preservedAccountRewards, completedPlanets:[], completedLessons:[], learnedWords:[], wordMastery:{}, activeDays:[], errorWords:[], energy:ENERGY_MAX, energyUpdatedAt:Date.now(), energy_reset_at:null, proActive:false, demoPro:false, selectedSkin:'default' }); proAccount={startedAt:0,expiresAt:0,months:0,wasPro:false,autoRenew:false,canCancelRenewal:false,billingState:'ok',revoked:false};
         selectedGoal = 10; currentTab = 'map'; lessonSession = null; reviewSession = null; saveState(); render(); showToast('Прогресс сброшен на этом устройстве и в облаке');
       });
       const buyWeek = document.getElementById('buyProWeek');
       if (buyWeek) buyWeek.addEventListener('click', () => handleProPurchase('week'));
       const buyMonth = document.getElementById('buyProMonth');
       if (buyMonth) buyMonth.addEventListener('click', () => handleProPurchase('month'));
+      const cancelRenewal = document.getElementById('cancelProRenewal');
+      if (cancelRenewal) cancelRenewal.addEventListener('click', handleCancelProRenewal);
       const questChest = document.getElementById('claimDailyQuestChest');
       if (questChest) questChest.addEventListener('click', claimDailyQuestChest);
+      const supportButton = document.getElementById('openSupport');
+      if (supportButton) supportButton.addEventListener('click',()=>{
+        tap();
+        const username = String(SUPPORT_BOT_USERNAME || '').trim().replace(/^@/,'');
+        if (!username) { showToast('Юзернейм бота поддержки пока не указан.'); return; }
+        if (!/^[A-Za-z0-9_]{5,32}$/.test(username)) { showToast('Проверь юзернейм бота поддержки в настройках проекта.'); return; }
+        const supportUrl = `https://t.me/${username}`;
+        if (tg && typeof tg.openTelegramLink === 'function') tg.openTelegramLink(supportUrl);
+        else window.open(supportUrl,'_blank','noopener,noreferrer');
+      });
       const replayTutorial = document.getElementById('restartLumiTutorial');
       if (replayTutorial) replayTutorial.addEventListener('click',()=>{
         tap(); tutorialActive=false; state.tutorialCompleted=false; state.tutorialPending=true; state.tutorialStep=0;
@@ -2562,6 +2935,40 @@
       const value=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.id;
       return value===undefined||value===null?'':String(value);
     }
+    async function fetchWorkerJson(url, options = {}, timeoutMs = WORKER_REQUEST_TIMEOUT_MS) {
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      let timeoutId = null;
+      let timedOut = false;
+      const requestOptions = { ...options };
+      if (controller) requestOptions.signal = controller.signal;
+      const task = (async () => {
+        const response = await fetch(url, requestOptions);
+        const raw = await response.text();
+        let data = {};
+        try { data = raw ? JSON.parse(raw) : {}; } catch (_) { data = {}; }
+        return { response, data };
+      })();
+      try {
+        return await Promise.race([
+          task,
+          new Promise((_, reject) => {
+            timeoutId = window.setTimeout(() => {
+              timedOut = true;
+              if (controller) controller.abort();
+              reject(new Error('Cloudflare Worker не ответил за отведённое время. Проверь соединение и попробуй ещё раз.'));
+            }, timeoutMs);
+          })
+        ]);
+      } catch (error) {
+        if (timedOut) throw error;
+        if (controller && controller.signal.aborted) throw new Error('Запрос к Cloudflare Worker был прерван по таймауту.');
+        throw error;
+      } finally {
+        if (timeoutId) window.clearTimeout(timeoutId);
+        if (timedOut && controller) controller.abort();
+      }
+    }
+
     function workerAuthHeaders() {
       if(!tg||!tg.initData)throw new Error('Telegram не передал данные авторизации. Открой Mini App из бота.');
       return {'Authorization':`tma ${tg.initData}`,'Accept':'application/json'};
@@ -2582,15 +2989,16 @@
       try {
         // Re-check server authority immediately before requesting an invoice; do not trust a stale client flag.
         const latest=await requestProStatus();
-        proAccount={startedAt:latest.startedAt||0,expiresAt:latest.expiresAt||0,months:latest.months||0,wasPro:latest.wasPro===true||latest.active===true,autoRenew:latest.autoRenew,billingState:latest.billingState||'ok'};
-        state.proActive=latest.active===true;
-        if(latest.active && plan !== 'week'){saveState();render();showToast(`Lumi PRO уже активен до ${formatProDate(latest.expiresAt)}. Можно добавить 7 дней или оформить месяц после окончания срока.`);return;}
-        saveState();
+        applyServerTrialStatus(latest);
+        proAccount={startedAt:latest.startedAt||0,expiresAt:latest.expiresAt||0,months:latest.months||0,wasPro:latest.wasPro===true||latest.active===true,autoRenew:latest.autoRenew===true,canCancelRenewal:latest.canCancelRenewal===true,billingState:latest.billingState||'ok',revoked:latest.revoked===true};
+        authoritativeProStatus=latest.active===true;
+        applyAuthoritativeProStatus();
+        if(latest.active && plan !== 'week'){saveAccessStateLocally();render();showToast(`Lumi PRO уже активен до ${formatProDate(latest.expiresAt)}. Можно добавить 7 дней или оформить месяц после окончания срока.`);return;}
+        saveAccessStateLocally();
         const base=new URL(WORKER_URL.trim());
-        const response=await fetch(`${base.href.replace(/\/$/,'')}/create-invoice?user_id=${encodeURIComponent(userId)}&plan=${encodeURIComponent(plan)}`,{
+        const {response, data:payload}=await fetchWorkerJson(`${base.href.replace(/\/$/,'')}/create-invoice?user_id=${encodeURIComponent(userId)}&plan=${encodeURIComponent(plan)}`,{
           method:'POST',headers:{...workerAuthHeaders(),'Content-Type':'application/json'},body:JSON.stringify({user_id:userId,plan})
         });
-        const payload=await response.json().catch(()=>({}));
         const invoiceLink=payload.invoice_link||payload.invoiceUrl;
         if(!response.ok||!invoiceLink)throw new Error(payload.error||'Worker не вернул ссылку Telegram invoice.');
         const invoiceUrl=new URL(invoiceLink);
@@ -2611,61 +3019,97 @@
       }catch(error){console.error('Lumi invoice error:',error);showToast(error.message||'Не удалось создать счёт. Проверь настройки Worker.');}
       finally{if(!invoiceOpened){purchaseInFlight=false;setBusy(false);}}
     }
-    async function requestProStatus(options = {}) {
+    async function handleCancelProRenewal() {
+      if (purchaseInFlight) return;
+      if (!tg || !tg.initData || !workerIsConfigured()) { showToast('Управление автопродлением доступно из Telegram.'); return; }
+      const userId = telegramUserId();
+      if (!userId) { showToast('Не удалось определить Telegram user.id.'); return; }
+      const button = document.getElementById('cancelProRenewal');
+      purchaseInFlight = true;
+      if (button) { button.disabled = true; button.textContent = 'Отключаю автопродление…'; }
+      try {
+        const base = new URL(WORKER_URL.trim());
+        const {response, data} = await fetchWorkerJson(`${base.href.replace(/\/$/,'')}/cancel-subscription?user_id=${encodeURIComponent(userId)}`, {
+          method:'POST', headers:{...workerAuthHeaders(),'Content-Type':'application/json'},
+          body:JSON.stringify({user_id:userId})
+        });
+        if (!response.ok || data.ok !== true) throw new Error(data.error || 'Не удалось отключить автопродление.');
+        proAccount.autoRenew = false;
+        proAccount.canCancelRenewal = false;
+        proAccount.billingState = 'canceled';
+        saveAccessStateLocally();
+        render();
+        showToast(`Автопродление отключено. PRO действует до ${formatProDate(data.expires_at || proAccount.expiresAt)}.`);
+      } catch (error) {
+        console.error('Lumi subscription cancellation failed:', error);
+        showToast(error.message || 'Не удалось отключить автопродление.');
+        if (button && button.isConnected) { button.disabled = false; button.textContent = 'Отключить автопродление'; }
+      } finally {
+        purchaseInFlight = false;
+      }
+    }
+
+    async function requestProStatus(timeoutMs = WORKER_REQUEST_TIMEOUT_MS) {
       if(!tg||!tg.initData||!workerIsConfigured())throw new Error('Не настроена проверка Telegram PRO.');
       const userId=telegramUserId();if(!userId)throw new Error('Telegram user.id отсутствует.');
       const base=new URL(WORKER_URL.trim());
-      const timeoutMs=Number.isFinite(Number(options.timeoutMs))?Math.max(250,Math.min(10000,Number(options.timeoutMs))):8000;
-      const controller=typeof AbortController!=='undefined'?new AbortController():null;
-      let timeoutId=null;
-      const timeoutPromise=new Promise((_,reject)=>{
-        timeoutId=window.setTimeout(()=>{
-          if(controller)controller.abort();
-          reject(new Error(`Проверка Lumi PRO превысила лимит ${timeoutMs} мс.`));
-        },timeoutMs);
-      });
-      try {
-        const requestPromise=(async()=>{
-          const response=await fetch(`${base.href.replace(/\/$/,'')}/check-pro?user_id=${encodeURIComponent(userId)}`,{
-            method:'GET',headers:workerAuthHeaders(),cache:'no-store',signal:controller?controller.signal:undefined
-          });
-          const data=await response.json().catch(()=>({}));
-          if(!response.ok||typeof data.is_pro!=='boolean')throw new Error(data.error||'Worker вернул некорректный PRO-статус.');
-          return {active:data.is_pro,expiresAt:data.expires_at||0,startedAt:data.started_at||0,months:data.months_in_pro||data.months_paid||0,wasPro:data.was_pro===true,autoRenew:data.auto_renew!==false,billingState:data.billing_state||'ok'};
-        })();
-        return await Promise.race([requestPromise,timeoutPromise]);
-      } finally { if(timeoutId!==null)window.clearTimeout(timeoutId); }
+      const {response, data}=await fetchWorkerJson(`${base.href.replace(/\/$/,'')}/check-pro?user_id=${encodeURIComponent(userId)}`,{method:'GET',headers:workerAuthHeaders(),cache:'no-store'},timeoutMs);
+      if(!response.ok||typeof data.is_pro!=='boolean')throw new Error(data.error||'Worker вернул некорректный PRO-статус.');
+      const serverTime = Number(data.server_time || 0);
+      if (serverTime > 0) serverClockOffsetMs = serverTime * 1000 - Date.now();
+      return {active:data.is_pro,expiresAt:data.expires_at||0,startedAt:data.started_at||0,months:data.months_in_pro||data.months_paid||0,wasPro:data.was_pro===true,autoRenew:data.auto_renew===true,canCancelRenewal:data.can_cancel_renewal===true,billingState:data.billing_state||'ok',revoked:data.revoked===true,serverTime,trialExpiresAt:Number(data.trial_expires_at||0),trialClaimed:data.trial_claimed===true};
+    }
+    function applyServerTrialStatus(data) {
+      if (!data || !Number.isFinite(Number(data.trialExpiresAt))) return false;
+      const previous = isTrialProEnabled();
+      authoritativeTrialExpiresAt = Number(data.trialExpiresAt || 0);
+      state.trial_pro_until = authoritativeTrialExpiresAt * 1000;
+      state.trial_pro_claimed = data.trialClaimed === true || authoritativeTrialExpiresAt > 0;
+      return previous !== isTrialProEnabled();
     }
     async function refreshProStatusFromServer(afterPaid=false) {
       try{
+        const wasActive = isProEnabled();
         let data={active:false};
         const attempts=afterPaid?25:1;
+        const deadline=Date.now()+(afterPaid?WORKER_POST_PAYMENT_TIMEOUT_MS:WORKER_REQUEST_TIMEOUT_MS);
         for(let attempt=0;attempt<attempts;attempt++){
-          data=await requestProStatus();
+          const remaining=deadline-Date.now();
+          if(remaining<=0)break;
+          data=await requestProStatus(Math.min(WORKER_REQUEST_TIMEOUT_MS,remaining));
           if(data.active)break;
-          if(attempt<attempts-1)await new Promise(resolve=>window.setTimeout(resolve,2500));
+          if(attempt<attempts-1){
+            const waitMs=Math.min(2500,Math.max(0,deadline-Date.now()));
+            if(waitMs<250)break;
+            await new Promise(resolve=>window.setTimeout(resolve,waitMs));
+          }
         }
-        const wasActive=state.proActive===true;
-        state.proActive=data.active===true;
-        proAccount={startedAt:data.startedAt||0,expiresAt:data.expiresAt||0,months:data.months||0,wasPro:data.wasPro||data.active,autoRenew:data.autoRenew,billingState:data.billingState||'ok'};
-        if(!isProEnabled()&&['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme))state.selectedTheme='aurora';
-        saveState();render();
-        if(state.proActive&&!wasActive){celebrateProActivation();showToast('⭐ Поздравляем! Lumi PRO активирован. Луми и дрон снова вместе!');}
-        else if(state.proActive)showToast('Lumi PRO активен до '+formatProDate(proAccount.expiresAt));
+        const trialChanged = applyServerTrialStatus(data);
+        authoritativeProStatus=data.active===true;
+        proAccount={startedAt:data.startedAt||0,expiresAt:data.expiresAt||0,months:data.months||0,wasPro:data.wasPro||data.active,autoRenew:data.autoRenew===true,canCancelRenewal:data.canCancelRenewal===true,billingState:data.billingState||'ok',revoked:data.revoked===true};
+        const paidChanged = applyAuthoritativeProStatus();
+        if (trialChanged || paidChanged || wasActive !== isProEnabled()) saveAccessStateLocally();
+        render();
+        if(isProEnabled()&&!wasActive){celebrateProActivation();showToast('⭐ Поздравляем! Lumi PRO активирован. Луми и дрон снова вместе!');}
+        else if(isProEnabled())showToast('Lumi PRO активен до '+formatProDate(proAccount.expiresAt));
+        else if (proAccount.billingState === 'refunded') showToast('Платёж возвращён. Оплаченный PRO отключён сервером.');
         else if(afterPaid)showToast('Telegram принял платёж, но Worker ещё не получил подтверждение. Не покупай повторно — проверь webhook.');
         else showToast('Статус Lumi PRO обновлён.');
       }catch(error){console.error('Lumi PRO verification:',error);if(afterPaid)showToast('Оплата прошла, но сервер пока не подтвердил доступ. Не покупай повторно — проверь webhook.');}
     }
     async function verifyProOnStartup() {
-      if(!tg||!tg.initData||!workerIsConfigured())return;
+      if(!tg||!tg.initData||!workerIsConfigured()||proCheckInFlight)return;
+      proCheckInFlight=true;
       try{
-        const data=await requestProStatus({timeoutMs:2500});
-        const changed=state.proActive!==(data.active===true);
-        state.proActive=data.active===true;
-        proAccount={startedAt:data.startedAt||0,expiresAt:data.expiresAt||0,months:data.months||0,wasPro:data.wasPro===true||data.active===true,autoRenew:data.autoRenew,billingState:data.billingState||'ok'};
-        if(!isProEnabled()&&['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme))state.selectedTheme='aurora';
-        if(changed){saveState();render();}else updateTopStats();
+        const previousAccess=isProEnabled();
+        const data=await requestProStatus();
+        const trialChanged = applyServerTrialStatus(data);
+        authoritativeProStatus=data.active===true;
+        proAccount={startedAt:data.startedAt||0,expiresAt:data.expiresAt||0,months:data.months||0,wasPro:data.wasPro===true||data.active===true,autoRenew:data.autoRenew===true,canCancelRenewal:data.canCancelRenewal===true,billingState:data.billingState||'ok',revoked:data.revoked===true};
+        const changed=trialChanged || applyAuthoritativeProStatus() || previousAccess!==isProEnabled();
+        if(changed){saveAccessStateLocally();render();}else updateTopStats();
       }catch(error){console.warn('Lumi PRO status could not be refreshed:',error);}
+      finally { proCheckInFlight=false; }
     }
 
     function startLesson(lesson) {
@@ -2701,6 +3145,29 @@
     function lessonHeaderMarkup(session, progress) {
       return `<div class="lesson-header"><button class="icon-btn lesson-close" id="exitLesson" aria-label="Выйти из урока" title="Выйти">✕</button><div class="lesson-progress" role="progressbar" aria-label="Прогресс урока" aria-valuemin="0" aria-valuemax="${progress.total}" aria-valuenow="${progress.complete}"><span style="width:${progress.percent}%"></span></div><div class="lesson-count">${Math.min(progress.complete+1,progress.total)}/${progress.total}</div></div>`;
     }
+
+    function renderGrammarForms(grammar) {
+      if (!grammar || !grammar.forms) return '';
+      const rows = [
+        ['+','Утверждение',grammar.forms.positive],
+        ['−','Отрицание',grammar.forms.negative],
+        ['?','Вопрос',grammar.forms.question]
+      ];
+      return `<div class="grammar-forms">${rows.map(([symbol,label,formula])=>`<div class="grammar-form-row"><span class="grammar-form-sign">${symbol}</span><span class="grammar-form-label">${label}</span><span class="grammar-form-value">${escapeHtml(formula)}</span></div>`).join('')}</div>`;
+    }
+    function renderGrammarMarkers(grammar) {
+      if (!grammar || !Array.isArray(grammar.markers) || !grammar.markers.length) return '';
+      return `<div class="grammar-markers"><strong>Маркеры времени</strong><div class="grammar-marker-list">${grammar.markers.map(marker=>`<span class="grammar-marker">${escapeHtml(marker)}</span>`).join('')}</div></div>`;
+    }
+    function renderTenseQuickReference() {
+      const tenseIds = ['grammar-present-simple','grammar-present-continuous','grammar-past-simple','grammar-future-simple','grammar-past-continuous','grammar-present-perfect','grammar-past-perfect','grammar-future-continuous','grammar-present-perfect-continuous','grammar-past-perfect-continuous','grammar-future-perfect','grammar-future-perfect-continuous'];
+      const tenseLessons = tenseIds.map(id=>allLessons.find(lesson=>lesson.id===id)).filter(Boolean);
+      const free = tenseLessons.filter(lesson=>!lesson.isPro);
+      const advanced = tenseLessons.filter(lesson=>lesson.isPro);
+      const item = lesson => `<details class="tense-reference-item"><summary><strong>${escapeHtml(lesson.grammar.tense)}</strong><span>${escapeHtml(lesson.grammar.structure)}</span></summary>${renderGrammarForms(lesson.grammar)}${renderGrammarMarkers(lesson.grammar)}<p class="small muted">${escapeHtml(lesson.grammar.usage)}</p><div class="tense-reference-example"><strong>${escapeHtml(lesson.grammar.example)}</strong><span>${escapeHtml(lesson.grammar.exampleRu)}</span></div></details>`;
+      return `<section class="card tense-reference"><div class="eyebrow">ГРАММАТИЧЕСКИЙ СПРАВОЧНИК</div><h2>Все 12 времён английского</h2><p class="small muted">Формулы утверждения, отрицания и вопроса. S — подлежащее; V1 — начальная форма; V2 — прошедшая форма; V3 — третья форма; V-ing — форма с -ing.</p><div class="tense-reference-group"><h3>Базовый уровень · бесплатно</h3>${free.map(item).join('')}</div>${isProEnabled()?`<div class="tense-reference-group"><h3>Продвинутый уровень · Lumi PRO</h3>${advanced.map(item).join('')}</div>`:`<div class="tense-reference-locked"><strong>Ещё 6 продвинутых времён открываются в Lumi PRO ⭐</strong><p class="small muted">Past Perfect, Future Continuous, Present Perfect Continuous, Past Perfect Continuous, Future Perfect и Future Perfect Continuous.</p><button class="btn purple full" data-tab-go="pro">Открыть Lumi PRO</button></div>`}</section>`;
+    }
+
     function renderLesson(resetScroll = false) {
       const session = lessonSession;
       if (!session) return;
@@ -2712,7 +3179,7 @@
       let content = '';
       if (session.stage === 'grammar_intro') {
         const grammar = lesson.grammar;
-        content = `${header}<section class="card grammar-intro-card"><div class="eyebrow">УРОК ГРАММАТИКИ · ${escapeHtml(grammar.tense)}</div><h1 style="font-size:25px;margin:8px 0 12px">${escapeHtml(lesson.title)}</h1><div class="rule-example"><strong>Формула</strong><p style="margin:6px 0 0;font-weight:800">${escapeHtml(grammar.structure)}</p></div><p class="small muted" style="margin:12px 0">${escapeHtml(grammar.usage)}</p><div class="rule-example"><strong>Пример</strong><p style="margin:6px 0 0;font-weight:800">${escapeHtml(grammar.example)}</p><p class="small muted" style="margin:4px 0 0">${escapeHtml(grammar.exampleRu)}</p></div><p class="small muted" style="margin-top:12px">${escapeHtml(lesson.rule)}</p><button class="btn full" id="startGrammarPractice">Понял, начать практику →</button></section>`;
+        content = `${header}<section class="card grammar-intro-card"><div class="eyebrow">УРОК ГРАММАТИКИ · ${escapeHtml(grammar.tense)}</div><h1 style="font-size:25px;margin:8px 0 12px">${escapeHtml(lesson.title)}</h1><div class="rule-example"><strong>Короткая формула</strong><p style="margin:6px 0 0;font-weight:800">${escapeHtml(grammar.structure)}</p></div>${renderGrammarForms(grammar)}${renderGrammarMarkers(grammar)}<p class="small muted" style="margin:12px 0">${escapeHtml(grammar.usage)}</p><div class="rule-example grammar-example-block"><strong>Пример</strong><div class="grammar-example-line"><div><p style="margin:6px 0 0;font-weight:800">${escapeHtml(grammar.example)}</p><p class="small muted" style="margin:4px 0 0">${escapeHtml(grammar.exampleRu)}</p></div><button type="button" class="sound-mini" data-speak-text="${escapeHtml(grammar.example)}" aria-label="Озвучить пример на английском">🔊</button></div></div>${grammar.note?`<div class="grammar-note"><strong>Запомни</strong><p class="small muted">${escapeHtml(grammar.note)}</p></div>`:''}<p class="small muted" style="margin-top:12px">${escapeHtml(lesson.rule)}</p><button class="btn full" id="startGrammarPractice">Понял, начать практику →</button></section>`;
       } else if (session.stage === 'cards') {
         const word = wordCatalog[lesson.words[session.cardIndex]];
         content = `${header}
@@ -2740,7 +3207,7 @@
           <div class="lesson-stage-label"><span>Собери предложение</span><span>Слова уже изучены</span></div>
           <section class="card sentence-card">
             <div class="lesson-mascot-row">${lumiArt()}<div><div class="eyebrow">МИССИЯ ЛУМИ</div><strong>Поставь слова в правильном порядке</strong><div class="small muted">Все слова из карточек этого и прошлых уроков.</div></div></div>
-            <div class="sentence-meaning">${escapeHtml(lesson.meaning)}</div>
+            <div class="sentence-meaning">${escapeHtml(lesson.meaning)}</div><div class="sentence-audio-row"><button type="button" class="sound-mini" data-speak-text="${escapeHtml(tokens.map(token=>token[1]).join(' '))}" aria-label="Прослушать пример предложения">🔊 Послушать пример</button></div>
             <div class="sentence-area-label">Твоё предложение</div><div class="sentence-answer" id="sentenceAnswer">${answerMarkup}</div>
             <div class="sentence-area-label">Словесные пузырьки · нажми, чтобы добавить</div><div class="sentence-bubbles" id="sentenceBubbles">${bubbles || '<span class="sentence-slot-hint">Все слова выбраны</span>'}</div>
             <div class="feedback ${session.builderChecked?'show '+(session.builderCorrect?'good':'bad'):''}" id="builderFeedback">${session.builderChecked ? (session.builderCorrect ? 'Отлично! Предложение собрано правильно ✨' : `Порядок пока не совпал. ${escapeHtml(lesson.rule)} Попробуй ещё раз — ты справишься!`) : ''}</div>
@@ -2878,7 +3345,7 @@
         }else{tap();session.stage='result';renderLessonResult();}
       });
       const speakFlashcard=document.getElementById('speakFlashcard');
-      if(speakFlashcard){warmDictionaryAudio(wordCatalog[lesson.words[session.cardIndex]]?.en);speakFlashcard.addEventListener('click',event=>{tap();speakWord(lesson.words[session.cardIndex],event.currentTarget);});}
+      if(speakFlashcard)speakFlashcard.addEventListener('click',event=>{tap();speakWord(lesson.words[session.cardIndex],event.currentTarget);});
     }
     function makeLessonOptions(lesson, wordId) {
       const allowed = new Set(learnedWordIdsForLesson(lesson));
@@ -2891,262 +3358,221 @@
     }
     function bindSpeechButtons(root) {
       if(!root)return;
-      const buttons=Array.from(root.querySelectorAll('[data-speak]'));
-      buttons.forEach(button=>button.addEventListener('click',event=>{event.stopPropagation();tap();speakWord(button.dataset.speak,button);}));
-      // Fetch dictionary MP3s before the learner taps. This lets the native HTMLAudioElement
-      // play the real recording inside the original tap gesture when it is ready.
-      buttons.slice(0,6).forEach(button=>{
-        const entry=wordCatalog[button.dataset.speak];
-        if(entry&&entry.en)warmDictionaryAudio(entry.en);
-      });
+      root.querySelectorAll('[data-speak]').forEach(button=>button.addEventListener('click',event=>{event.stopPropagation();tap();speakWord(button.dataset.speak,button);}));
+      root.querySelectorAll('[data-speak-text]').forEach(button=>button.addEventListener('click',event=>{event.stopPropagation();tap();speakWord(button.dataset.speakText,button);}));
     }
     function bindWordTips(root) {
       if(!root)return;
       root.querySelectorAll('[data-word-tip]:not([data-token-idx])').forEach(button=>button.addEventListener('click',event=>{event.stopPropagation();showWordPopover(button.dataset.wordTip,button);}));
     }
-    function refreshSpeechVoices() {
-      try {
-        const synth = window.speechSynthesis;
-        if (!synth || typeof synth.getVoices !== 'function') return;
-        const voices = synth.getVoices();
-        const englishVoices = voices.filter(voice => /^en(?:-|$)/i.test(voice.lang || ''));
-        englishSpeechVoice = englishVoices.find(voice => /^en-US(?:-|$)/i.test(voice.lang || ''))
-          || englishVoices.find(voice => /^en-GB(?:-|$)/i.test(voice.lang || ''))
-          || englishVoices.find(voice => voice.localService)
-          || englishVoices[0]
-          || null;
-      } catch (_) { englishSpeechVoice = null; }
-    }
-    function warmSpeechSynthesis() {
-      try {
-        const synth = window.speechSynthesis;
-        if (!synth) return;
-        refreshSpeechVoices();
-        if (typeof synth.addEventListener === 'function') synth.addEventListener('voiceschanged', refreshSpeechVoices);
-        else synth.onvoiceschanged = refreshSpeechVoices;
-      } catch (_) { /* Speech synthesis is optional in some Telegram WebViews. */ }
-    }
     async function getDictionaryAudioUrl(word) {
-      const normalized = String(word || '').trim().toLowerCase();
-      if (!/^[a-z]+(?:['-][a-z]+)?$/.test(normalized)) return null;
-      if (dictionaryAudioCache.has(normalized)) return dictionaryAudioCache.get(normalized);
-      const lookup = (async () => {
-        let timeout = null;
-        try {
-          const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-          timeout = controller ? window.setTimeout(() => controller.abort(), 4500) : null;
-          const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(normalized)}`, {
-            method: 'GET', mode: 'cors', cache: 'force-cache', signal: controller ? controller.signal : undefined
-          });
-          if (!response.ok) return null;
-          const payload = await response.json();
-          for (const entry of Array.isArray(payload) ? payload : []) {
-            for (const phonetic of Array.isArray(entry.phonetics) ? entry.phonetics : []) {
-              const audio = String(phonetic.audio || '').trim();
-              if (!audio) continue;
-              const url = audio.startsWith('//') ? 'https:' + audio : audio;
-              try { if (new URL(url).protocol === 'https:') return url; } catch (_) { /* Skip malformed dictionary audio URL. */ }
+      const normalized=String(word||'').trim().toLowerCase();
+      if(!/^[a-z]+(?:['-][a-z]+)?$/.test(normalized))return null;
+      if(dictionaryAudioCache.has(normalized))return dictionaryAudioCache.get(normalized);
+      const lookup=(async()=>{
+        const controller=typeof AbortController!=='undefined'?new AbortController():null;
+        let timeout=null;
+        try{
+          const request=(async()=>{
+            const response=await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(normalized)}`,{
+              method:'GET',mode:'cors',cache:'force-cache',signal:controller?controller.signal:undefined
+            });
+            if(!response.ok)return null;
+            return await response.json();
+          })();
+          const payload=await Promise.race([
+            request,
+            new Promise((_,reject)=>{
+              timeout=window.setTimeout(()=>{
+                if(controller)controller.abort();
+                reject(new Error('Dictionary timeout'));
+              },DICTIONARY_LOOKUP_TIMEOUT_MS);
+            })
+          ]);
+          for(const entry of Array.isArray(payload)?payload:[]){
+            for(const phonetic of Array.isArray(entry.phonetics)?entry.phonetics:[]){
+              const audio=String(phonetic.audio||'').trim();
+              if(!audio)continue;
+              const url=audio.startsWith('//')?'https:'+audio:audio;
+              try{if(new URL(url).protocol==='https:')return url;}catch(_){/* Skip malformed dictionary audio URL. */}
             }
           }
-        } catch (_) { return null; }
-        finally { if (timeout) window.clearTimeout(timeout); }
+        }catch(_){return null;}
+        finally{if(timeout)window.clearTimeout(timeout);}
         return null;
       })();
-      dictionaryAudioCache.set(normalized, lookup);
-      const result = await lookup;
-      dictionaryAudioCache.set(normalized, result);
+      setDictionaryAudioCache(normalized,lookup);
+      const result=await lookup;
+      setDictionaryAudioCache(normalized,result);
       return result;
     }
-    function warmDictionaryAudio(word) {
-      const normalized = String(word || '').trim().toLowerCase();
-      if (!/^[a-z]+(?:['-][a-z]+)?$/.test(normalized) || dictionaryAudioPlayers.has(normalized)) return;
-      void getDictionaryAudioUrl(normalized).then(url => {
-        if (!url || dictionaryAudioPlayers.has(normalized)) return;
-        try {
-          const audio = new Audio();
-          audio.preload = 'auto';
-          audio.referrerPolicy = 'no-referrer';
-          audio.src = url;
-          audio.load();
-          dictionaryAudioPlayers.set(normalized, audio);
-          // Keep the audio cache small on mobile devices.
-          while (dictionaryAudioPlayers.size > 24) {
-            const oldestKey = dictionaryAudioPlayers.keys().next().value;
-            const oldestAudio = dictionaryAudioPlayers.get(oldestKey);
-            try { oldestAudio.pause(); oldestAudio.removeAttribute('src'); oldestAudio.load(); } catch (_) {}
-            dictionaryAudioPlayers.delete(oldestKey);
+
+    function clearSpeechHighlight() {
+      if (activeSpeechHighlightTimer) { window.clearTimeout(activeSpeechHighlightTimer); activeSpeechHighlightTimer = null; }
+      if (activeSpeechTrigger) { activeSpeechTrigger.classList.remove('pronunciation-speaking'); activeSpeechTrigger.removeAttribute('aria-busy'); }
+      activeSpeechTrigger = null;
+    }
+    function setSpeechHighlight(trigger) {
+      clearSpeechHighlight();
+      if (!trigger) return;
+      activeSpeechTrigger = trigger;
+      trigger.classList.add('pronunciation-speaking');
+      trigger.setAttribute('aria-busy', 'true');
+      // Keep the transcript highlight for the full duration of longer phrases.
+      // Playback end/error handlers clear it earlier; this is only a hard safety cap.
+      const estimatedMs = Math.min(120000, Math.max(12000, String(trigger.textContent || '').trim().length * 450));
+      activeSpeechHighlightTimer = window.setTimeout(clearSpeechHighlight, estimatedMs);
+    }
+    function stopActiveSpeechAudio() {
+      clearSpeechHighlight();
+      const audio = activeSpeechAudio || document.getElementById('lumiPronunciationAudio');
+      if (!audio) return;
+      try { audio.pause(); audio.currentTime = 0; audio.removeAttribute('src'); audio.load(); } catch (_) {}
+      if (activeSpeechAudio === audio) activeSpeechAudio = null;
+    }
+    function googleTranslateAudioUrl(text) {
+      const content = String(text || '').trim().slice(0, 180);
+      if (!content) return null;
+      const query = new URLSearchParams({ ie:'UTF-8', client:'tw-ob', tl:'en', q:content });
+      return `https://translate.google.com/translate_tts?${query.toString()}`;
+    }
+    function tryPlayHtmlAudio(url) {
+      return new Promise(resolve => {
+        const audio = document.getElementById('lumiPronunciationAudio') || new Audio();
+        let settled = false;
+        let timeout = null;
+        const finish = value => {
+          if (settled) return;
+          settled = true;
+          if (timeout) window.clearTimeout(timeout);
+          audio.removeEventListener('error', onError);
+          if (!value) {
+            try { audio.pause(); audio.removeAttribute('src'); audio.load(); } catch (_) {}
+            if (activeSpeechAudio === audio) activeSpeechAudio = null;
           }
-        } catch (_) { /* Device TTS remains the primary path. */ }
-      }).catch(() => {});
-    }
-    function stopActiveHtmlAudio() {
-      if (!activeHtmlAudio) return;
-      const previous = activeHtmlAudio;
-      activeHtmlAudio = null;
-      try { previous.pause(); previous.currentTime = 0; } catch (_) {}
-    }
-    function playHtmlAudioElement(audio, requestId, onFailure) {
-      if (!audio || requestId !== activeSpeechRequest) return false;
-      stopActiveHtmlAudio();
-      activeHtmlAudio = audio;
-      audio.preload = 'auto';
-      try { audio.referrerPolicy = 'no-referrer'; audio.setAttribute('referrerpolicy', 'no-referrer'); } catch (_) {}
-      let failed = false;
-      const fail = () => {
-        if (failed || requestId !== activeSpeechRequest || activeHtmlAudio !== audio) return;
-        failed = true;
-        activeHtmlAudio = null;
-        try { audio.pause(); } catch (_) {}
-        if (typeof onFailure === 'function') onFailure();
-      };
-      audio.addEventListener('error', fail, { once:true });
-      audio.addEventListener('ended', () => {
-        if (activeHtmlAudio === audio) activeHtmlAudio = null;
-      }, { once:true });
-      try {
-        const playback = audio.play();
-        if (playback && typeof playback.catch === 'function') playback.catch(fail);
-        return true;
-      } catch (_) {
-        fail();
-        return true;
-      }
-    }
-    function tryPlayPreparedDictionaryAudio(word, onFailure, requestId) {
-      const normalized = String(word || '').trim().toLowerCase();
-      const audio = dictionaryAudioPlayers.get(normalized);
-      // Do not wait for the network here: only a ready MP3 may take the immediate tap gesture.
-      if (!audio || audio.readyState < 2) return false;
-      try { audio.pause(); audio.currentTime = 0; } catch (_) {}
-      return playHtmlAudioElement(audio, requestId, onFailure);
-    }
-    function playGoogleTranslateTts(text, onFailure, requestId) {
-      const phrase = String(text || '').trim();
-      if (!phrase || requestId !== activeSpeechRequest || typeof Audio === 'undefined') return false;
-      const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=' + encodeURIComponent(phrase);
-      try {
-        const audio = new Audio(url);
-        audio.preload = 'auto';
-        audio.setAttribute('referrerpolicy', 'no-referrer');
-        return playHtmlAudioElement(audio, requestId, onFailure);
-      } catch (_) { return false; }
-    }
-    function trySpeechSynthesis(text, onFailure, existingRequestId = null) {
-      const synth = window.speechSynthesis;
-      const Utterance = window.SpeechSynthesisUtterance;
-      if (!synth || !Utterance) return false;
-      const requestId = existingRequestId || ++activeSpeechRequest;
-      let started = false;
-      let failed = false;
-      let watchdog = null;
-      const fail = () => {
-        if (failed || started || requestId !== activeSpeechRequest) return;
-        failed = true;
-        if (watchdog) window.clearTimeout(watchdog);
-        if (typeof onFailure === 'function') onFailure();
-      };
-      try {
-        if (synth.speaking || synth.pending) synth.cancel();
-        const utterance = new Utterance(String(text || ''));
-        utterance.lang = englishSpeechVoice?.lang || 'en-US';
-        if (englishSpeechVoice) utterance.voice = englishSpeechVoice;
-        utterance.rate = 0.92;
-        utterance.pitch = 1;
-        utterance.onstart = () => {
-          if (requestId !== activeSpeechRequest) return;
-          started = true;
-          if (watchdog) window.clearTimeout(watchdog);
+          resolve(value);
         };
-        utterance.onend = () => {
-          if (requestId === activeSpeechRequest && watchdog) window.clearTimeout(watchdog);
-        };
-        utterance.onerror = () => { if (requestId === activeSpeechRequest) fail(); };
-        if (synth.paused) synth.resume();
-        synth.speak(utterance);
-        watchdog = window.setTimeout(() => {
-          if (requestId !== activeSpeechRequest || started || failed) return;
-          try { synth.resume(); } catch (_) {}
-          if (synth.speaking || synth.pending) {
-            watchdog = window.setTimeout(() => {
-              if (requestId === activeSpeechRequest && !started) fail();
-            }, 1100);
-          } else fail();
-        }, 900);
-        return true;
-      } catch (_) { fail(); return false; }
+        const onError = () => finish(false);
+        try {
+          activeSpeechAudio = audio;
+          audio.preload = 'auto';
+          audio.volume = 1;
+          audio.playsInline = true;
+          audio.addEventListener('error', onError, { once:true });
+          audio.onended = () => { if (activeSpeechAudio === audio) activeSpeechAudio = null; clearSpeechHighlight(); };
+          audio.src = url;
+          timeout = window.setTimeout(() => finish(false), 2400);
+          const playResult = audio.play(); // Called synchronously in the original user gesture.
+          if (playResult && typeof playResult.then === 'function') playResult.then(() => finish(true)).catch(() => finish(false));
+          else finish(true);
+        } catch (_) { finish(false); }
+      });
     }
-
+    function trySpeechSynthesis(text) {
+      return new Promise(resolve=>{
+        const synth=window.speechSynthesis;
+        const Utterance=window.SpeechSynthesisUtterance;
+        if(!synth||!Utterance){resolve(false);return;}
+        let settled=false,started=false;
+        const finish=value=>{if(settled)return;settled=true;window.clearTimeout(fallbackTimer);resolve(value);};
+        let fallbackTimer=null;
+        try{
+          synth.cancel();
+          const utterance=new Utterance(String(text||''));
+          const voices=typeof synth.getVoices==='function'?synth.getVoices():[];
+          const preferred=voices.find(voice=>/^en-US(?:-|$)/i.test(voice.lang))||voices.find(voice=>/^en-GB(?:-|$)/i.test(voice.lang))||voices.find(voice=>/^en(?:-|$)/i.test(voice.lang));
+          utterance.lang=preferred?.lang||'en-US';
+          if(preferred)utterance.voice=preferred;
+          utterance.rate=.9;utterance.pitch=1;
+          utterance.onstart=()=>{started=true;finish(true);};
+          utterance.onerror=()=>{clearSpeechHighlight();finish(false);};
+          utterance.onend=()=>{clearSpeechHighlight();finish(true);};
+          synth.speak(utterance);
+          // Some mobile WebViews expose the API but silently refuse playback. Don't leave the learner with a dead button.
+          fallbackTimer=window.setTimeout(()=>{if(!started){try{synth.cancel();}catch(_){}finish(false);}},1400);
+          // Browsers that don't dispatch onstart may still report the queue as active.
+          window.setTimeout(()=>{if(!settled&&(synth.speaking||synth.pending)){started=true;finish(true);}},350);
+        }catch(_){finish(false);}
+      });
+    }
     function playPronunciationFallbackCue() {
-      try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        if (!audioContext) audioContext = new AudioCtx();
-        if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
-        const now = audioContext.currentTime;
-        [493.88, 659.25].forEach((frequency, index) => {
-          const osc = audioContext.createOscillator(), gain = audioContext.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(frequency, now + index * .08);
-          gain.gain.setValueAtTime(.0001, now + index * .08);
-          gain.gain.exponentialRampToValueAtTime(.035, now + index * .08 + .018);
-          gain.gain.exponentialRampToValueAtTime(.0001, now + index * .08 + .2);
-          osc.connect(gain); gain.connect(audioContext.destination);
-          osc.start(now + index * .08); osc.stop(now + index * .08 + .22);
+      try{
+        const context=getOrCreateAudioContext();
+        if(!context)return;
+        if(context.state==='suspended')Promise.resolve(context.resume()).catch(()=>{});
+        const now=context.currentTime;
+        [493.88,659.25].forEach((frequency,index)=>{
+          const osc=context.createOscillator(),gain=context.createGain();
+          osc.type='sine';osc.frequency.setValueAtTime(frequency,now+index*.08);
+          gain.gain.setValueAtTime(.0001,now+index*.08);gain.gain.exponentialRampToValueAtTime(.035,now+index*.08+.018);gain.gain.exponentialRampToValueAtTime(.0001,now+index*.08+.2);
+          osc.connect(gain);gain.connect(context.destination);osc.start(now+index*.08);osc.stop(now+index*.08+.22);
         });
-      } catch (_) { /* The visual phonetic fallback still works if Web Audio is unavailable. */ }
+      }catch(_){/* The visual phonetic fallback still works if Web Audio is unavailable. */}
     }
-    function showPronunciationFallback(entry, trigger) {
-      const panel = document.getElementById('pronunciationFallback'), app = document.getElementById('app');
-      if (!panel || !app) return;
-      const ipaText = String(entry.ipa || '').trim();
-      const hasIpa = ipaText && ipaText !== String(entry.en || '').trim();
-      panel.innerHTML = `<span class="pronunciation-fallback-label">ПРОИЗНОШЕНИЕ ЛУМИ</span><strong class="pronunciation-fallback-word">${escapeHtml(entry.en)}</strong>${hasIpa ? `<span class="pronunciation-fallback-ipa">${escapeHtml(ipaText)}</span>` : ''}<span class="pronunciation-fallback-hint">${hasIpa ? 'Попробуй прочитать по транскрипции ✨' : 'Прочитай фразу вслух в своём темпе ✨'}</span>`;
-      panel.hidden = false;
-      const appRect = app.getBoundingClientRect(), rect = trigger?.getBoundingClientRect();
-      const panelWidth = Math.min(280, appRect.width - 24);
-      panel.style.width = panelWidth + 'px'; panel.style.left = '12px'; panel.style.top = '8px';
-      const panelRect = panel.getBoundingClientRect();
-      let left = rect ? rect.left - appRect.left + rect.width / 2 - panelRect.width / 2 : (appRect.width - panelRect.width) / 2;
-      left = Math.max(12, Math.min(appRect.width - panelRect.width - 12, left));
-      let top = rect ? rect.top - appRect.top - panelRect.height - 10 : appRect.height - panelRect.height - 90;
-      if (top < 8) top = rect ? rect.bottom - appRect.top + 10 : Math.max(8, top);
-      const nav = document.getElementById('bottomNav');
-      const safeBottom = nav && !nav.hidden ? nav.getBoundingClientRect().height + 8 : 8;
-      top = Math.max(8, Math.min(appRect.height - panelRect.height - safeBottom, top));
-      panel.style.left = left + 'px'; panel.style.top = top + 'px';
+    function showPronunciationFallback(entry,trigger) {
+      const panel=document.getElementById('pronunciationFallback'),app=document.getElementById('app');
+      if(!panel||!app)return;
+      const ipaText=String(entry.ipa||'').trim();
+      const hasIpa=ipaText&&ipaText!==String(entry.en||'').trim();
+      panel.innerHTML=`<span class="pronunciation-fallback-label">ПРОИЗНОШЕНИЕ ЛУМИ</span><strong class="pronunciation-fallback-word">${escapeHtml(entry.en)}</strong>${hasIpa?`<span class="pronunciation-fallback-ipa">${escapeHtml(ipaText)}</span>`:''}<span class="pronunciation-fallback-hint">${hasIpa?'Попробуй прочитать по транскрипции ✨':'Прочитай фразу вслух в своём темпе ✨'}</span>`;
+      panel.hidden=false;
+      const appRect=app.getBoundingClientRect(),rect=trigger?.getBoundingClientRect();
+      const panelWidth=Math.min(280,appRect.width-24);
+      panel.style.width=panelWidth+'px';panel.style.left='12px';panel.style.top='8px';
+      const panelRect=panel.getBoundingClientRect();
+      let left=rect?rect.left-appRect.left+rect.width/2-panelRect.width/2:(appRect.width-panelRect.width)/2;
+      left=Math.max(12,Math.min(appRect.width-panelRect.width-12,left));
+      let top=rect?rect.top-appRect.top-panelRect.height-10:appRect.height-panelRect.height-90;
+      if(top<8)top=rect?rect.bottom-appRect.top+10:Math.max(8,top);
+      const nav=document.getElementById('bottomNav');
+      const safeBottom=nav&&!nav.hidden?nav.getBoundingClientRect().height+8:8;
+      top=Math.max(8,Math.min(appRect.height-panelRect.height-safeBottom,top));
+      panel.style.left=left+'px';panel.style.top=top+'px';
       playPronunciationFallbackCue();
-      if (pronunciationFallbackTimer) window.clearTimeout(pronunciationFallbackTimer);
-      pronunciationFallbackTimer = window.setTimeout(() => { panel.hidden = true; }, 5000);
+      if(pronunciationFallbackTimer)window.clearTimeout(pronunciationFallbackTimer);
+      pronunciationFallbackTimer=window.setTimeout(()=>{panel.hidden=true;},5000);
     }
-    function speakWord(wordId, trigger = null) {
-      const entry = wordCatalog[wordId];
-      const text = entry ? entry.en : String(wordId || '').trim();
-      if (!text) return;
-      const requestId = ++activeSpeechRequest;
-      const isSingleWord = /^[a-z]+(?:['-][a-z]+)?$/i.test(text.trim());
-      const visualFallback = () => {
-        if (requestId === activeSpeechRequest) showPronunciationFallback(entry || { en:text, ipa:text }, trigger);
-      };
-      const speechFallback = () => {
-        if (requestId !== activeSpeechRequest) return;
-        if (!trySpeechSynthesis(text, visualFallback, requestId)) visualFallback();
-      };
-      // Stop the previous word/phrase so rapid taps never queue stale audio.
-      stopActiveHtmlAudio();
-      try {
-        const synth = window.speechSynthesis;
-        if (synth && (synth.speaking || synth.pending)) synth.cancel();
-      } catch (_) {}
-
-      if (isSingleWord) {
-        // Prefer a real dictionary MP3 whenever it was preloaded before the tap.
-        if (tryPlayPreparedDictionaryAudio(text, () => playGoogleTranslateTts(text, speechFallback, requestId) || speechFallback(), requestId)) return;
-        // Dictionary lookup/download continues in the background for the next tap.
-        warmDictionaryAudio(text);
+    function speakWord(wordId,trigger=null) {
+      const entry=wordCatalog[wordId];
+      const rawText=entry?entry.en:String(wordId??'');
+      const text=String(rawText).replace(/\s+/g,' ').trim();
+      // English TTS must never receive translations, IPA, empty values or arbitrary UI text.
+      if(!text || /[\u0400-\u04FF]/.test(text) || /^[\s\[\/].*[\]\/]$/.test(text) || !/^[A-Za-z][A-Za-z0-9'’.,!?;:() -]{0,179}$/.test(text)) {
+        if(trigger) trigger.setAttribute('aria-busy','false');
+        clearSpeechHighlight();
+        return;
       }
+      const requestId=++speechRequestId;
+      const isSingleWord=!!entry&&/^[a-z]+(?:['-][a-z]+)?$/i.test(text.trim());
+      unlockAudioFromGesture();
+      stopActiveSpeechAudio();
+      setSpeechHighlight(trigger);
+      const primaryAudioUrl=googleTranslateAudioUrl(text);
+      // Start the dictionary lookup alongside the primary HTML5 audio request.
+      // If Google TTS fails, a word-level MP3 may already be cached and ready.
+      const dictionaryAudioPromise = isSingleWord ? getDictionaryAudioUrl(text) : Promise.resolve(null);
 
-      // Start an HTML5 audio stream synchronously inside the tap handler. Web Speech is only a fallback.
-      if (!playGoogleTranslateTts(text, speechFallback, requestId)) speechFallback();
+      // HTML5 audio starts in the tap handler for both vocabulary and full phrases.
+      // Dictionary MP3 is the next fallback for single words; speechSynthesis is last.
+      const start = async () => {
+        let spoken = false;
+        if (primaryAudioUrl) spoken = await tryPlayHtmlAudio(primaryAudioUrl);
+        if (requestId !== speechRequestId || spoken) { if (spoken && trigger) trigger.setAttribute('aria-busy','false'); return; }
+        if (isSingleWord) {
+          const dictionaryUrl = await dictionaryAudioPromise;
+          if (requestId !== speechRequestId) return;
+          if (dictionaryUrl) spoken = await tryPlayHtmlAudio(dictionaryUrl);
+          if (requestId !== speechRequestId || spoken) { if (spoken && trigger) trigger.setAttribute('aria-busy','false'); return; }
+        }
+        const nativeSpoken = await trySpeechSynthesis(text);
+        if (requestId !== speechRequestId || nativeSpoken) { if (nativeSpoken && trigger) trigger.setAttribute('aria-busy','false'); return; }
+        clearSpeechHighlight();
+        showPronunciationFallback(entry || {en:text,ipa:text},trigger);
+      };
+      start().catch(error=>{
+        console.warn('Lumi speech fallback failed:',error);
+        if(requestId===speechRequestId){clearSpeechHighlight();showPronunciationFallback(entry || {en:text,ipa:text},trigger);}
+      });
     }
     function showWordPopover(wordId, anchor) {
       const entry=wordCatalog[wordId];const pop=document.getElementById('wordPopover');
@@ -3317,14 +3743,50 @@
       tap(); currentTab = button.dataset.tab; render();
     });
 
-    // Render from synchronously available localStorage/default state first.
-    // Telegram CloudStorage and the Worker are background enhancements, never startup gates.
-    let runtimeTimersStarted = false;
-    function startLumiRuntimeTimers() {
-      if (runtimeTimersStarted) return;
-      runtimeTimersStarted = true;
+    // First paint is entirely synchronous from localStorage. No Telegram SDK,
+    // CloudStorage callback or Worker response is awaited before render().
+    function bootstrapLumiApp() {
+      progressStorageReady = true;
+      ensureLeagueWeek();
+      const startupAchievements = checkAchievements();
+      if (startupAchievements.length) saveState();
+      render();
       lastProAccessState = isProEnabled();
       updateEnergyTimerUI();
+
+      const revisionAtStartupRender = localStateRevision;
+      let backgroundServicesStarted = false;
+      const startBackgroundServices = () => {
+        if (backgroundServicesStarted || !tg) return;
+        backgroundServicesStarted = true;
+        if (telegramSdkLoadTimer) { window.clearTimeout(telegramSdkLoadTimer); telegramSdkLoadTimer = null; }
+        initializeProgressStorage(revisionAtStartupRender).then(async result => {
+          if (result && result.stateApplied) {
+            selectedGoal = state.goal || 10;
+            if (!lessonSession && !dialogSession) render();
+            else updateTopStats();
+          }
+          if (tg.initData) {
+            const hasUnmigratedGift = state.trial_pro_claimed === true && Number(state.trial_pro_until) > Date.now() && authoritativeTrialExpiresAt === 0;
+            if (hasUnmigratedGift && !DEMO_PRO_ALLOWED) await requestTrialProClaim();
+            await verifyProOnStartup();
+          }
+        }).catch(error => {
+          console.warn('Lumi background cloud sync failed:', error);
+          cloudStorageReady = false;
+          cloudStorageStatus = 'error';
+          updateStorageStatusUI();
+          if (tg.initData) verifyProOnStartup();
+        });
+      };
+      window.addEventListener('lumi:telegram-ready', startBackgroundServices);
+      if (tg) startBackgroundServices();
+      else {
+        cloudStorageReady = false;
+        cloudStorageStatus = 'local';
+        updateStorageStatusUI();
+      }
+
       window.setInterval(() => {
         const previousAccess = lastProAccessState;
         const changed = refreshEnergy();
@@ -3333,7 +3795,7 @@
         if (previousAccess !== currentAccess) {
           lastProAccessState = currentAccess;
           if (!currentAccess && ['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme='aurora';
-          saveState();
+          saveAccessStateLocally();
           applySelectedTheme();
           render();
           if (!currentAccess && Number(state.trial_pro_until) > 0 && Number(state.trial_pro_until) <= Date.now()) showToast('Подарочный Lumi PRO завершён. Оплаченный доступ можно оформить во вкладке PRO.');
@@ -3342,52 +3804,26 @@
           if (currentTab === 'map' && !lessonSession && state.onboardingDone) render();
         }
       }, 1000);
-      window.setInterval(() => { verifyProOnStartup(); }, 5 * 60 * 1000);
-    }
-
-    function renderFirstScreenImmediately() {
-      ensureLeagueWeek();
-      const startupAchievements = checkAchievements();
-      if (startupAchievements.length) saveState();
-      render();
-      startLumiRuntimeTimers();
-    }
-
-    async function bootstrapLumiApp() {
-      const initialRevision = stateUpdatedAt;
-      // The two remote checks are bounded independently to 2.5 seconds and run only after first paint.
-      await initializeProgressStorage(initialRevision);
-      await verifyProOnStartup();
-      render();
-      updateStorageStatusUI();
+      window.setInterval(() => {
+        if (document.visibilityState === 'visible' && tg?.initData) verifyProOnStartup();
+      }, 30 * 1000);
     }
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') flushCloudProgressSave();
+      else if (document.visibilityState === 'visible' && tg?.initData) verifyProOnStartup();
     });
     window.addEventListener('pagehide', flushCloudProgressSave);
-    warmSpeechSynthesis();
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') refreshSpeechVoices();
-    });
-    // This is intentionally synchronous: a new user gets the goal chooser and a returning
-    // user gets the planet map before any Telegram/Worker request is awaited.
     try {
-      renderFirstScreenImmediately();
+      bootstrapLumiApp();
     } catch (error) {
-      console.error('Lumi immediate render failed:', error);
-      const screen = document.getElementById('screen');
-      if (screen) screen.innerHTML = '<div class="page"><section class="card"><h2>Луми готовится к полёту 🚀</h2><p>Попробуй обновить приложение. Твой сохранённый прогресс не удалён.</p></section></div>';
-    }
-    bootstrapLumiApp().catch(error => {
-      console.error('Lumi background startup failed:', error);
+      console.error('Lumi startup failed:', error);
       cloudStorageReady = false;
       cloudStorageStatus = 'local';
       progressStorageReady = true;
-      writeLocalProgressSnapshot();
-      updateStorageStatusUI();
-      showToast('Облачная синхронизация временно недоступна. Прогресс сохранён на устройстве.');
-    });
+      render();
+      showToast('Запущен локальный режим сохранения');
+    }
   </script>
 </body>
 </html>
