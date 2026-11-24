@@ -501,6 +501,75 @@
       .league-rank { font-size:10px; padding:6px 7px; }
     }
 
+
+    /* First-run guide and welcome capsule are positioned inside #app, never the desktop viewport. */
+    .lumi-tour-overlay[hidden],.welcome-gift-overlay[hidden] { display:none; }
+    .lumi-tour-overlay,.welcome-gift-overlay { position:absolute; inset:0; z-index:80; overflow:hidden; }
+    .lumi-tour-overlay { pointer-events:auto; }
+    .tour-spotlight { position:absolute; z-index:1; border:3px solid #fff; border-radius:17px; box-shadow:0 0 0 9999px rgba(13,23,46,.74),0 0 0 7px rgba(78,225,255,.26),0 0 24px 8px rgba(76,222,255,.68); pointer-events:none; animation:tourPulse 1.8s ease-in-out infinite; }
+    @keyframes tourPulse { 50% { box-shadow:0 0 0 9999px rgba(13,23,46,.74),0 0 0 9px rgba(78,225,255,.34),0 0 30px 11px rgba(76,222,255,.84); } }
+    .tour-card { position:absolute; z-index:2; left:10px; right:10px; bottom:calc(78px + env(safe-area-inset-bottom)); max-height:min(310px,calc(100% - 155px)); overflow-y:auto; overscroll-behavior:contain; padding:12px; border:1px solid rgba(255,255,255,.95); border-radius:20px; background:linear-gradient(145deg,#fff 0%,#f2fbff 65%,#f5efff 100%); color:#27324b; box-shadow:0 18px 45px rgba(5,15,35,.34); }
+    .tour-topline { display:flex; justify-content:space-between; align-items:center; gap:8px; padding-right:2px; }
+    .tour-step-count { font-size:9px; font-weight:950; letter-spacing:.7px; color:#71809a; }
+    .tour-skip { min-height:30px; padding:3px 8px; border:0; border-radius:9px; background:#eef2f8; color:#71809a; font-size:10px; font-weight:900; cursor:pointer; }
+    .tour-main { display:flex; align-items:flex-start; gap:9px; margin:6px 0 10px; }
+    .tour-mascot { flex:0 0 62px; width:62px; height:62px; display:grid; place-items:center; }
+    .tour-mascot .lumi-wrap { width:62px; }
+    .tour-copy { min-width:0; flex:1; }
+    .tour-copy h3 { margin:3px 0 5px; font-size:14px; line-height:1.2; }
+    .tour-copy p { margin:0; color:#586781; font-size:11px; line-height:1.42; overflow-wrap:anywhere; }
+    .tour-footer { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:10px; }
+    .tour-progress-dots { display:flex; align-items:center; gap:5px; }
+    .tour-progress-dots i { display:block; width:6px; height:6px; border-radius:50%; background:#d7deeb; }
+    .tour-progress-dots i.active { width:18px; border-radius:9px; background:#12bfd0; }
+    .tour-next { min-width:128px; min-height:42px; padding:0 15px; border:0; border-radius:13px; color:#fff; font-size:12px; font-weight:950; background:linear-gradient(135deg,#08b9d0,#16b98b); box-shadow:0 4px 0 #078c91; cursor:pointer; }
+    .welcome-gift-overlay { z-index:81; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(12,22,46,.72); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+    .gift-dialog { width:min(100%,350px); max-height:calc(100% - 20px); overflow-y:auto; padding:19px 17px 17px; border:1px solid rgba(255,255,255,.95); border-radius:25px; background:linear-gradient(155deg,#fff 0%,#f5fbff 54%,#f7efff 100%); color:#26334c; text-align:center; box-shadow:0 25px 70px rgba(0,0,0,.3); animation:giftAppear .45s cubic-bezier(.2,.9,.25,1) both; }
+    @keyframes giftAppear { from { opacity:0; transform:translateY(20px) scale(.88); } to { opacity:1; transform:translateY(0) scale(1); } }
+    .gift-capsule { width:104px; height:104px; margin:0 auto 8px; display:grid; place-items:center; border-radius:32px; border:3px solid #fff; background:radial-gradient(circle at 30% 22%,#fff 0 8%,transparent 9%),linear-gradient(145deg,#a4f2ff,#a9a0ff 55%,#ffb9d6); font-size:52px; box-shadow:0 0 0 7px rgba(127,207,255,.17),0 0 32px rgba(112,172,255,.65),inset 0 -9px 15px rgba(93,87,180,.16); animation:capsuleFloat 1.9s ease-in-out infinite; }
+    @keyframes capsuleFloat { 50% { transform:translateY(-7px) rotate(5deg); filter:brightness(1.08); } }
+    .gift-dialog h2 { margin:5px 0 7px; font-size:22px; }
+    .gift-dialog p { margin:0 0 12px; color:#68758e; font-size:12px; line-height:1.5; }
+    .gift-rewards { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:12px 0 16px; }
+    .gift-reward { padding:10px 7px; border-radius:14px; background:#f2f7ff; color:#465675; font-size:11px; font-weight:900; }
+    .gift-reward strong { display:block; margin-top:3px; color:#8056d8; font-size:17px; }
+    .daily-quest-mount { margin-top:12px; }
+    .daily-quest-card { padding:13px; overflow:hidden; }
+    .daily-quest-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+    .daily-quest-head h2 { margin:0; font-size:16px; }
+    .daily-quest-chest { width:40px; height:40px; flex:0 0 40px; display:grid; place-items:center; border-radius:13px; background:#fff4d9; font-size:23px; box-shadow:inset 0 -3px 0 rgba(170,116,15,.1); }
+    .daily-quest-chest.ready { animation:chestReady 1.2s ease-in-out infinite; box-shadow:0 0 0 3px rgba(245,181,52,.16),0 0 18px rgba(245,181,52,.35); }
+    @keyframes chestReady { 50% { transform:translateY(-3px) rotate(3deg); } }
+    .daily-quest-row { padding:8px 0; border-top:1px solid var(--line); }
+    .daily-quest-row:first-of-type { border-top:0; }
+    .daily-quest-line { display:flex; justify-content:space-between; align-items:center; gap:9px; font-size:11px; font-weight:850; }
+    .daily-quest-line strong { color:var(--cyan-dark); white-space:nowrap; font-size:10px; }
+    .daily-quest-track { height:6px; margin-top:6px; overflow:hidden; border-radius:99px; background:#edf1f7; }
+    .daily-quest-track span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#06b6d4,#7b73e8); transition:width .25s; }
+    .daily-quest-bottom { display:flex; align-items:center; justify-content:space-between; gap:9px; margin-top:10px; }
+    .daily-quest-bottom small { color:var(--muted); font-size:10px; line-height:1.35; }
+    .daily-quest-claim { min-height:38px; padding:0 12px; border:0; border-radius:11px; background:linear-gradient(135deg,#f5b642,#ef8e45); color:#fff; font-size:10px; font-weight:950; white-space:nowrap; box-shadow:0 3px 0 #d77d2d; }
+    .daily-quest-claim:disabled { background:#e8edf4; color:#95a0b3; box-shadow:none; }
+    .trial-dialog-card { margin-top:10px; padding:12px; border:1px dashed #b7a4ef; border-radius:16px; background:linear-gradient(135deg,#faf7ff,#f2faff); }
+    .trial-dialog-card p { margin:4px 0 9px; color:var(--muted); font-size:10px; line-height:1.4; }
+    .trial-dialog-card .btn { min-height:42px; font-size:11px; }
+    .tutorial-settings { margin-top:13px; padding:14px; }
+    @media (max-width:380px) {
+      .tour-card { left:8px; right:8px; bottom:calc(76px + env(safe-area-inset-bottom)); max-height:min(300px,calc(100% - 145px)); padding:10px; }
+      .tour-mascot,.tour-mascot .lumi-wrap { width:54px; height:54px; flex-basis:54px; }
+      .tour-copy h3 { font-size:13px; }
+      .tour-copy p { font-size:10.5px; }
+      .tour-main { gap:6px; }
+      .tour-next { min-width:116px; }
+    }
+    @media (max-height:600px) {
+      .tour-card { max-height:calc(100% - 135px); padding:9px; bottom:calc(70px + env(safe-area-inset-bottom)); }
+      .tour-mascot,.tour-mascot .lumi-wrap { width:46px; height:46px; flex-basis:46px; }
+      .tour-copy p { font-size:10px; line-height:1.32; }
+      .gift-dialog { padding:13px; }
+      .gift-capsule { width:78px; height:78px; font-size:40px; }
+    }
+
   </style>
 </head>
 <body>
@@ -526,6 +595,8 @@
     <div class="toast" id="toast" role="status"></div>
     <div class="word-popover" id="wordPopover" hidden role="status" aria-live="polite"></div>
     <div class="exit-modal" id="exitModal" hidden aria-hidden="true"></div>
+    <div class="lumi-tour-overlay" id="tourOverlay" hidden aria-hidden="true"></div>
+    <div class="welcome-gift-overlay" id="welcomeGiftOverlay" hidden aria-hidden="true"></div>
   </main>
 
   <script>
@@ -554,7 +625,9 @@
       lessonHistory: [], exerciseHistory: [], claimedAchievements: [], levelRewardsClaimed: [],
       streakLastDate: '', freeFreezeUsed: false, cryoFreezeDates: [],
       leaguePoints: 0, leagueWeekKey: '',
-      dialogRecords: {}, dialogDailyRewardDate: '', dialogDailyRewards: [],
+      dialogRecords: {}, dialogDailyRewardDate: '', dialogDailyRewards: [], freeDialogTrialUsed: false,
+      tutorialCompleted: false, tutorialPending: false, tutorialStep: 0, welcomeGiftClaimed: false, bonusFreezeCharges: 0,
+      dailyQuestDate: localDateKey(), dailyQuestLessonDone: false, dailyQuestTranslations: 0, dailyQuestXp: 0, dailyQuestsClaimedDate: '',
       onboardingDone: false, warmupDone: false, onboardingStep: '', completedPlanets: [], completedLessons: [], learnedWords: [], wordMastery: {},
       today: localDateKey(), dailyDate: localDateKey(), activeDays: []
     };
@@ -629,6 +702,32 @@
         // Existing users who have finished onboarding already chose a goal; never show the first-run chooser again.
         merged.goalChosen = merged.goalChosen === true || merged.onboardingDone === true || merged.onboardingStep === 'warmup' || merged.warmupDone === true;
         merged.onboardingStep = typeof merged.onboardingStep === 'string' ? merged.onboardingStep.slice(0,24) : '';
+        const hadTourState = Object.prototype.hasOwnProperty.call(saved,'tutorialCompleted') || Object.prototype.hasOwnProperty.call(saved,'tutorialPending');
+        merged.tutorialCompleted = merged.tutorialCompleted === true;
+        merged.tutorialPending = merged.tutorialPending === true && !merged.tutorialCompleted;
+        merged.tutorialStep = safeInteger(merged.tutorialStep,0,0,3);
+        merged.welcomeGiftClaimed = merged.welcomeGiftClaimed === true;
+        merged.bonusFreezeCharges = safeInteger(merged.bonusFreezeCharges,0,0,20);
+        merged.freeDialogTrialUsed = merged.freeDialogTrialUsed === true;
+        // Existing players from older builds have already completed onboarding; don't interrupt them with a first-run tour.
+        const wasExistingPlayer = saved.onboardingDone === true || saved.warmupDone === true;
+        if (!hadTourState && wasExistingPlayer) {
+          merged.tutorialCompleted = true;
+          merged.tutorialPending = false;
+        }
+        // Players migrating from a build without the welcome capsule must not farm the new-player gift by replaying the tour.
+        if (!Object.prototype.hasOwnProperty.call(saved,'welcomeGiftClaimed') && wasExistingPlayer) {
+          merged.welcomeGiftClaimed = true;
+        }
+        merged.dailyQuestDate = typeof merged.dailyQuestDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(merged.dailyQuestDate) ? merged.dailyQuestDate : localDateKey();
+        merged.dailyQuestLessonDone = merged.dailyQuestLessonDone === true;
+        merged.dailyQuestTranslations = safeInteger(merged.dailyQuestTranslations,0,0,3);
+        merged.dailyQuestXp = safeInteger(merged.dailyQuestXp,0,0,30);
+        merged.dailyQuestsClaimedDate = typeof merged.dailyQuestsClaimedDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(merged.dailyQuestsClaimedDate) ? merged.dailyQuestsClaimedDate : '';
+        if (merged.dailyQuestDate !== localDateKey()) {
+          merged.dailyQuestDate = localDateKey(); merged.dailyQuestLessonDone = false;
+          merged.dailyQuestTranslations = 0; merged.dailyQuestXp = 0;
+        }
         for (const key of ['crystals','xp','streak','lessonsCompleted','totalCorrect','totalAnswered','vocabLearned']) merged[key] = safeInteger(merged[key],0);
         merged.dailyMinutes = safeInteger(merged.dailyMinutes,0,0,1440);
         merged.dailyCompletedLessons = safeList(merged.dailyCompletedLessons).slice(0,500);
@@ -977,7 +1076,7 @@
       return `<section class="card league-card"><div class="league-head"><div><div class="eyebrow">ЕЖЕНЕДЕЛЬНОЕ СОРЕВНОВАНИЕ</div><h2>🌠 Звёздная Лига</h2></div><span class="league-rank">Твоё место: #${me.rank}</span></div><p class="league-note">15 виртуальных кадетов постепенно набирают очки в течение недели. Каждая учебная награда приносит очки; PRO удваивает и XP, и очки Лиги. Таблица обновляется каждую неделю.</p><div class="league-list">${rows.map(row=>`<div class="league-row ${row.isUser?'me':''} ${row.isUser&&row.pro?'pro-me':''}"><span class="league-place">${row.rank}</span><span class="league-avatar">${row.avatar}</span><span class="league-name">${escapeHtml(row.name)}${row.isUser&&row.pro?'<span class="league-crown">👑</span>':''}</span><span class="league-points">${row.points.toLocaleString('ru-RU')} XP</span></div>`).join('')}</div></section>`;
     }
     function renderLiveDialogs() {
-      if (!isProEnabled()) return `<section class="card dialog-section"><div class="eyebrow">БЕСКОНЕЧНАЯ PRO-ПРАКТИКА</div><h2>💬 Живые диалоги с Луми</h2><p class="small muted">Тренируй естественные ответы в реальных ситуациях, отвечай на время и улучшай личные рекорды.</p><button class="btn purple full" id="unlockDialogs">Оформить PRO и открыть диалоги ⭐</button></section>`;
+      if (!isProEnabled()) return `<section class="card dialog-section"><div class="eyebrow">БЕСКОНЕЧНАЯ PRO-ПРАКТИКА</div><h2>💬 Живые диалоги с Луми</h2><p class="small muted">Тренируй естественные ответы в реальных ситуациях, выбирай естественные реплики и отвечай на время.</p><div class="trial-dialog-card"><strong>🎟️ Первое знакомство за счёт Академии</strong><p>${state.freeDialogTrialUsed?'Бесплатный пробный полёт уже использован. Полная практика из трёх ситуаций доступна в Lumi PRO.':'Один раз попробуй настоящий PRO-диалог: 4 реплики, таймер и личный результат.'}</p><button class="btn purple full" data-dialog-trial="coffee" ${state.freeDialogTrialUsed?'disabled':''}>${state.freeDialogTrialUsed?'Пробный запуск использован':'Попробовать PRO-диалог бесплатно (1 раз)'}</button></div><button class="btn secondary full" id="unlockDialogs" style="margin-top:10px">Открыть все диалоги с Lumi PRO ⭐</button></section>`;
       return `<section class="card dialog-section"><div class="eyebrow">ТРЕНАЖЁР РЕЧИ · PRO</div><h2>💬 Живые диалоги с Луми</h2><p class="small muted">У тебя 20 секунд на каждую реплику. Выбирай естественный ответ, набирай безошибочные серии и бей свой рекорд.</p><div class="dialog-grid">${DIALOG_SCENARIOS.map(item=>{const record=state.dialogRecords[item.id]||{bestTime:0,bestCorrect:0,runs:0};return `<article class="dialog-card"><div class="dialog-icon">${item.icon}</div><div><h3>${item.title}</h3><p>${item.subtitle}</p><div class="dialog-record">${record.runs?`Личный рекорд: ${record.bestTime?record.bestTime+' сек.':'—'} · ${record.bestCorrect}/${item.turns.length} верно`:'Пока нет рекорда · 4 реплики'}</div></div><button class="btn purple full dialog-start" data-dialog-start="${item.id}">Начать диалог →</button></article>`;}).join('')}</div></section>`;
     }
     function formatProDate(timestamp) {
@@ -1009,6 +1108,7 @@
       // One source of truth: PRO doubles earned XP and league points exactly once.
       const gained = base * (isProEnabled() ? 2 : 1);
       state.leaguePoints = Math.min(1000000000, state.leaguePoints + gained);
+      markDailyQuestProgress('xp',gained);
       const before = Math.floor(state.xp / 50) + 1;
       state.xp = Math.max(0, Math.floor(state.xp + gained));
       const after = Math.floor(state.xp / 50) + 1;
@@ -1502,6 +1602,82 @@
       document.getElementById('bottomNav').hidden = !visible;
       document.getElementById('topStats').style.visibility = visible ? 'visible' : 'hidden';
     }
+    const LUMI_TOUR_STEPS = [
+      {title:'Твоя карта планет 🪐',text:'Здесь твои планеты знаний! Проходи уроки по порядку — новые слова добавляются по чуть-чуть, а если нажать на любое английское слово в задании, я сразу подскажу его перевод.',selector:'.course-planet .course-planet-head'},
+      {title:'Учебник и Звёздная Лига 📚',text:'Во вкладке «Учебник» копятся все твои слова для повторения, а в «Звёздной Лиге» ты соревнуешься с другими кадетами за первое место.',selector:'#bottomNav'},
+      {title:'Твой профиль 👩‍🚀',text:'В «Профиле» живёт твой огонёк ударного режима, статистика и гардероб моих космических костюмов.',selector:'#bottomNav [data-tab="profile"]'},
+      {title:'Отсек Lumi PRO ⭐',text:'А здесь находится отсек PRO! В обычном режиме у тебя 5 зарядов энергии, а с Lumi PRO — бесконечная энергия, крио-защита огонька, двойной опыт (2x XP), закрытые планеты и живые диалоги со мной.',selector:'#bottomNav [data-tab="pro"]'}
+    ];
+    let tutorialActive = false;
+    function startPendingTutorial() {
+      if (tutorialActive || !state.onboardingDone || !state.tutorialPending || state.tutorialCompleted || lessonSession || dialogSession) return;
+      if (currentTab !== 'map') { currentTab='map'; render(); return; }
+      tutorialActive = true;
+      showTutorialStep(Math.min(3,state.tutorialStep||0));
+    }
+    function positionTourSpotlight(target) {
+      const overlay=document.getElementById('tourOverlay');
+      const spotlight=overlay?.querySelector('.tour-spotlight');
+      const app=document.getElementById('app');
+      if(!overlay||!spotlight||!app||!target)return;
+      const appRect=app.getBoundingClientRect();
+      const rect=target.getBoundingClientRect();
+      const left=Math.max(6,Math.min(appRect.width-48,rect.left-appRect.left-5));
+      const top=Math.max(6,Math.min(appRect.height-48,rect.top-appRect.top-5));
+      const width=Math.max(42,Math.min(appRect.width-left-6,rect.width+10));
+      const height=Math.max(42,Math.min(appRect.height-top-6,rect.height+10));
+      spotlight.style.left=left+'px'; spotlight.style.top=top+'px';
+      spotlight.style.width=width+'px'; spotlight.style.height=height+'px';
+    }
+    function showTutorialStep(index) {
+      const overlay=document.getElementById('tourOverlay');
+      const step=LUMI_TOUR_STEPS[index];
+      if(!overlay||!step)return;
+      tutorialActive=true;
+      state.tutorialStep=index;
+      saveState();
+      overlay.innerHTML=`<div class="tour-spotlight" aria-hidden="true"></div><section class="tour-card" role="dialog" aria-modal="true" aria-labelledby="tourTitle"><div class="tour-topline"><span class="tour-step-count">ПОЛЁТ С ЛУМИ · ${index+1} / 4</span><button class="tour-skip" id="skipLumiTour">Пропустить</button></div><div class="tour-main"><div class="tour-mascot">${lumiArt()}</div><div class="tour-copy"><h3 id="tourTitle">${step.title}</h3><p>${step.text}</p></div></div><div class="tour-footer"><div class="tour-progress-dots" aria-label="Шаг ${index+1} из 4">${LUMI_TOUR_STEPS.map((_,i)=>`<i class="${i<=index?'active':''}"></i>`).join('')}</div><button class="tour-next" id="nextLumiTour">Дальше →</button></div></section>`;
+      overlay.hidden=false; overlay.setAttribute('aria-hidden','false');
+      const target=document.querySelector(step.selector) || document.querySelector('.hero');
+      if(target && target.closest('#screen')) {
+        const scroll=document.getElementById('screen');
+        const tr=target.getBoundingClientRect(), sr=scroll.getBoundingClientRect();
+        if(tr.top<sr.top+10 || tr.bottom>sr.bottom-245) {
+          const desired=scroll.scrollTop+(tr.top-sr.top)-70;
+          scroll.scrollTo({top:Math.max(0,desired),behavior:'auto'});
+        }
+      }
+      requestAnimationFrame(()=>positionTourSpotlight(target));
+      overlay.querySelector('#skipLumiTour').addEventListener('click',()=>{tap();finishInteractiveTour(true);});
+      overlay.querySelector('#nextLumiTour').addEventListener('click',()=>{tap();if(index>=LUMI_TOUR_STEPS.length-1)finishInteractiveTour(false);else showTutorialStep(index+1);});
+    }
+    function awardWelcomeGift() {
+      if(state.welcomeGiftClaimed)return false;
+      state.welcomeGiftClaimed=true;
+      state.crystals=Math.min(1000000000,state.crystals+25);
+      state.bonusFreezeCharges=Math.min(20,(Number(state.bonusFreezeCharges)||0)+1);
+      saveState();
+      return true;
+    }
+    function showWelcomeGift() {
+      const overlay=document.getElementById('welcomeGiftOverlay');
+      if(!overlay)return;
+      const newlyAwarded=awardWelcomeGift();
+      if(!newlyAwarded){showToast('Обучение завершено! Теперь можно исследовать Академию 🚀');return;}
+      overlay.innerHTML=`<section class="gift-dialog" role="dialog" aria-modal="true" aria-labelledby="giftTitle"><div class="gift-capsule">🎁</div><div class="eyebrow">СТАРТОВЫЙ НАБОР КАДЕТА</div><h2 id="giftTitle">Космический бокс от Луми!</h2><p>Ты отлично справился с первым полётом. Я приготовил небольшой запас для новых открытий!</p><div class="gift-rewards"><div class="gift-reward">Кристаллы<strong>+25 💎</strong></div><div class="gift-reward">Крио-заморозка<strong>+1 ❄️</strong></div></div><button class="btn full" id="claimWelcomeGift">Забрать подарок 🚀</button></section>`;
+      overlay.hidden=false; overlay.setAttribute('aria-hidden','false');
+      overlay.querySelector('#claimWelcomeGift').addEventListener('click',()=>{tap();overlay.hidden=true;overlay.setAttribute('aria-hidden','true');overlay.innerHTML='';render();showToast('Подарок уже в твоём инвентаре! ✨');});
+    }
+    function finishInteractiveTour(skipped=false) {
+      const overlay=document.getElementById('tourOverlay');
+      if(overlay){overlay.hidden=true;overlay.setAttribute('aria-hidden','true');overlay.innerHTML='';}
+      tutorialActive=false;
+      state.tutorialCompleted=true; state.tutorialPending=false; state.tutorialStep=0;
+      saveState();
+      showWelcomeGift();
+      if(skipped) haptic('soft');
+    }
+
     function render() {
       applySelectedTheme();
       refreshEnergy();
@@ -1519,6 +1695,7 @@
       screen.scrollTop = 0;
       document.querySelectorAll('.nav-btn').forEach(button => button.classList.toggle('active', button.dataset.tab === currentTab));
       bindPageEvents();
+      if (state.tutorialPending && !state.tutorialCompleted) requestAnimationFrame(startPendingTutorial);
     }
 
     function renderWelcome() {
@@ -1610,6 +1787,7 @@
         state.vocabLearned = state.learnedWords.length;
         recordExerciseTask('warmup-1','warmup','hello',options[picked]?.textContent?.trim() || '',correct);
         state.totalAnswered += 1; state.dailyMinutes = Math.min(state.goal, state.dailyMinutes + 1); state.warmupDone = true; state.onboardingDone = true; state.goalChosen = true; state.onboardingStep = 'completed';
+        if (!state.tutorialCompleted) { state.tutorialPending = true; state.tutorialStep = 0; }
         registerActiveDay(localDateKey()); saveState();
         const check = document.getElementById('warmupCheck'); check.textContent = 'Открыть карту планет 🪐'; check.classList.toggle('green', correct); check.disabled = false;
         check.onclick = () => { tap(); currentTab = 'map'; render(); showToast(correct ? 'Ты получил 10 кристаллов! 💎' : 'За смелость — 3 кристалла! 💎'); };
@@ -1633,6 +1811,9 @@
           for(let i=1;i<=missed;i++){const frozen=new Date(lastMs+i*86400000);const key=localDateKey(frozen);if(!state.cryoFreezeDates.includes(key))state.cryoFreezeDates.push(key);}
         } else if (!isProEnabled() && missed===1 && !state.freeFreezeUsed) {
           state.freeFreezeUsed=true; state.streak=Math.max(1,state.streak+1);
+          const frozen=localDateKey(new Date(lastMs+86400000)); if(!state.cryoFreezeDates.includes(frozen))state.cryoFreezeDates.push(frozen);
+        } else if (!isProEnabled() && missed===1 && Number(state.bonusFreezeCharges)>0) {
+          state.bonusFreezeCharges=Math.max(0,Number(state.bonusFreezeCharges)-1); state.streak=Math.max(1,state.streak+1);
           const frozen=localDateKey(new Date(lastMs+86400000)); if(!state.cryoFreezeDates.includes(frozen))state.cryoFreezeDates.push(frozen);
         } else state.streak=1;
       }
@@ -1668,6 +1849,61 @@
     function goalOptionCaption(value) {
       const lessons = dailyLessonTarget(value);
       return `${lessons} ${plural(lessons,'урок','урока','уроков')} в день`;
+    }
+
+    function ensureDailyQuests() {
+      const today = localDateKey();
+      if (state.dailyQuestDate === today) return false;
+      state.dailyQuestDate = today;
+      state.dailyQuestLessonDone = false;
+      state.dailyQuestTranslations = 0;
+      state.dailyQuestXp = 0;
+      return true;
+    }
+    function dailyQuestStatus() {
+      ensureDailyQuests();
+      return {
+        lesson: state.dailyQuestLessonDone ? 1 : 0,
+        translations: Math.min(3, state.dailyQuestTranslations),
+        xp: Math.min(30, state.dailyQuestXp)
+      };
+    }
+    function renderDailyQuests() {
+      const progress = dailyQuestStatus();
+      const claimed = state.dailyQuestsClaimedDate === localDateKey();
+      const complete = progress.lesson >= 1 && progress.translations >= 3 && progress.xp >= 30;
+      const tasks = [
+        {label:'Пройди 1 урок',value:progress.lesson,target:1},
+        {label:'Открой перевод слова 3 раза',value:progress.translations,target:3},
+        {label:'Набери 30 XP',value:progress.xp,target:30}
+      ];
+      return `<section class="card daily-quest-card"><div class="daily-quest-head"><div><div class="eyebrow">МИКРО-МИССИИ НА СЕГОДНЯ</div><h2>🎯 Квесты кадета</h2></div><div class="daily-quest-chest ${complete&&!claimed?'ready':''}">${claimed?'🏆':complete?'🎁':'🧰'}</div></div>${tasks.map(task=>`<div class="daily-quest-row"><div class="daily-quest-line"><span>${task.label}</span><strong>${task.value}/${task.target}${task.target===30?' XP':''}</strong></div><div class="daily-quest-track"><span style="width:${Math.min(100,Math.round(task.value/task.target*100))}%"></span></div></div>`).join('')}<div class="daily-quest-bottom"><small>${claimed?'Награда за сегодня уже получена!':complete?'Все задания выполнены — сундук ждёт тебя!':'Выполни все три задания и забери награду.'}</small><button class="daily-quest-claim" id="claimDailyQuestChest" ${!complete||claimed?'disabled':''}>${claimed?'Получено ✓':complete?'Открыть 🎁':'+30 💎'}</button></div></section>`;
+    }
+    function refreshDailyQuestsUI() {
+      const mount = document.getElementById('dailyQuestsMount');
+      if (mount) mount.innerHTML = renderDailyQuests();
+      const claim = document.getElementById('claimDailyQuestChest');
+      if (claim) claim.addEventListener('click', claimDailyQuestChest);
+    }
+    function markDailyQuestProgress(kind, amount = 1) {
+      ensureDailyQuests();
+      let changed = false;
+      if (kind === 'lesson' && !state.dailyQuestLessonDone) { state.dailyQuestLessonDone = true; changed = true; }
+      if (kind === 'translations' && state.dailyQuestTranslations < 3) { state.dailyQuestTranslations = Math.min(3,state.dailyQuestTranslations + Math.max(1,Math.floor(amount||1))); changed = true; }
+      if (kind === 'xp' && state.dailyQuestXp < 30) { state.dailyQuestXp = Math.min(30,state.dailyQuestXp + Math.max(0,Math.floor(amount||0))); changed = true; }
+      if (changed) refreshDailyQuestsUI();
+      return changed;
+    }
+    function claimDailyQuestChest() {
+      const progress = dailyQuestStatus();
+      const complete = progress.lesson >= 1 && progress.translations >= 3 && progress.xp >= 30;
+      if (!complete || state.dailyQuestsClaimedDate === localDateKey()) return;
+      state.dailyQuestsClaimedDate = localDateKey();
+      addCrystals(30);
+      saveState(); refreshDailyQuestsUI();
+      const chest = document.querySelector('.daily-quest-chest');
+      if (chest) chest.classList.add('ready');
+      sound('success'); haptic('success'); showToast('Сундук открыт! +30 кристаллов 💎');
     }
 
     function knownWordSet() {
@@ -1729,6 +1965,7 @@
       const dailyDone = dailyLessonProgress();
       const dailyPercent = Math.min(100, Math.round(dailyDone / dailyTarget * 100));
       const dailyClaimed = state.dailyGoalClaimedDate === localDateKey();
+      if (ensureDailyQuests()) saveState();
       return `<div class="page">
         <section class="card hero">
           <div class="hero-copy"><div class="eyebrow">КОСМИЧЕСКАЯ АКАДЕМИЯ</div><h1>С возвращением,<br>кадет!</h1><p>Луми приготовил ${isProEnabled() ? allLessons.length : planets.reduce((n,p)=>n+p.lessons.length,0)} коротких миссий. Новые слова появляются маленькими порциями.</p></div>
@@ -1743,6 +1980,7 @@
           <div class="daily-energy-row"><span>Энергия кадета</span><span class="energy-hearts">${isProEnabled() ? '♾️ Безлимитная энергия' : `❤️ ${hearts}`}</span></div>
           ${!isProEnabled() && state.energy < ENERGY_MAX ? `<div class="small muted" style="margin-top:5px">Следующее сердечко восстановится через ${Math.max(1,Math.ceil((ENERGY_REGEN_MS-(Date.now()-Number(state.energyUpdatedAt||Date.now())))/60000))} мин.</div>` : ''}
         </section>
+        <div class="daily-quest-mount" id="dailyQuestsMount">${renderDailyQuests()}</div>
         ${renderLeagueCard()}
         <div class="section-row" style="margin:19px 2px 10px"><h2>Бесплатные планеты</h2><span class="muted small">${planets.length} миров · ${planets.reduce((n,p)=>n+p.lessons.length,0)} уроков</span></div>
         ${planets.map((planet,index) => renderPlanetCard(planet,index,false)).join('')}
@@ -1870,11 +2108,12 @@
         </div>
         <section class="card streak-card"><div class="section-row"><h2>Огонёк привычки</h2><strong style="color:var(--gold)">🔥 ${state.streak} ${plural(state.streak,'день','дня','дней')}</strong></div><p class="small muted" style="margin:0">Заглядывай каждый день, чтобы поддерживать свою серию.</p>
           <div class="streak-days">${currentWeek.map(day => {const done=active.has(day.date),frozen=!done&&state.cryoFreezeDates.includes(day.date);return `<div class="streak-day ${done?'done':frozen?'frozen':''}"><i>${done?'🔥':frozen?'❄️':'·'}</i>${day.label}</div>`;}).join('')}</div>
-          <div class="cryo-status">${isProEnabled()?'❄️ Крио-защита Луми активна: серия выдерживает до 3 пропущенных дней подряд без ограничения числа использований.':state.freeFreezeUsed?'🧊 Бесплатная заморозка уже использована. Следующий пропуск прервёт серию.':'🧊 У тебя есть 1 бесплатная заморозка серии.'}</div>
+          <div class="cryo-status">${isProEnabled()?'❄️ Крио-защита Луми активна: серия выдерживает до 3 пропущенных дней подряд без ограничения числа использований.':`${state.freeFreezeUsed?'Базовая заморозка использована.':'У тебя есть 1 бесплатная заморозка.'}${state.bonusFreezeCharges>0?` Дополнительных от Луми: ${state.bonusFreezeCharges} ❄️.`:''}`}</div>
         </section>
         <section class="card" style="padding:14px"><div class="section-row"><h3 style="margin:0">Твоя цель на день</h3><button class="tiny-link" id="changeGoalProfile">Изменить</button></div><strong style="font-size:23px">${state.goal} минут <span class="muted small">в день</span></strong><p class="small muted" style="margin:4px 0 0">План: ${dailyLessonProgress()}/${dailyLessonTarget()} разных уроков сегодня. При выполнении — +15 кристаллов и бонус XP.</p></section>
         ${DEMO_PRO_ALLOWED ? `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : state.demoPro ? '🧪 Включён ДЕМО-PRO' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Статус подписки подтверждён сервером Telegram.' : state.demoPro ? 'Все премиум-функции включены только на этом устройстве для проверки.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><div class="eyebrow">ТЕСТОВЫЙ ДОСТУП</div><h3 style="margin:5px 0">Проверить все платные функции</h3><p class="small muted" style="margin:0">Демо-PRO открывает секретные планеты, бесконечную энергию, двойной XP, продвинутый учебник и все скины. Оплата не требуется.</p><button class="btn ${state.demoPro?'secondary':'purple'} full" id="toggleDemoPro">${state.demoPro?'Выключить ДЕМО-PRO':'Включить ДЕМО-PRO (для теста)'}</button></section>` : `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Подписка подтверждена сервером Telegram.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><button class="btn purple full" data-tab-go="pro">Посмотреть возможности Lumi PRO ⭐</button></section>`}
         <section class="card" style="padding:14px;margin-top:13px"><div class="section-row"><h3 style="margin:0">⭐ Lumi PRO и спутник</h3><strong>${isProEnabled()?(state.demoPro&&!state.proActive?'ДЕМО-PRO':`Месяцев в PRO: ${Math.max(1,proAccount.months||1)}`):'FREE'}</strong></div>${isProEnabled()?`<p class="small muted" style="margin:6px 0 0">Подписка действует до ${formatProDate(proAccount.expiresAt)}. Статус продления: ${proAccount.billingState==='payment_failed'?'платёж не прошёл':proAccount.autoRenew===false?'отключено':'включено'}. Мини-дрон Луми 🛸 активен, крио-защита бережёт серию.</p>`:proAccount.wasPro?'<div class="profile-expired-note">Луми немного грустит: подписка закончилась, а мини-дрон и крио-защита ушли в спящий режим. Возобнови Lumi PRO, чтобы снова отправиться в полёт вместе с ними.</div><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Вернуть спутника и защиту ⭐</button>':'<p class="small muted" style="margin:6px 0 0">Подключи Lumi PRO, чтобы открыть мини-дрона-спутника, крио-защиту и новые режимы.</p><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Узнать о Lumi PRO</button>'}</section>
+        <section class="card tutorial-settings"><div class="eyebrow">ПОМОЩЬ ОТ ЛУМИ</div><h3 style="margin:5px 0">Хочешь освежить правила?</h3><p class="small muted" style="margin:0 0 9px">Я снова покажу карту, учебник, профиль и возможности PRO — всего четыре шага.</p><button class="btn secondary full" id="restartLumiTutorial">Пройти обучение с Луми заново</button></section>
         ${renderWardrobe()}
         ${renderCrystalShop()}
         ${renderThemeShop()}
@@ -1926,25 +2165,27 @@
       if(dialogSession.finished){
         const scenario=DIALOG_SCENARIOS.find(item=>item.id===dialogSession.scenarioId);
         const record=state.dialogRecords[dialogSession.scenarioId]||{bestTime:0,bestCorrect:0,runs:0};
-        screen.innerHTML=`<div class="page"><section class="card dialog-stage"><div class="eyebrow">ДИАЛОГ ЗАВЕРШЁН</div><div style="font-size:42px;text-align:center;margin:14px">${dialogSession.correct===dialogSession.turns.length?'🌟':'💬'}</div><h1 style="text-align:center">${dialogSession.correct===dialogSession.turns.length?'Идеальный разговор!':'Хорошая тренировка!'}</h1><p class="small muted" style="text-align:center">${escapeHtml(scenario.title)}</p><div class="stats-grid"><div class="card metric"><div class="metric-icon">✅</div><strong>${dialogSession.correct}/${dialogSession.turns.length}</strong><span>ВЕРНЫХ ОТВЕТОВ</span></div><div class="card metric"><div class="metric-icon">⏱️</div><strong>${dialogSession.elapsedSeconds}с</strong><span>ТВОЁ ВРЕМЯ</span></div></div><p class="small muted" style="text-align:center;margin-top:10px">Личный рекорд: ${record.bestTime?record.bestTime+' сек.':'пока не установлен'} · Пройдено диалогов: ${record.runs}</p><button class="btn purple full" id="dialogRetry">Повторить диалог</button><button class="btn secondary full" id="dialogBack" style="margin-top:9px">Назад к тренажёрам</button></section></div>`;
-        document.getElementById('dialogRetry').addEventListener('click',()=>startDialog(dialogSession.scenarioId));
+        screen.innerHTML=`<div class="page"><section class="card dialog-stage"><div class="eyebrow">${dialogSession.freeTrial?'ПРОБНЫЙ ПОЛЁТ ЗАВЕРШЁН':'ДИАЛОГ ЗАВЕРШЁН'}</div><div style="font-size:42px;text-align:center;margin:14px">${dialogSession.correct===dialogSession.turns.length?'🌟':'💬'}</div><h1 style="text-align:center">${dialogSession.correct===dialogSession.turns.length?'Идеальный разговор!':'Хорошая тренировка!'}</h1><p class="small muted" style="text-align:center">${escapeHtml(scenario.title)}</p><div class="stats-grid"><div class="card metric"><div class="metric-icon">✅</div><strong>${dialogSession.correct}/${dialogSession.turns.length}</strong><span>ВЕРНЫХ ОТВЕТОВ</span></div><div class="card metric"><div class="metric-icon">⏱️</div><strong>${dialogSession.elapsedSeconds}с</strong><span>ТВОЁ ВРЕМЯ</span></div></div><p class="small muted" style="text-align:center;margin-top:10px">Личный рекорд: ${record.bestTime?record.bestTime+' сек.':'пока не установлен'} · Пройдено диалогов: ${record.runs}</p>${dialogSession.freeTrial?'<p class="small muted" style="text-align:center">Хочешь продолжить тренировки и открыть остальные ситуации? Загляни в Lumi PRO ⭐</p>':'<button class="btn purple full" id="dialogRetry">Повторить диалог</button>'}<button class="btn secondary full" id="dialogBack" style="margin-top:9px">Назад к тренажёрам</button></section></div>`;
+        const retry=document.getElementById('dialogRetry'); if(retry) retry.addEventListener('click',()=>startDialog(dialogSession.scenarioId));
         document.getElementById('dialogBack').addEventListener('click',()=>{stopDialogTimer();dialogSession=null;render();});
         return;
       }
       const scenario=DIALOG_SCENARIOS.find(item=>item.id===dialogSession.scenarioId);
       const turn=dialogSession.turns[dialogSession.index];
       const timerLeft=Math.max(0,Math.ceil((dialogSession.deadline-Date.now())/1000));
-      screen.innerHTML=`<div class="page"><section class="card dialog-stage"><div class="dialog-stage-top"><div><div class="eyebrow">${scenario.icon} ЖИВОЙ ДИАЛОГ · PRO</div><strong>${escapeHtml(scenario.title)}</strong></div><div class="dialog-timer ${timerLeft<=5?'urgent':''}" id="dialogTimer">${timerLeft}с</div></div><div class="dialog-progress"><span style="width:${(dialogSession.index/dialogSession.turns.length)*100}%"></span></div><p class="small muted">Реплика ${dialogSession.index+1} из ${dialogSession.turns.length} · Верно: ${dialogSession.correct}</p><div class="dialog-lumi">Луми: ${escapeHtml(turn.prompt)}</div><div class="dialog-task">ТВОЯ ЗАДАЧА: ${escapeHtml(turn.task)}</div><div class="dialog-answer-list">${turn.choices.map((choice,index)=>`<button class="dialog-answer ${dialogSession.answered&&index===turn.correct?'correct':''} ${dialogSession.answered&&index===dialogSession.selected&&index!==turn.correct?'wrong':''}" data-dialog-answer="${index}" ${dialogSession.answered?'disabled':''}>${String.fromCharCode(65+index)}. ${escapeHtml(choice)}</button>`).join('')}</div>${dialogSession.answered?`<div class="dialog-feedback">${dialogSession.selected===turn.correct?'✅ Отличный естественный ответ!':'💡 Лучше сказать: «'+escapeHtml(turn.choices[turn.correct])+'»'}${dialogSession.timedOut?' · Время вышло.':''}</div><button class="btn purple full" id="dialogNext" style="margin-top:11px">${dialogSession.index===dialogSession.turns.length-1?'Завершить разговор':'Следующая реплика →'}</button>`:''}<button class="btn secondary full" id="dialogExit" style="margin-top:9px">Выйти из диалога</button></section></div>`;
+      screen.innerHTML=`<div class="page"><section class="card dialog-stage"><div class="dialog-stage-top"><div><div class="eyebrow">${scenario.icon} ${dialogSession.freeTrial?'ПРОБНЫЙ ДИАЛОГ':'ЖИВОЙ ДИАЛОГ · PRO'}</div><strong>${escapeHtml(scenario.title)}</strong></div><div class="dialog-timer ${timerLeft<=5?'urgent':''}" id="dialogTimer">${timerLeft}с</div></div><div class="dialog-progress"><span style="width:${(dialogSession.index/dialogSession.turns.length)*100}%"></span></div><p class="small muted">Реплика ${dialogSession.index+1} из ${dialogSession.turns.length} · Верно: ${dialogSession.correct}</p><div class="dialog-lumi">Луми: ${escapeHtml(turn.prompt)}</div><div class="dialog-task">ТВОЯ ЗАДАЧА: ${escapeHtml(turn.task)}</div><div class="dialog-answer-list">${turn.choices.map((choice,index)=>`<button class="dialog-answer ${dialogSession.answered&&index===turn.correct?'correct':''} ${dialogSession.answered&&index===dialogSession.selected&&index!==turn.correct?'wrong':''}" data-dialog-answer="${index}" ${dialogSession.answered?'disabled':''}>${String.fromCharCode(65+index)}. ${escapeHtml(choice)}</button>`).join('')}</div>${dialogSession.answered?`<div class="dialog-feedback">${dialogSession.selected===turn.correct?'✅ Отличный естественный ответ!':'💡 Лучше сказать: «'+escapeHtml(turn.choices[turn.correct])+'»'}${dialogSession.timedOut?' · Время вышло.':''}</div><button class="btn purple full" id="dialogNext" style="margin-top:11px">${dialogSession.index===dialogSession.turns.length-1?'Завершить разговор':'Следующая реплика →'}</button>`:''}<button class="btn secondary full" id="dialogExit" style="margin-top:9px">Выйти из диалога</button></section></div>`;
       screen.querySelectorAll('[data-dialog-answer]').forEach(button=>button.addEventListener('click',()=>answerDialog(Number(button.dataset.dialogAnswer))));
       const next=document.getElementById('dialogNext'); if(next) next.addEventListener('click',advanceDialog);
       const exit=document.getElementById('dialogExit'); if(exit) exit.addEventListener('click',()=>{stopDialogTimer();dialogSession=null;render();});
     }
-    function startDialog(scenarioId) {
-      if(!isProEnabled()){showToast('Живые диалоги доступны в Lumi PRO ⭐');return;}
+    function startDialog(scenarioId, options = {}) {
+      const trialAllowed = options.freeTrial === true && scenarioId === 'coffee' && !isProEnabled() && !state.freeDialogTrialUsed;
+      if(!isProEnabled() && !trialAllowed){showToast('Живые диалоги доступны в Lumi PRO ⭐');return;}
       const scenario=DIALOG_SCENARIOS.find(item=>item.id===scenarioId); if(!scenario)return;
+      if(trialAllowed){state.freeDialogTrialUsed=true;saveState();}
       stopDialogTimer();
       const turns=scenario.turns.map(turn=>{const choices=turn.choices.map((text,index)=>({text,correct:index===turn.correct}));for(let i=choices.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[choices[i],choices[j]]=[choices[j],choices[i]];}return {prompt:turn.prompt,task:turn.task,choices:choices.map(item=>item.text),correct:choices.findIndex(item=>item.correct)};});
-      dialogSession={scenarioId,turns,index:0,correct:0,answered:false,selected:null,timedOut:false,startedAt:Date.now(),turnStartedAt:Date.now(),deadline:Date.now()+20000,totalElapsed:0,finished:false};
+      dialogSession={scenarioId,turns,index:0,correct:0,answered:false,selected:null,timedOut:false,startedAt:Date.now(),turnStartedAt:Date.now(),deadline:Date.now()+20000,totalElapsed:0,finished:false,freeTrial:trialAllowed};
       renderDialogSession();
       dialogTimer=window.setInterval(()=>{
         if(!dialogSession||dialogSession.answered||dialogSession.finished)return;
@@ -1979,7 +2220,7 @@
       record.runs=Math.min(1000000,record.runs+1);record.bestCorrect=Math.max(record.bestCorrect,session.correct);
       if(session.correct===session.turns.length&&(!record.bestTime||session.elapsedSeconds<record.bestTime))record.bestTime=session.elapsedSeconds;
       state.dialogRecords[session.scenarioId]=record;
-      if(session.correct===session.turns.length){
+      if(session.correct===session.turns.length && !session.freeTrial){
         if(state.dialogDailyRewardDate!==localDateKey()){state.dialogDailyRewardDate=localDateKey();state.dialogDailyRewards=[];}
         if(!state.dialogDailyRewards.includes(session.scenarioId)){state.dialogDailyRewards.push(session.scenarioId);const earned=addXp(5);showToast(`Идеальный диалог! +${earned} XP ⭐`);}
       }
@@ -2021,6 +2262,13 @@
       });
       const buy = document.getElementById('buyPro');
       if (buy) buy.addEventListener('click', handleProPurchase);
+      const questChest = document.getElementById('claimDailyQuestChest');
+      if (questChest) questChest.addEventListener('click', claimDailyQuestChest);
+      const replayTutorial = document.getElementById('restartLumiTutorial');
+      if (replayTutorial) replayTutorial.addEventListener('click',()=>{
+        tap(); tutorialActive=false; state.tutorialCompleted=false; state.tutorialPending=true; state.tutorialStep=0;
+        currentTab='map'; saveState(); render();
+      });
       const unlockDialogs = document.getElementById('unlockDialogs');
       if (unlockDialogs) unlockDialogs.addEventListener('click', () => document.getElementById('buyPro')?.scrollIntoView({behavior:'smooth',block:'center'}));
       const toggleDemo = DEMO_PRO_ALLOWED ? document.getElementById('toggleDemoPro') : null;
@@ -2042,6 +2290,7 @@
       if (hardPractice) hardPractice.addEventListener('click', () => startReview(true));
       document.querySelectorAll('[data-tab-go="pro"]').forEach(button => button.addEventListener('click', () => { tap(); currentTab='pro'; render(); }));
       document.querySelectorAll('[data-dialog-start]').forEach(button=>button.addEventListener('click',()=>{tap();startDialog(button.dataset.dialogStart);}));
+      document.querySelectorAll('[data-dialog-trial]').forEach(button=>button.addEventListener('click',()=>{tap();startDialog(button.dataset.dialogTrial,{freeTrial:true});}));
     }
     function bindBookEvents() {
       const search = document.getElementById('bookSearch');
@@ -2467,6 +2716,7 @@
     function showWordPopover(wordId, anchor) {
       const entry=wordCatalog[wordId];const pop=document.getElementById('wordPopover');
       if(!entry||!pop||!anchor)return;
+      if(markDailyQuestProgress('translations',1)) saveState();
       pop.innerHTML=`<div class="word-popover-copy"><strong>${escapeHtml(entry.en)}</strong><span>${escapeHtml(entry.ru)}</span></div><button class="popover-speak" data-speak="${entry.id}" aria-label="Озвучить слово">🔊</button>`;
       pop.hidden=false;
       const rect=anchor.getBoundingClientRect();
@@ -2521,6 +2771,7 @@
           // Skipping the optional first warm-up should still lead to the planet map.
           state.warmupDone = true;
           state.onboardingDone = true;
+          if (!state.tutorialCompleted) { state.tutorialPending = true; state.tutorialStep = 0; }
           saveState();
         }
         reviewSession = null;
@@ -2570,6 +2821,7 @@
       let dailyGoalReached = false;
       let dailyBonusXp = 0;
       if(!session.rewarded){
+        markDailyQuestProgress('lesson',1);
         if(!wasCompleted){
           state.completedLessons.push(lesson.id);
           state.lessonsCompleted+=1;
