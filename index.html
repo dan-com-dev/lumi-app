@@ -3648,9 +3648,12 @@
           },160);
           // A silent/blocked WebView must not leave the user waiting several seconds.
           watchdog=window.setTimeout(()=>{
+            // Give mobile WebViews enough time to initialize the device TTS engine
+            // on its first use. A short watchdog can falsely treat a slow voice
+            // service as unavailable and send playback into a network fallback.
             if(!started&&!synth.speaking){try{synth.cancel();}catch(_){}finish(false);}
             else finish(true);
-          },650);
+          },1800);
         }catch(_){finish(false);}
       });
     }
@@ -3705,42 +3708,42 @@
       stopActiveSpeechAudio();
       setSpeechHighlight(trigger);
       const primaryAudioUrl=googleTranslateAudioUrl(text);
-      const mobileAudioFirst = isMobileAudioWebView();
-      // Mobile Telegram WebViews sometimes signal SpeechSynthesis.onstart while
-      // producing no audible output. Start real HTMLAudio playback on the tap first.
-      const primedMobileAudio = primeMobileRemoteAudio(primaryAudioUrl);
-      // Warm the single-word dictionary lookup in parallel, without delaying speech.
-      const dictionaryAudioPromise = isSingleWord ? getDictionaryAudioUrl(text) : Promise.resolve(null);
-      // Desktop speech remains local and starts synchronously in the original tap.
-      const nativeAudioPromise = mobileAudioFirst ? null : trySpeechSynthesis(text,requestId);
 
-      const start = async () => {
-        let spoken = false;
-        if (primedMobileAudio) spoken = await activatePrimedRemoteAudio(primedMobileAudio,requestId);
-        else if (nativeAudioPromise) spoken = await nativeAudioPromise;
-        if (requestId !== speechRequestId) { discardPrimedRemoteAudio(primedMobileAudio); return; }
-        if (spoken) { if (trigger) trigger.setAttribute('aria-busy','false'); return; }
-        // If the mobile stream is unavailable, stop its pending audio before trying
-        // native speech so two voices can never overlap. On desktop, the remote
-        // stream is the fallback after the local synthesizer.
-        if (primedMobileAudio && !spoken) discardPrimedRemoteAudio(primedMobileAudio);
-        if (mobileAudioFirst) spoken = await trySpeechSynthesis(text,requestId);
-        else if (primaryAudioUrl) spoken = await tryPlayHtmlAudio(primaryAudioUrl);
-        if (requestId !== speechRequestId || spoken) { if (spoken && trigger) trigger.setAttribute('aria-busy','false'); return; }
-        discardPrimedRemoteAudio(primedMobileAudio);
-        if (isSingleWord) {
-          const dictionaryUrl = await dictionaryAudioPromise;
-          if (requestId !== speechRequestId) return;
-          if (dictionaryUrl) spoken = await tryPlayHtmlAudio(dictionaryUrl);
-          if (requestId !== speechRequestId || spoken) { if (spoken && trigger) trigger.setAttribute('aria-busy','false'); return; }
+      // IMPORTANT: invoke device speech synchronously in the original tap.
+      // The former mobile flow awaited a remote MP3 for up to 2.6 seconds and
+      // only then called SpeechSynthesis. Telegram's WebView can revoke the
+      // transient user activation during that wait, so the native voice is
+      // rejected as autoplay and the user hears nothing. Start TTS now, before
+      // any network request or await; remote audio is only a fallback.
+      const nativeAudioPromise=trySpeechSynthesis(text,requestId);
+      // Warm dictionary audio in parallel for single words, but never make it
+      // a prerequisite for the immediate native speech call above.
+      const dictionaryAudioPromise=isSingleWord?getDictionaryAudioUrl(text):Promise.resolve(null);
+
+      const start=async()=>{
+        let spoken=await nativeAudioPromise;
+        if(requestId!==speechRequestId)return;
+        if(spoken){if(trigger)trigger.setAttribute('aria-busy','false');return;}
+
+        // Native speech failed. Try a real audio stream as a fallback. On WebViews
+        // that allow playback after the TTS interaction, this can still recover;
+        // otherwise show the transcript helper instead of silently pretending.
+        if(primaryAudioUrl)spoken=await tryPlayHtmlAudio(primaryAudioUrl);
+        if(requestId!==speechRequestId||spoken){if(spoken&&trigger)trigger.setAttribute('aria-busy','false');return;}
+
+        if(isSingleWord){
+          const dictionaryUrl=await dictionaryAudioPromise;
+          if(requestId!==speechRequestId)return;
+          if(dictionaryUrl)spoken=await tryPlayHtmlAudio(dictionaryUrl);
+          if(requestId!==speechRequestId||spoken){if(spoken&&trigger)trigger.setAttribute('aria-busy','false');return;}
         }
         if(requestId!==speechRequestId)return;
         clearSpeechHighlight();
-        showPronunciationFallback(entry || {en:text,ipa:text},trigger);
+        showPronunciationFallback(entry||{en:text,ipa:text},trigger);
       };
       start().catch(error=>{
         console.warn('Lumi speech fallback failed:',error);
-        if(requestId===speechRequestId){clearSpeechHighlight();showPronunciationFallback(entry || {en:text,ipa:text},trigger);}
+        if(requestId===speechRequestId){clearSpeechHighlight();showPronunciationFallback(entry||{en:text,ipa:text},trigger);}
       });
     }
     function showWordPopover(wordId, anchor) {
