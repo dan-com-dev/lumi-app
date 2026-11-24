@@ -231,6 +231,7 @@
     .avatar-orb { width: 64px; height: 64px; flex: 0 0 64px; border-radius: 21px; display: grid; place-items: center; font-size: 34px; background: linear-gradient(145deg,#c9f8fb,#eadbff); }
     .profile-hero h2 { margin: 0 0 4px; }
     .profile-hero p { font-size: 11px; color: var(--muted); margin: 0; }
+    .profile-xp-badge { display:inline-flex; align-items:center; margin:3px 0 0 4px; padding:3px 7px; border-radius:8px; color:#7045c5; background:#f0eaff; font-size:9px; font-weight:950; white-space:nowrap; }
     .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin: 13px 0; }
     .metric { padding: 14px; min-height: 91px; }
     .metric-icon { font-size: 20px; }
@@ -690,7 +691,7 @@
     // Вставь сюда адрес опубликованного Cloudflare Worker.
     // Токен бота никогда не помещай в index.html — только в Worker Secret BOT_TOKEN.
     const WORKER_URL = "https://lumi-serve.danirondandan.workers.dev";
-    const SUPPORT_BOT_USERNAME = "LumiAcademySupportBot"; // Укажи username бота поддержки без символа @, когда он будет известен.
+    const SUPPORT_BOT_USERNAME = ""; // Укажи username бота поддержки без символа @, когда он будет известен.
 
     // Telegram SDK загружается асинхронно: даже медленный CDN не блокирует первый экран.
     // Сетевые возможности подключаются после первого локального render().
@@ -769,7 +770,7 @@
     const CLOUD_STORAGE_KEY = 'lumi_progress_v1';
     let state = loadState();
     let localStateRevision = 0;
-    let proAccount = { startedAt: 0, expiresAt: 0, months: 0, wasPro: false, autoRenew: false, canCancelRenewal: false, billingState: 'ok', revoked: false };
+    let proAccount = { startedAt: 0, expiresAt: 0, months: 0, lastPlan: '', wasPro: false, autoRenew: false, canCancelRenewal: false, billingState: 'ok', revoked: false };
     let authoritativeProStatus = null;
     let serverClockOffsetMs = 0;
     let authoritativeTrialExpiresAt = 0;
@@ -793,7 +794,6 @@
     let speechRequestId = 0;
     let energyInfoOpen = false;
     let lastProAccessState = null;
-    let pronunciationFallbackTimer = null;
     const dictionaryAudioCache = new Map();
     const DICTIONARY_CACHE_MAX = 200;
     function setDictionaryAudioCache(key, value) {
@@ -1499,6 +1499,9 @@
       return state.proActive === true && proAccount.revoked !== true && expiresAt > 0 && expiresAt > serverNow;
     }
     function isProEnabled() { return isServerPaidProEnabled() || (DEMO_PRO_ALLOWED && state.demoPro === true) || isTrialProEnabled(); }
+    function isSkinAvailable(skinId) {
+      return state.ownedSkins.includes(skinId) || (isProEnabled() && ['gold','cyber','hero'].includes(skinId));
+    }
     async function requestTrialProClaim() {
       if (trialClaimInFlight || !tg?.initData || !workerIsConfigured()) return false;
       trialClaimInFlight = true;
@@ -1627,7 +1630,7 @@
       if (extraClass.includes('skin-gold')) return 'skin-gold';
       if (extraClass.includes('skin-cyber')) return 'skin-cyber';
       if (extraClass.includes('skin-hero')) return 'skin-hero';
-      return state.ownedSkins.includes(state.selectedSkin) && state.selectedSkin !== 'default' ? `skin-${state.selectedSkin}` : '';
+      return isSkinAvailable(state.selectedSkin) && state.selectedSkin !== 'default' ? `skin-${state.selectedSkin}` : '';
     }
     function saveState() {
       localStateRevision++;
@@ -1651,9 +1654,13 @@
       if (authoritativeProStatus === null) return false;
       const previousAccess = isProEnabled();
       const previousTheme = state.selectedTheme;
+      const previousSkin = state.selectedSkin;
       state.proActive = authoritativeProStatus === true;
-      if (!isProEnabled() && ['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme = 'aurora';
-      const changed = previousAccess !== isProEnabled() || previousTheme !== state.selectedTheme;
+      if (!isProEnabled()) {
+        if (['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme = 'aurora';
+        if (state.selectedSkin !== 'default' && !state.ownedSkins.includes(state.selectedSkin)) state.selectedSkin = 'default';
+      }
+      const changed = previousAccess !== isProEnabled() || previousTheme !== state.selectedTheme || previousSkin !== state.selectedSkin;
       lastProAccessState = isProEnabled();
       if (changed) saveAccessStateLocally();
       return changed;
@@ -2587,7 +2594,7 @@
 
 
     function renderCrystalShop() {
-      return `<section class="card economy-section"><div class="section-row"><h2>Магазин Луми</h2><strong>💎 ${state.crystals}</strong></div><p class="small muted">Покупай косметические образы за кристаллы. Купленные предметы останутся с тобой.</p><div class="shop-grid">${LUMI_SKINS.map(skin=>{const owned=state.ownedSkins.includes(skin.id);return `<div class="shop-item"><span class="shop-icon">${skin.icon}</span><strong>${skin.name}</strong><small>${owned?'Уже куплено':`Цена: ${skin.price} 💎`}</small><button data-shop-skin="${skin.id}" ${owned || state.crystals<skin.price?'disabled':''}>${owned?'Куплено':state.crystals<skin.price?'Не хватает 💎':`Купить · ${skin.price} 💎`}</button></div>`;}).join('')}</div><p class="economy-note">Награды: +10 💎 за первый проход урока, +15 💎 за дневную цель, бонусы за достижения и повышение уровня.</p></section>`;
+      return `<section class="card economy-section"><div class="section-row"><h2>Магазин Луми</h2><strong>💎 ${state.crystals}</strong></div><p class="small muted">Покупай косметические образы за кристаллы. Купленные предметы останутся с тобой.${isProEnabled()?' Сейчас все образы также открыты по PRO — кристаллы тратить не нужно.':''}</p><div class="shop-grid">${LUMI_SKINS.map(skin=>{const owned=state.ownedSkins.includes(skin.id),proUnlocked=isProEnabled()&&!owned;return `<div class="shop-item"><span class="shop-icon">${skin.icon}</span><strong>${skin.name}</strong><small>${owned?'Уже куплено':proUnlocked?'Открыто в Lumi PRO':`Цена: ${skin.price} 💎`}</small><button data-shop-skin="${skin.id}" ${owned || proUnlocked || state.crystals<skin.price?'disabled':''}>${owned?'Куплено':proUnlocked?'Доступно в PRO':state.crystals<skin.price?'Не хватает 💎':`Купить · ${skin.price} 💎`}</button></div>`;}).join('')}</div><p class="economy-note">Награды: +10 💎 за первый проход урока, +15 💎 за дневную цель, бонусы за достижения и повышение уровня.</p></section>`;
     }
     function renderThemeShop() {
       return `<section class="card theme-section"><div class="section-row"><h2>Оформление Академии</h2><span class="pro-planet-label">3 FREE · 5 PRO</span></div><p class="small muted">Выбери атмосферу своей космической академии.</p><div class="theme-grid">${LUMI_THEMES.map(theme=>{const locked=!theme.free&&!isProEnabled();return `<div class="theme-choice ${state.selectedTheme===theme.id?'selected':''}"><span class="theme-icon">${theme.icon}</span><strong>${theme.name}</strong><div class="theme-swatch">${theme.colors.map(color=>`<i style="background:${color}"></i>`).join('')}</div><small>${theme.free?'Бесплатная тема':locked?'⭐ Только PRO':'⭐ PRO-тема'}</small><button data-theme-select="${theme.id}" ${locked?'disabled':''}>${state.selectedTheme===theme.id?'Выбрана':locked?'Заблокирована':'Применить'}</button></div>`;}).join('')}</div></section>`;
@@ -2610,8 +2617,8 @@
     }
 
     function renderWardrobe() {
-      return `<section class="card skin-section"><div class="section-row"><h2>Гардероб Луми</h2><span class="small muted">Кристаллы 💎</span></div><p class="small muted">Покупай образы в магазине и надевай их в любой момент.</p>
-        <div class="skin-grid">${[{id:'default',icon:'🚀',name:'Космический кадет',price:0},...LUMI_SKINS].map(skin=>{const owned=state.ownedSkins.includes(skin.id);return `<button class="skin-choice ${state.selectedSkin===skin.id?'selected':''}" data-skin="${skin.id}"><span class="skin-icon">${skin.icon}</span><span>${skin.name}</span><span>${state.selectedSkin===skin.id?'✓ Надет':owned?'Надеть':`${skin.price} 💎`}</span></button>`;}).join('')}</div><div style="display:grid;place-items:center;margin-top:9px">${lumiArt()}</div>
+      return `<section class="card skin-section"><div class="section-row"><h2>Гардероб Луми</h2><span class="small muted">${isProEnabled()?'⭐ Все образы открыты в PRO':'Кристаллы 💎'}</span></div><p class="small muted">${isProEnabled()?'Все три премиальных образа доступны без кристаллов, пока действует Lumi PRO. Купленные образы останутся навсегда.':'Покупай образы за кристаллы или открой все три сразу с Lumi PRO.'}</p>
+        <div class="skin-grid">${[{id:'default',icon:'🚀',name:'Космический кадет',price:0},...LUMI_SKINS].map(skin=>{const available=isSkinAvailable(skin.id);return `<button class="skin-choice ${state.selectedSkin===skin.id?'selected':''}" data-skin="${skin.id}"><span class="skin-icon">${skin.icon}</span><span>${skin.name}</span><span>${state.selectedSkin===skin.id?'✓ Надет':available?'Надеть':`${skin.price} 💎`}</span></button>`;}).join('')}</div><div style="display:grid;place-items:center;margin-top:9px">${lumiArt()}</div>
       </section>`;
     }
     function renderProfile() {
@@ -2628,7 +2635,7 @@
       });
       return `<div class="page">
         <div class="page-head"><div class="eyebrow">ТВОЙ КОСМИЧЕСКИЙ ЖУРНАЛ</div><h1>Профиль 👩‍🚀</h1><p>Каждый маленький шаг — уже достижение.</p></div>
-        <section class="card profile-hero"><div class="avatar-orb">🧑‍🚀</div><div style="min-width:0;flex:1"><h2>Кадет Академии ${isProEnabled()?'<span class="profile-drone" title="Спутник-дрон Луми активен">🛸</span>':''}</h2>${isTrialProEnabled()&&!state.proActive?'<span class="pro-plan-status">🎁 ПРОБНЫЙ PRO</span>':''}<p>Уровень ${Math.floor(state.xp / 50) + 1} · ${state.xp} XP накоплено</p><div class="progress-mini" style="width:140px;max-width:100%"><span style="width:${(state.xp % 50) / 50 * 100}%"></span></div></div></section>
+        <section class="card profile-hero"><div class="avatar-orb">🧑‍🚀</div><div style="min-width:0;flex:1"><h2>Кадет Академии ${isProEnabled()?'<span class="profile-drone" title="Спутник-дрон Луми активен">🛸</span>':''}</h2>${isTrialProEnabled()&&!state.proActive?'<span class="pro-plan-status">🎁 ПРОБНЫЙ PRO</span>':''}<p>Уровень ${Math.floor(state.xp / 50) + 1} · ${state.xp} XP накоплено ${isProEnabled()?'<span class="profile-xp-badge">⚡ 2× XP активно</span>':''}</p><div class="progress-mini" style="width:140px;max-width:100%"><span style="width:${(state.xp % 50) / 50 * 100}%"></span></div></div></section>
         <div class="storage-sync-note" id="cloudStorageStatusNote" role="status">${storageStatusText()}</div>
         <div class="stats-grid">
           <div class="card metric"><div class="metric-icon">🔥</div><strong>${state.streak}</strong><span>ДНЕЙ ПОДРЯД</span></div>
@@ -2645,7 +2652,7 @@
         </section>
         <section class="card" style="padding:14px"><div class="section-row"><h3 style="margin:0">Твоя цель на день</h3><button class="tiny-link" id="changeGoalProfile">Изменить</button></div><strong style="font-size:23px">${state.goal} минут <span class="muted small">в день</span></strong><p class="small muted" style="margin:4px 0 0">План: ${dailyLessonProgress()}/${dailyLessonTarget()} разных уроков сегодня. При выполнении — +15 кристаллов и бонус XP.</p></section>
         ${DEMO_PRO_ALLOWED ? `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : isTrialProEnabled() ? '🎁 Подарочный PRO активен' : state.demoPro ? '🧪 Включён ДЕМО-PRO' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Статус подписки подтверждён сервером Telegram.' : isTrialProEnabled() ? `Пробный доступ действует до ${formatProDate(state.trial_pro_until)}.` : state.demoPro ? 'Все премиум-функции включены только на этом устройстве для проверки.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><div class="eyebrow">ТЕСТОВЫЙ ДОСТУП</div><h3 style="margin:5px 0">Проверить все платные функции</h3><p class="small muted" style="margin:0">Демо-PRO открывает секретные планеты, бесконечную энергию, двойной XP, продвинутый учебник и все скины. Оплата не требуется.</p><button class="btn ${state.demoPro?'secondary':'purple'} full" id="toggleDemoPro">${state.demoPro?'Выключить ДЕМО-PRO':'Включить ДЕМО-PRO (для теста)'}</button></section>` : `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Подписка подтверждена сервером Telegram.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><button class="btn purple full" data-tab-go="pro">Посмотреть возможности Lumi PRO ⭐</button></section>`}
-        <section class="card" style="padding:14px;margin-top:13px"><div class="section-row"><h3 style="margin:0">⭐ Lumi PRO и спутник</h3><strong>${state.proActive?`Месяцев в PRO: ${Math.max(1,proAccount.months||1)}`:state.demoPro?'ДЕМО-PRO':isTrialProEnabled()?'ПРОБНЫЙ PRO':'FREE'}</strong></div>${state.proActive?`<p class="small muted" style="margin:6px 0 0">Оплаченная подписка подтверждена сервером и действует до ${formatProDate(proAccount.expiresAt)}. Статус продления: ${proAccount.billingState==='payment_failed'?'платёж не прошёл':proAccount.autoRenew===false?'отключено':'включено'}. Мини-дрон Луми 🛸 активен.</p>`:isTrialProEnabled()?`<p class="small muted" style="margin:6px 0 0">🎁 Подарочный Lumi PRO действует до ${formatProDate(state.trial_pro_until)}. Все закрытые планеты, живые диалоги, двойной XP и бесконечная энергия открыты на время пробного доступа.</p>`:state.demoPro?'<p class="small muted" style="margin:6px 0 0">Все премиум-функции включены только на этом устройстве для тестирования.</p>':proAccount.wasPro?'<div class="profile-expired-note">Луми немного грустит: подписка закончилась, а мини-дрон и крио-защита ушли в спящий режим. Возобнови Lumi PRO, чтобы снова отправиться в полёт вместе с ними.</div><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Вернуть спутника и защиту ⭐</button>':'<p class="small muted" style="margin:6px 0 0">Подключи Lumi PRO, чтобы открыть мини-дрона-спутника, крио-защиту и новые режимы.</p><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Узнать о Lumi PRO</button>'}</section>
+        <section class="card" style="padding:14px;margin-top:13px"><div class="section-row"><h3 style="margin:0">⭐ Lumi PRO и спутник</h3><strong>${state.proActive?(proAccount.lastPlan==='week'?'ТАРИФ · 7 ДНЕЙ':`Месяцев в PRO: ${Math.max(1,proAccount.months||1)}`):state.demoPro?'ДЕМО-PRO':isTrialProEnabled()?'ПРОБНЫЙ PRO':'FREE'}</strong></div>${state.proActive?`<p class="small muted" style="margin:6px 0 0">Оплаченная подписка подтверждена сервером и действует до ${formatProDate(proAccount.expiresAt)}. Статус продления: ${proAccount.billingState==='payment_failed'?'платёж не прошёл':proAccount.autoRenew===false?'отключено':'включено'}. Мини-дрон Луми 🛸 активен.</p>`:isTrialProEnabled()?`<p class="small muted" style="margin:6px 0 0">🎁 Подарочный Lumi PRO действует до ${formatProDate(state.trial_pro_until)}. Все закрытые планеты, живые диалоги, двойной XP и бесконечная энергия открыты на время пробного доступа.</p>`:state.demoPro?'<p class="small muted" style="margin:6px 0 0">Все премиум-функции включены только на этом устройстве для тестирования.</p>':proAccount.wasPro?'<div class="profile-expired-note">Луми немного грустит: подписка закончилась, а мини-дрон и крио-защита ушли в спящий режим. Возобнови Lumi PRO, чтобы снова отправиться в полёт вместе с ними.</div><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Вернуть спутника и защиту ⭐</button>':'<p class="small muted" style="margin:6px 0 0">Подключи Lumi PRO, чтобы открыть мини-дрона-спутника, крио-защиту и новые режимы.</p><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Узнать о Lumi PRO</button>'}</section>
         <section class="card tutorial-settings"><div class="eyebrow">ПОМОЩЬ ОТ ЛУМИ</div><h3 style="margin:5px 0">Хочешь освежить правила?</h3><p class="small muted" style="margin:0 0 9px">Я снова покажу карту, учебник, профиль и возможности PRO — всего четыре шага.</p><button class="btn secondary full" id="restartLumiTutorial">Пройти обучение с Луми заново</button></section>
         <section class="card support-card"><div class="eyebrow">МЫ НА СВЯЗИ</div><h3 style="margin:5px 0">Нужна помощь?</h3><p class="small muted" style="margin:0 0 9px">Напиши команде Lumi Academy, если у тебя возник вопрос или ты заметил проблему.</p><button type="button" class="btn secondary full" id="openSupport">Написать в поддержку</button></section>
         ${renderWardrobe()}
@@ -2794,7 +2801,7 @@
       if (reset) reset.addEventListener('click', () => {
         tap(); if (!window.confirm('Сбросить весь прогресс на этом устройстве и в облаке Telegram?')) return;
         const preservedAccountRewards = { trial_pro_until:state.trial_pro_until, trial_pro_claimed:state.trial_pro_claimed, welcomeGiftClaimed:state.welcomeGiftClaimed, bonusFreezeCharges:state.bonusFreezeCharges };
-        state = normalizeState({ ...defaultState, ...preservedAccountRewards, completedPlanets:[], completedLessons:[], learnedWords:[], wordMastery:{}, activeDays:[], errorWords:[], energy:ENERGY_MAX, energyUpdatedAt:Date.now(), energy_reset_at:null, proActive:false, demoPro:false, selectedSkin:'default' }); proAccount={startedAt:0,expiresAt:0,months:0,wasPro:false,autoRenew:false,canCancelRenewal:false,billingState:'ok',revoked:false};
+        state = normalizeState({ ...defaultState, ...preservedAccountRewards, completedPlanets:[], completedLessons:[], learnedWords:[], wordMastery:{}, activeDays:[], errorWords:[], energy:ENERGY_MAX, energyUpdatedAt:Date.now(), energy_reset_at:null, proActive:false, demoPro:false, selectedSkin:'default' }); proAccount={startedAt:0,expiresAt:0,months:0,lastPlan:'',wasPro:false,autoRenew:false,canCancelRenewal:false,billingState:'ok',revoked:false};
         selectedGoal = 10; currentTab = 'map'; lessonSession = null; reviewSession = null; saveState(); render(); showToast('Прогресс сброшен на этом устройстве и в облаке');
       });
       const buyWeek = document.getElementById('buyProWeek');
@@ -2825,14 +2832,17 @@
       const toggleDemo = DEMO_PRO_ALLOWED ? document.getElementById('toggleDemoPro') : null;
       if (toggleDemo) toggleDemo.addEventListener('click', () => {
         tap(); state.demoPro = !state.demoPro;
-        if (!isProEnabled() && ['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme='aurora';
+        if (!isProEnabled()) {
+          if (['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme='aurora';
+          if (state.selectedSkin !== 'default' && !state.ownedSkins.includes(state.selectedSkin)) state.selectedSkin='default';
+        }
         saveState(); render(); showToast(state.demoPro ? 'ДЕМО-PRO активирован! Все миры открыты ⭐' : 'Тестовый PRO выключен');
       });
       const disableDemo = DEMO_PRO_ALLOWED ? document.getElementById('disableDemoPro') : null;
-      if (disableDemo) disableDemo.addEventListener('click', () => { tap(); state.demoPro=false; if(!isProEnabled() && ['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme='aurora'; saveState(); render(); showToast('ДЕМО-PRO выключен'); });
+      if (disableDemo) disableDemo.addEventListener('click', () => { tap(); state.demoPro=false; if(!isProEnabled()){if(['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme='aurora';if(state.selectedSkin!=='default'&&!state.ownedSkins.includes(state.selectedSkin))state.selectedSkin='default';} saveState(); render(); showToast('ДЕМО-PRO выключен'); });
       document.querySelectorAll('[data-skin]').forEach(button => button.addEventListener('click', () => {
         const skinId=button.dataset.skin;
-        if (!state.ownedSkins.includes(skinId)) { showToast('Сначала купи этот образ в магазине 💎'); return; }
+        if (!isSkinAvailable(skinId)) { showToast('Купи этот образ за кристаллы или открой все образы с Lumi PRO ⭐'); return; }
         tap(); state.selectedSkin = skinId; saveState(); render(); showToast('Новый образ Луми надет! ✨');
       }));
       document.querySelectorAll('[data-shop-skin]').forEach(button => button.addEventListener('click', () => { tap(); buySkin(button.dataset.shopSkin); }));
@@ -2990,7 +3000,7 @@
         // Re-check server authority immediately before requesting an invoice; do not trust a stale client flag.
         const latest=await requestProStatus();
         applyServerTrialStatus(latest);
-        proAccount={startedAt:latest.startedAt||0,expiresAt:latest.expiresAt||0,months:latest.months||0,wasPro:latest.wasPro===true||latest.active===true,autoRenew:latest.autoRenew===true,canCancelRenewal:latest.canCancelRenewal===true,billingState:latest.billingState||'ok',revoked:latest.revoked===true};
+        proAccount={startedAt:latest.startedAt||0,expiresAt:latest.expiresAt||0,months:latest.months||0,lastPlan:latest.lastPlan||'',wasPro:latest.wasPro===true||latest.active===true,autoRenew:latest.autoRenew===true,canCancelRenewal:latest.canCancelRenewal===true,billingState:latest.billingState||'ok',revoked:latest.revoked===true};
         authoritativeProStatus=latest.active===true;
         applyAuthoritativeProStatus();
         if(latest.active && plan !== 'week'){saveAccessStateLocally();render();showToast(`Lumi PRO уже активен до ${formatProDate(latest.expiresAt)}. Можно добавить 7 дней или оформить месяц после окончания срока.`);return;}
@@ -3057,7 +3067,7 @@
       if(!response.ok||typeof data.is_pro!=='boolean')throw new Error(data.error||'Worker вернул некорректный PRO-статус.');
       const serverTime = Number(data.server_time || 0);
       if (serverTime > 0) serverClockOffsetMs = serverTime * 1000 - Date.now();
-      return {active:data.is_pro,expiresAt:data.expires_at||0,startedAt:data.started_at||0,months:data.months_in_pro||data.months_paid||0,wasPro:data.was_pro===true,autoRenew:data.auto_renew===true,canCancelRenewal:data.can_cancel_renewal===true,billingState:data.billing_state||'ok',revoked:data.revoked===true,serverTime,trialExpiresAt:Number(data.trial_expires_at||0),trialClaimed:data.trial_claimed===true};
+      return {active:data.is_pro,expiresAt:data.expires_at||0,startedAt:data.started_at||0,months:data.months_in_pro||data.months_paid||0,lastPlan:data.last_plan||'',wasPro:data.was_pro===true,autoRenew:data.auto_renew===true,canCancelRenewal:data.can_cancel_renewal===true,billingState:data.billing_state||'ok',revoked:data.revoked===true,serverTime,trialExpiresAt:Number(data.trial_expires_at||0),trialClaimed:data.trial_claimed===true};
     }
     function applyServerTrialStatus(data) {
       if (!data || !Number.isFinite(Number(data.trialExpiresAt))) return false;
@@ -3086,7 +3096,7 @@
         }
         const trialChanged = applyServerTrialStatus(data);
         authoritativeProStatus=data.active===true;
-        proAccount={startedAt:data.startedAt||0,expiresAt:data.expiresAt||0,months:data.months||0,wasPro:data.wasPro||data.active,autoRenew:data.autoRenew===true,canCancelRenewal:data.canCancelRenewal===true,billingState:data.billingState||'ok',revoked:data.revoked===true};
+        proAccount={startedAt:data.startedAt||0,expiresAt:data.expiresAt||0,months:data.months||0,lastPlan:data.lastPlan||'',wasPro:data.wasPro||data.active,autoRenew:data.autoRenew===true,canCancelRenewal:data.canCancelRenewal===true,billingState:data.billingState||'ok',revoked:data.revoked===true};
         const paidChanged = applyAuthoritativeProStatus();
         if (trialChanged || paidChanged || wasActive !== isProEnabled()) saveAccessStateLocally();
         render();
@@ -3105,7 +3115,7 @@
         const data=await requestProStatus();
         const trialChanged = applyServerTrialStatus(data);
         authoritativeProStatus=data.active===true;
-        proAccount={startedAt:data.startedAt||0,expiresAt:data.expiresAt||0,months:data.months||0,wasPro:data.wasPro===true||data.active===true,autoRenew:data.autoRenew===true,canCancelRenewal:data.canCancelRenewal===true,billingState:data.billingState||'ok',revoked:data.revoked===true};
+        proAccount={startedAt:data.startedAt||0,expiresAt:data.expiresAt||0,months:data.months||0,lastPlan:data.lastPlan||'',wasPro:data.wasPro===true||data.active===true,autoRenew:data.autoRenew===true,canCancelRenewal:data.canCancelRenewal===true,billingState:data.billingState||'ok',revoked:data.revoked===true};
         const changed=trialChanged || applyAuthoritativeProStatus() || previousAccess!==isProEnabled();
         if(changed){saveAccessStateLocally();render();}else updateTopStats();
       }catch(error){console.warn('Lumi PRO status could not be refreshed:',error);}
@@ -3436,6 +3446,69 @@
       const query = new URLSearchParams({ ie:'UTF-8', client:'tw-ob', tl:'en', q:content });
       return `https://translate.google.com/translate_tts?${query.toString()}`;
     }
+    function isMobileAudioWebView() {
+      const coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      return !!coarsePointer || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+    }
+    function primeMobileRemoteAudio(url) {
+      if (!url || !isMobileAudioWebView()) return null;
+      const audio = document.getElementById('lumiPronunciationAudio') || new Audio();
+      const prime = { audio, failed:false };
+      try {
+        if (activeSpeechAudio && activeSpeechAudio !== audio) { activeSpeechAudio.pause(); }
+        activeSpeechAudio = audio;
+        audio.pause();
+        try { audio.currentTime = 0; } catch (_) {}
+        audio.preload = 'auto';
+        audio.volume = 1;
+        audio.muted = true;
+        audio.playsInline = true;
+        audio.onended = null;
+        audio.onerror = () => { prime.failed = true; };
+        audio.src = url;
+        audio.load();
+        // Prime while the real tap is still active. Muted playback is allowed in
+        // mobile WebViews; if native speech fails, the same stream is unmuted.
+        const primingPlay = audio.play();
+        if (primingPlay && typeof primingPlay.catch === 'function') primingPlay.catch(() => { prime.failed = true; });
+        return prime;
+      } catch (_) { prime.failed = true; return prime; }
+    }
+    function discardPrimedRemoteAudio(prime) {
+      if (!prime || !prime.audio) return;
+      try { prime.audio.pause(); prime.audio.muted = false; prime.audio.currentTime = 0; }
+      catch (_) { try { prime.audio.pause(); } catch (_) {} }
+      if (activeSpeechAudio === prime.audio) activeSpeechAudio = null;
+    }
+    function activatePrimedRemoteAudio(prime) {
+      if (!prime || !prime.audio || prime.failed) return Promise.resolve(false);
+      return new Promise(resolve => {
+        const audio = prime.audio;
+        let settled = false, timeout = null;
+        const finish = value => {
+          if (settled) return;
+          settled = true;
+          if (timeout) window.clearTimeout(timeout);
+          audio.removeEventListener('error', onError);
+          if (!value && activeSpeechAudio === audio) activeSpeechAudio = null;
+          resolve(value);
+        };
+        const onError = () => finish(false);
+        try {
+          audio.addEventListener('error', onError, { once:true });
+          audio.onended = () => { if (activeSpeechAudio === audio) activeSpeechAudio = null; clearSpeechHighlight(); };
+          audio.volume = 1;
+          audio.muted = false;
+          try { audio.currentTime = 0; } catch (_) {}
+          activeSpeechAudio = audio;
+          timeout = window.setTimeout(() => finish(false), 1800);
+          if (!audio.paused && !audio.ended) { finish(true); return; }
+          const playResult = audio.play();
+          if (playResult && typeof playResult.then === 'function') playResult.then(() => finish(true)).catch(() => finish(false));
+          else finish(true);
+        } catch (_) { finish(false); }
+      });
+    }
     function tryPlayHtmlAudio(url) {
       return new Promise(resolve => {
         const audio = document.getElementById('lumiPronunciationAudio') || new Audio();
@@ -3457,41 +3530,55 @@
           activeSpeechAudio = audio;
           audio.preload = 'auto';
           audio.volume = 1;
+          audio.muted = false;
           audio.playsInline = true;
           audio.addEventListener('error', onError, { once:true });
           audio.onended = () => { if (activeSpeechAudio === audio) activeSpeechAudio = null; clearSpeechHighlight(); };
           audio.src = url;
-          timeout = window.setTimeout(() => finish(false), 2400);
-          const playResult = audio.play(); // Called synchronously in the original user gesture.
+          timeout = window.setTimeout(() => finish(false), 1800);
+          const playResult = audio.play();
           if (playResult && typeof playResult.then === 'function') playResult.then(() => finish(true)).catch(() => finish(false));
           else finish(true);
         } catch (_) { finish(false); }
       });
     }
-    function trySpeechSynthesis(text) {
+    function trySpeechSynthesis(text, requestId=speechRequestId) {
       return new Promise(resolve=>{
         const synth=window.speechSynthesis;
         const Utterance=window.SpeechSynthesisUtterance;
         if(!synth||!Utterance){resolve(false);return;}
-        let settled=false,started=false;
-        const finish=value=>{if(settled)return;settled=true;window.clearTimeout(fallbackTimer);resolve(value);};
-        let fallbackTimer=null;
+        let settled=false,started=false,watchdog=null,probe=null;
+        const finish=value=>{
+          if(settled)return;
+          settled=true;
+          if(watchdog)window.clearTimeout(watchdog);
+          if(probe)window.clearTimeout(probe);
+          resolve(value);
+        };
         try{
           synth.cancel();
+          if(typeof synth.resume==='function')synth.resume();
           const utterance=new Utterance(String(text||''));
           const voices=typeof synth.getVoices==='function'?synth.getVoices():[];
           const preferred=voices.find(voice=>/^en-US(?:-|$)/i.test(voice.lang))||voices.find(voice=>/^en-GB(?:-|$)/i.test(voice.lang))||voices.find(voice=>/^en(?:-|$)/i.test(voice.lang));
           utterance.lang=preferred?.lang||'en-US';
           if(preferred)utterance.voice=preferred;
-          utterance.rate=.9;utterance.pitch=1;
+          utterance.rate=.75;
+          utterance.pitch=1;
+          utterance.volume=1;
           utterance.onstart=()=>{started=true;finish(true);};
-          utterance.onerror=()=>{clearSpeechHighlight();finish(false);};
-          utterance.onend=()=>{clearSpeechHighlight();finish(true);};
+          utterance.onerror=()=>finish(false);
+          utterance.onend=()=>{if(requestId===speechRequestId)clearSpeechHighlight();finish(true);};
+          // Call speak immediately in the original tap, before any network await.
           synth.speak(utterance);
-          // Some mobile WebViews expose the API but silently refuse playback. Don't leave the learner with a dead button.
-          fallbackTimer=window.setTimeout(()=>{if(!started){try{synth.cancel();}catch(_){}finish(false);}},1400);
-          // Browsers that don't dispatch onstart may still report the queue as active.
-          window.setTimeout(()=>{if(!settled&&(synth.speaking||synth.pending)){started=true;finish(true);}},350);
+          probe=window.setTimeout(()=>{
+            if(!settled&&synth.speaking){started=true;finish(true);}
+          },220);
+          // A silent/blocked WebView must not leave the user waiting several seconds.
+          watchdog=window.setTimeout(()=>{
+            if(!started&&!synth.speaking){try{synth.cancel();}catch(_){}finish(false);}
+            else finish(true);
+          },950);
         }catch(_){finish(false);}
       });
     }
@@ -3529,8 +3616,6 @@
       top=Math.max(8,Math.min(appRect.height-panelRect.height-safeBottom,top));
       panel.style.left=left+'px';panel.style.top=top+'px';
       playPronunciationFallbackCue();
-      if(pronunciationFallbackTimer)window.clearTimeout(pronunciationFallbackTimer);
-      pronunciationFallbackTimer=window.setTimeout(()=>{panel.hidden=true;},5000);
     }
     function speakWord(wordId,trigger=null) {
       const entry=wordCatalog[wordId];
@@ -3548,24 +3633,32 @@
       stopActiveSpeechAudio();
       setSpeechHighlight(trigger);
       const primaryAudioUrl=googleTranslateAudioUrl(text);
-      // Start the dictionary lookup alongside the primary HTML5 audio request.
-      // If Google TTS fails, a word-level MP3 may already be cached and ready.
+      // On phones, prime a muted remote stream during the tap itself. Some Telegram
+      // WebViews reject audio.play() after an awaited network/TTS delay, even though
+      // the same call is accepted inside the original touch event.
+      const primedMobileAudio = primeMobileRemoteAudio(primaryAudioUrl);
+      // Warm the single-word dictionary lookup in parallel, without delaying speech.
       const dictionaryAudioPromise = isSingleWord ? getDictionaryAudioUrl(text) : Promise.resolve(null);
+      // Native TTS is always requested synchronously from the user's tap.
+      const nativeAudioPromise = trySpeechSynthesis(text,requestId);
 
-      // HTML5 audio starts in the tap handler for both vocabulary and full phrases.
-      // Dictionary MP3 is the next fallback for single words; speechSynthesis is last.
       const start = async () => {
-        let spoken = false;
-        if (primaryAudioUrl) spoken = await tryPlayHtmlAudio(primaryAudioUrl);
+        let spoken = await nativeAudioPromise;
+        if (requestId !== speechRequestId) { discardPrimedRemoteAudio(primedMobileAudio); return; }
+        if (spoken) { discardPrimedRemoteAudio(primedMobileAudio); if (trigger) trigger.setAttribute('aria-busy','false'); return; }
+        // On mobile, unmute the already gesture-authorized stream before trying
+        // any delayed fallback. Desktop starts the remote stream only if needed.
+        if (primedMobileAudio) spoken = await activatePrimedRemoteAudio(primedMobileAudio);
+        else if (primaryAudioUrl) spoken = await tryPlayHtmlAudio(primaryAudioUrl);
         if (requestId !== speechRequestId || spoken) { if (spoken && trigger) trigger.setAttribute('aria-busy','false'); return; }
+        discardPrimedRemoteAudio(primedMobileAudio);
         if (isSingleWord) {
           const dictionaryUrl = await dictionaryAudioPromise;
           if (requestId !== speechRequestId) return;
           if (dictionaryUrl) spoken = await tryPlayHtmlAudio(dictionaryUrl);
           if (requestId !== speechRequestId || spoken) { if (spoken && trigger) trigger.setAttribute('aria-busy','false'); return; }
         }
-        const nativeSpoken = await trySpeechSynthesis(text);
-        if (requestId !== speechRequestId || nativeSpoken) { if (nativeSpoken && trigger) trigger.setAttribute('aria-busy','false'); return; }
+        if(requestId!==speechRequestId)return;
         clearSpeechHighlight();
         showPronunciationFallback(entry || {en:text,ipa:text},trigger);
       };
@@ -3593,8 +3686,20 @@
       pop.style.left=`${left}px`;pop.style.top=`${top}px`;
       bindSpeechButtons(pop);
     }
-    document.addEventListener('click',event=>{
-      const pop=document.getElementById('wordPopover');
+     function dismissPronunciationFallbackOnInteraction() {
+       const panel=document.getElementById('pronunciationFallback');
+       if(panel && !panel.hidden) panel.hidden=true;
+     }
+     // The phonetic card is intentionally persistent. Any real user interaction
+     // dismisses it: touch/pointer press, mouse wheel, scroll, or keyboard input.
+     document.addEventListener('pointerdown',dismissPronunciationFallbackOnInteraction,{capture:true,passive:true});
+     document.addEventListener('touchstart',dismissPronunciationFallbackOnInteraction,{capture:true,passive:true});
+     document.addEventListener('wheel',dismissPronunciationFallbackOnInteraction,{capture:true,passive:true});
+     document.addEventListener('scroll',dismissPronunciationFallbackOnInteraction,{capture:true,passive:true});
+     document.addEventListener('keydown',dismissPronunciationFallbackOnInteraction,true);
+
+     document.addEventListener('click',event=>{
+       const pop=document.getElementById('wordPopover');
       if(!pop||pop.hidden)return;
       if(event.target.closest('#wordPopover,[data-word-tip],[data-token-idx]'))return;
       pop.hidden=true;
@@ -3794,7 +3899,10 @@
         updateEnergyTimerUI();
         if (previousAccess !== currentAccess) {
           lastProAccessState = currentAccess;
-          if (!currentAccess && ['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme='aurora';
+          if (!currentAccess) {
+            if (['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme='aurora';
+            if (state.selectedSkin !== 'default' && !state.ownedSkins.includes(state.selectedSkin)) state.selectedSkin='default';
+          }
           saveAccessStateLocally();
           applySelectedTheme();
           render();
