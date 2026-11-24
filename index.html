@@ -681,6 +681,8 @@
     let bookQuery = '';
     let toastTimer = null;
     let audioContext = null;
+    let mobileAudioUnlocked = false;
+    let activeHtmlAudio = null;
     let energyInfoOpen = false;
     let lastProAccessState = null;
     let pronunciationFallbackTimer = null;
@@ -887,7 +889,7 @@
           if (settled) return;
           settled = true;
           reject(new Error(`CloudStorage.${method}: превышено время ожидания.`));
-        }, 5000);
+        }, 2500);
         const callback = (error, result) => {
           if (settled) return;
           settled = true;
@@ -906,6 +908,17 @@
       });
     }
 
+    function callCloudStorageBeforeDeadline(method, args, deadline) {
+      const remaining = deadline - Date.now();
+      if (remaining <= 0) return Promise.reject(new Error('CloudStorage: превышен общий лимит загрузки 2,5 секунды.'));
+      let timeoutId = null;
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = window.setTimeout(() => reject(new Error('CloudStorage: превышен общий лимит загрузки 2,5 секунды.')), remaining);
+      });
+      return Promise.race([callCloudStorage(method, ...args), timeoutPromise])
+        .finally(() => { if (timeoutId !== null) window.clearTimeout(timeoutId); });
+    }
+
     function updateStorageStatusUI() {
       const note = document.getElementById('cloudStorageStatusNote');
       if (!note) return;
@@ -922,64 +935,78 @@
       return messages[cloudStorageStatus] || messages.local;
     }
 
-    async function initializeProgressStorage() {
+    async function initializeProgressStorage(initialRevision = stateUpdatedAt) {
       const localSnapshot = readLocalProgressSnapshot();
-      if (localSnapshot) {
-        state = localSnapshot.state;
-        stateUpdatedAt = localSnapshot.updatedAt;
-      }
       const cloud = getCloudStorageApi();
       if (!cloud) {
         cloudStorageReady = false;
         cloudStorageStatus = 'local';
         progressStorageReady = true;
+        writeLocalProgressSnapshot();
         updateStorageStatusUI();
         return;
       }
+
+      // CloudStorage callbacks have no AbortSignal, so bound the entire read (manifest + chunks)
+      // with one deadline. The screen has already rendered from local state before this starts.
+      const deadline = Date.now() + 2500;
       try {
-        const cloudRaw = await callCloudStorage('getItem', CLOUD_STORAGE_KEY);
-        cloudStorageReady = true;
+        const cloudRaw = await callCloudStorageBeforeDeadline('getItem', [CLOUD_STORAGE_KEY], deadline);
         let cloudSnapshot = null;
-        try {
-          let cloudManifest = null;
-          try { cloudManifest = cloudRaw ? JSON.parse(cloudRaw) : null; } catch (_) { cloudManifest = null; }
-          if (cloudManifest && cloudManifest.format === 'lumi-cloud-manifest-v2' && Number.isInteger(cloudManifest.count) && cloudManifest.count > 0 && cloudManifest.count <= 100) {
-            let combined = '';
-            for (let i = 0; i < cloudManifest.count; i++) {
-              const part = await callCloudStorage('getItem', `${CLOUD_STORAGE_KEY}_part_${cloudManifest.generation}_${i}`);
-              if (typeof part !== 'string') throw new Error('Отсутствует часть ' + i);
-              combined += part;
-            }
-            cloudSnapshot = parseProgressSnapshot(combined);
-            if (!cloudSnapshot || combined.length !== cloudManifest.length) throw new Error('Облачное сохранение повреждено.');
-            cloudSnapshot.updatedAt = Math.max(cloudSnapshot.updatedAt, Number(cloudManifest.updatedAt) || 0);
-          } else {
-            // Migration: older Lumi versions stored the entire snapshot in one CloudStorage value.
-            cloudSnapshot = parseProgressSnapshot(cloudRaw);
+        let cloudManifest = null;
+        try { cloudManifest = cloudRaw ? JSON.parse(cloudRaw) : null; } catch (_) { cloudManifest = null; }
+
+        if (cloudManifest && cloudManifest.format === 'lumi-cloud-manifest-v2' && Number.isInteger(cloudManifest.count) && cloudManifest.count > 0 && cloudManifest.count <= 100) {
+          let combined = '';
+          for (let i = 0; i < cloudManifest.count; i++) {
+            const part = await callCloudStorageBeforeDeadline('getItem', [`${CLOUD_STORAGE_KEY}_part_${cloudManifest.generation}_${i}`], deadline);
+            if (typeof part !== 'string') throw new Error('Отсутствует часть ' + i);
+            combined += part;
           }
-        } catch (cloudReadError) {
-          console.warn('Lumi cloud snapshot could not be reconstructed; local copy will be used:', cloudReadError);
-          cloudSnapshot = null;
+          cloudSnapshot = parseProgressSnapshot(combined);
+          if (!cloudSnapshot || combined.length !== cloudManifest.length) throw new Error('Облачное сохранение повреждено.');
+          cloudSnapshot.updatedAt = Math.max(cloudSnapshot.updatedAt, Number(cloudManifest.updatedAt) || 0);
+        } else {
+          // Migration: older Lumi versions stored the entire snapshot in one CloudStorage value.
+          cloudSnapshot = parseProgressSnapshot(cloudRaw);
         }
-        if (cloudSnapshot && (!localSnapshot || cloudSnapshot.updatedAt >= localSnapshot.updatedAt)) {
+
+        cloudStorageReady = true;
+        cloudStorageStatus = 'cloud';
+
+        // Never replace progress created while the cloud read was in flight.
+        const userChangedStateDuringLoad = stateUpdatedAt !== initialRevision;
+        if (!userChangedStateDuringLoad && cloudSnapshot && (!localSnapshot || cloudSnapshot.updatedAt >= localSnapshot.updatedAt)) {
           state = cloudSnapshot.state;
           stateUpdatedAt = cloudSnapshot.updatedAt;
+          selectedGoal = state.goal || 10;
           writeLocalProgressSnapshot();
-        } else if (localSnapshot) {
+        } else if (!userChangedStateDuringLoad && localSnapshot) {
           state = localSnapshot.state;
           stateUpdatedAt = Math.max(localSnapshot.updatedAt, Date.now());
+          selectedGoal = state.goal || 10;
+          scheduleCloudProgressSave(0);
+        } else if (!userChangedStateDuringLoad && !localSnapshot) {
+          // A brand-new Telegram account has no cloud key yet. Keep the fresh default state
+          // and create its first cloud snapshot without blocking the first render.
+          state = normalizeState(null);
+          selectedGoal = state.goal || 10;
+          stateUpdatedAt = Math.max(stateUpdatedAt, Date.now());
           scheduleCloudProgressSave(0);
         } else {
-          state = normalizeState(null);
-          stateUpdatedAt = Date.now();
+          // The learner has already started interacting; keep their newer in-memory state.
           scheduleCloudProgressSave(0);
         }
-        cloudStorageStatus = 'cloud';
       } catch (error) {
         cloudStorageReady = false;
         cloudStorageStatus = 'local';
-        if (!localSnapshot) state = normalizeState(null);
-        console.warn('Lumi CloudStorage load failed; using localStorage:', error);
+        if (stateUpdatedAt === initialRevision && localSnapshot) {
+          state = localSnapshot.state;
+          stateUpdatedAt = localSnapshot.updatedAt;
+        } else if (stateUpdatedAt === initialRevision && !localSnapshot) {
+          state = normalizeState(null);
+        }
+        console.warn('Lumi CloudStorage load skipped; using localStorage:', error);
       }
       progressStorageReady = true;
       writeLocalProgressSnapshot();
@@ -1330,27 +1357,55 @@
     function haptic(kind) {
       try { if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred(kind || 'light'); } catch (_) { /* no-op */ }
     }
+    function unlockMobileAudio() {
+      if (mobileAudioUnlocked) return;
+      mobileAudioUnlocked = true;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        if (!audioContext) audioContext = new AudioCtx();
+        // resume() and a silent one-sample buffer are both invoked inside the first trusted gesture.
+        if (audioContext.state === 'suspended') {
+          const resumed = audioContext.resume();
+          if (resumed && typeof resumed.catch === 'function') resumed.catch(() => {});
+        }
+        const silentBuffer = audioContext.createBuffer(1, 1, audioContext.sampleRate || 44100);
+        const source = audioContext.createBufferSource();
+        source.buffer = silentBuffer;
+        source.connect(audioContext.destination);
+        source.start(0);
+      } catch (_) { /* Some WebViews do not expose Web Audio; HTML5 audio may still work. */ }
+    }
+    document.addEventListener('touchstart', unlockMobileAudio, { once:true, capture:true, passive:true });
+    document.addEventListener('click', unlockMobileAudio, { once:true, capture:true });
+
     function sound(type) {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
         if (!audioContext) audioContext = new AudioCtx();
-        if (audioContext.state === 'suspended') audioContext.resume();
-        const now = audioContext.currentTime;
-        const notes = type === 'success' ? [523.25,659.25,783.99] : type === 'error' ? [240,190] : [420];
-        notes.forEach((frequency, index) => {
-          const osc = audioContext.createOscillator();
-          const gain = audioContext.createGain();
-          osc.type = type === 'error' ? 'sine' : 'sine';
-          osc.frequency.setValueAtTime(frequency, now + index * (type === 'success' ? .09 : .045));
-          if (type === 'success') osc.frequency.exponentialRampToValueAtTime(frequency * 1.18, now + index * .09 + .15);
-          gain.gain.setValueAtTime(.0001, now + index * (type === 'success' ? .09 : .045));
-          gain.gain.exponentialRampToValueAtTime(type === 'tap' ? .035 : .055, now + index * (type === 'success' ? .09 : .045) + .015);
-          gain.gain.exponentialRampToValueAtTime(.0001, now + index * (type === 'success' ? .09 : .045) + (type === 'tap' ? .09 : .22));
-          osc.connect(gain); gain.connect(audioContext.destination);
-          osc.start(now + index * (type === 'success' ? .09 : .045));
-          osc.stop(now + index * (type === 'success' ? .09 : .045) + .24);
-        });
+        const scheduleSound = () => {
+          if (!audioContext || audioContext.state !== 'running') return;
+          const now = audioContext.currentTime;
+          const notes = type === 'success' ? [523.25,659.25,783.99] : type === 'error' ? [240,190] : [420];
+          notes.forEach((frequency, index) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(frequency, now + index * (type === 'success' ? .09 : .045));
+            if (type === 'success') osc.frequency.exponentialRampToValueAtTime(frequency * 1.18, now + index * .09 + .15);
+            gain.gain.setValueAtTime(.0001, now + index * (type === 'success' ? .09 : .045));
+            gain.gain.exponentialRampToValueAtTime(type === 'tap' ? .035 : .055, now + index * (type === 'success' ? .09 : .045) + .015);
+            gain.gain.exponentialRampToValueAtTime(.0001, now + index * (type === 'success' ? .09 : .045) + (type === 'tap' ? .09 : .22));
+            osc.connect(gain); gain.connect(audioContext.destination);
+            osc.start(now + index * (type === 'success' ? .09 : .045));
+            osc.stop(now + index * (type === 'success' ? .09 : .045) + .24);
+          });
+        };
+        if (audioContext.state === 'suspended') {
+          const resumed = audioContext.resume();
+          if (resumed && typeof resumed.then === 'function') resumed.then(scheduleSound).catch(() => {});
+        } else scheduleSound();
       } catch (_) { /* Audio is optional; the app remains usable when disabled. */ }
     }
     function tap() { haptic('light'); sound('tap'); }
@@ -2556,14 +2611,30 @@
       }catch(error){console.error('Lumi invoice error:',error);showToast(error.message||'Не удалось создать счёт. Проверь настройки Worker.');}
       finally{if(!invoiceOpened){purchaseInFlight=false;setBusy(false);}}
     }
-    async function requestProStatus() {
+    async function requestProStatus(options = {}) {
       if(!tg||!tg.initData||!workerIsConfigured())throw new Error('Не настроена проверка Telegram PRO.');
       const userId=telegramUserId();if(!userId)throw new Error('Telegram user.id отсутствует.');
       const base=new URL(WORKER_URL.trim());
-      const response=await fetch(`${base.href.replace(/\/$/,'')}/check-pro?user_id=${encodeURIComponent(userId)}`,{method:'GET',headers:workerAuthHeaders(),cache:'no-store'});
-      const data=await response.json().catch(()=>({}));
-      if(!response.ok||typeof data.is_pro!=='boolean')throw new Error(data.error||'Worker вернул некорректный PRO-статус.');
-      return {active:data.is_pro,expiresAt:data.expires_at||0,startedAt:data.started_at||0,months:data.months_in_pro||data.months_paid||0,wasPro:data.was_pro===true,autoRenew:data.auto_renew!==false,billingState:data.billing_state||'ok'};
+      const timeoutMs=Number.isFinite(Number(options.timeoutMs))?Math.max(250,Math.min(10000,Number(options.timeoutMs))):8000;
+      const controller=typeof AbortController!=='undefined'?new AbortController():null;
+      let timeoutId=null;
+      const timeoutPromise=new Promise((_,reject)=>{
+        timeoutId=window.setTimeout(()=>{
+          if(controller)controller.abort();
+          reject(new Error(`Проверка Lumi PRO превысила лимит ${timeoutMs} мс.`));
+        },timeoutMs);
+      });
+      try {
+        const requestPromise=(async()=>{
+          const response=await fetch(`${base.href.replace(/\/$/,'')}/check-pro?user_id=${encodeURIComponent(userId)}`,{
+            method:'GET',headers:workerAuthHeaders(),cache:'no-store',signal:controller?controller.signal:undefined
+          });
+          const data=await response.json().catch(()=>({}));
+          if(!response.ok||typeof data.is_pro!=='boolean')throw new Error(data.error||'Worker вернул некорректный PRO-статус.');
+          return {active:data.is_pro,expiresAt:data.expires_at||0,startedAt:data.started_at||0,months:data.months_in_pro||data.months_paid||0,wasPro:data.was_pro===true,autoRenew:data.auto_renew!==false,billingState:data.billing_state||'ok'};
+        })();
+        return await Promise.race([requestPromise,timeoutPromise]);
+      } finally { if(timeoutId!==null)window.clearTimeout(timeoutId); }
     }
     async function refreshProStatusFromServer(afterPaid=false) {
       try{
@@ -2588,7 +2659,7 @@
     async function verifyProOnStartup() {
       if(!tg||!tg.initData||!workerIsConfigured())return;
       try{
-        const data=await requestProStatus();
+        const data=await requestProStatus({timeoutMs:2500});
         const changed=state.proActive!==(data.active===true);
         state.proActive=data.active===true;
         proAccount={startedAt:data.startedAt||0,expiresAt:data.expiresAt||0,months:data.months||0,wasPro:data.wasPro===true||data.active===true,autoRenew:data.autoRenew,billingState:data.billingState||'ok'};
@@ -2807,7 +2878,7 @@
         }else{tap();session.stage='result';renderLessonResult();}
       });
       const speakFlashcard=document.getElementById('speakFlashcard');
-      if(speakFlashcard)speakFlashcard.addEventListener('click',event=>{tap();speakWord(lesson.words[session.cardIndex],event.currentTarget);});
+      if(speakFlashcard){warmDictionaryAudio(wordCatalog[lesson.words[session.cardIndex]]?.en);speakFlashcard.addEventListener('click',event=>{tap();speakWord(lesson.words[session.cardIndex],event.currentTarget);});}
     }
     function makeLessonOptions(lesson, wordId) {
       const allowed = new Set(learnedWordIdsForLesson(lesson));
@@ -2820,7 +2891,14 @@
     }
     function bindSpeechButtons(root) {
       if(!root)return;
-      root.querySelectorAll('[data-speak]').forEach(button=>button.addEventListener('click',event=>{event.stopPropagation();tap();speakWord(button.dataset.speak,button);}));
+      const buttons=Array.from(root.querySelectorAll('[data-speak]'));
+      buttons.forEach(button=>button.addEventListener('click',event=>{event.stopPropagation();tap();speakWord(button.dataset.speak,button);}));
+      // Fetch dictionary MP3s before the learner taps. This lets the native HTMLAudioElement
+      // play the real recording inside the original tap gesture when it is ready.
+      buttons.slice(0,6).forEach(button=>{
+        const entry=wordCatalog[button.dataset.speak];
+        if(entry&&entry.en)warmDictionaryAudio(entry.en);
+      });
     }
     function bindWordTips(root) {
       if(!root)return;
@@ -2887,6 +2965,7 @@
         try {
           const audio = new Audio();
           audio.preload = 'auto';
+          audio.referrerPolicy = 'no-referrer';
           audio.src = url;
           audio.load();
           dictionaryAudioPlayers.set(normalized, audio);
@@ -2900,24 +2979,63 @@
         } catch (_) { /* Device TTS remains the primary path. */ }
       }).catch(() => {});
     }
-    function tryPlayPreparedDictionaryAudio(word, onFailure) {
+    function stopActiveHtmlAudio() {
+      if (!activeHtmlAudio) return;
+      const previous = activeHtmlAudio;
+      activeHtmlAudio = null;
+      try { previous.pause(); previous.currentTime = 0; } catch (_) {}
+    }
+    function playHtmlAudioElement(audio, requestId, onFailure) {
+      if (!audio || requestId !== activeSpeechRequest) return false;
+      stopActiveHtmlAudio();
+      activeHtmlAudio = audio;
+      audio.preload = 'auto';
+      try { audio.referrerPolicy = 'no-referrer'; audio.setAttribute('referrerpolicy', 'no-referrer'); } catch (_) {}
+      let failed = false;
+      const fail = () => {
+        if (failed || requestId !== activeSpeechRequest || activeHtmlAudio !== audio) return;
+        failed = true;
+        activeHtmlAudio = null;
+        try { audio.pause(); } catch (_) {}
+        if (typeof onFailure === 'function') onFailure();
+      };
+      audio.addEventListener('error', fail, { once:true });
+      audio.addEventListener('ended', () => {
+        if (activeHtmlAudio === audio) activeHtmlAudio = null;
+      }, { once:true });
+      try {
+        const playback = audio.play();
+        if (playback && typeof playback.catch === 'function') playback.catch(fail);
+        return true;
+      } catch (_) {
+        fail();
+        return true;
+      }
+    }
+    function tryPlayPreparedDictionaryAudio(word, onFailure, requestId) {
       const normalized = String(word || '').trim().toLowerCase();
       const audio = dictionaryAudioPlayers.get(normalized);
-      // Never wait for an audio download after the learner taps. Use it only when already buffered.
+      // Do not wait for the network here: only a ready MP3 may take the immediate tap gesture.
       if (!audio || audio.readyState < 2) return false;
+      try { audio.pause(); audio.currentTime = 0; } catch (_) {}
+      return playHtmlAudioElement(audio, requestId, onFailure);
+    }
+    function playGoogleTranslateTts(text, onFailure, requestId) {
+      const phrase = String(text || '').trim();
+      if (!phrase || requestId !== activeSpeechRequest || typeof Audio === 'undefined') return false;
+      const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=' + encodeURIComponent(phrase);
       try {
-        audio.pause();
-        audio.currentTime = 0;
-        const result = audio.play();
-        if (result && typeof result.catch === 'function') result.catch(() => { if (onFailure) onFailure(); });
-        return true;
+        const audio = new Audio(url);
+        audio.preload = 'auto';
+        audio.setAttribute('referrerpolicy', 'no-referrer');
+        return playHtmlAudioElement(audio, requestId, onFailure);
       } catch (_) { return false; }
     }
-    function trySpeechSynthesis(text, onFailure) {
+    function trySpeechSynthesis(text, onFailure, existingRequestId = null) {
       const synth = window.speechSynthesis;
       const Utterance = window.SpeechSynthesisUtterance;
       if (!synth || !Utterance) return false;
-      const requestId = ++activeSpeechRequest;
+      const requestId = existingRequestId || ++activeSpeechRequest;
       let started = false;
       let failed = false;
       let watchdog = null;
@@ -2928,7 +3046,6 @@
         if (typeof onFailure === 'function') onFailure();
       };
       try {
-        // Cancel only an actual previous utterance; do not add an unnecessary queue reset on every tap.
         if (synth.speaking || synth.pending) synth.cancel();
         const utterance = new Utterance(String(text || ''));
         utterance.lang = englishSpeechVoice?.lang || 'en-US';
@@ -2943,11 +3060,9 @@
         utterance.onend = () => {
           if (requestId === activeSpeechRequest && watchdog) window.clearTimeout(watchdog);
         };
-        utterance.onerror = () => {
-          if (requestId === activeSpeechRequest) fail();
-        };
+        utterance.onerror = () => { if (requestId === activeSpeechRequest) fail(); };
         if (synth.paused) synth.resume();
-        synth.speak(utterance); // Called synchronously inside the click handler to preserve the user gesture.
+        synth.speak(utterance);
         watchdog = window.setTimeout(() => {
           if (requestId !== activeSpeechRequest || started || failed) return;
           try { synth.resume(); } catch (_) {}
@@ -2958,11 +3073,9 @@
           } else fail();
         }, 900);
         return true;
-      } catch (_) {
-        fail();
-        return false;
-      }
+      } catch (_) { fail(); return false; }
     }
+
     function playPronunciationFallbackCue() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -3009,18 +3122,31 @@
       const entry = wordCatalog[wordId];
       const text = entry ? entry.en : String(wordId || '').trim();
       if (!text) return;
-      const isSingleWord = !!entry && /^[a-z]+(?:['-][a-z]+)?$/i.test(text.trim());
-      const fallback = () => {
-        if (isSingleWord && tryPlayPreparedDictionaryAudio(text, () => showPronunciationFallback(entry, trigger))) return;
-        showPronunciationFallback(entry || { en: text, ipa: text }, trigger);
+      const requestId = ++activeSpeechRequest;
+      const isSingleWord = /^[a-z]+(?:['-][a-z]+)?$/i.test(text.trim());
+      const visualFallback = () => {
+        if (requestId === activeSpeechRequest) showPronunciationFallback(entry || { en:text, ipa:text }, trigger);
       };
-      // A fully buffered dictionary recording may play immediately. Otherwise speak now; never await the network.
-      if (isSingleWord && tryPlayPreparedDictionaryAudio(text, () => trySpeechSynthesis(text, fallback))) {
-        return;
+      const speechFallback = () => {
+        if (requestId !== activeSpeechRequest) return;
+        if (!trySpeechSynthesis(text, visualFallback, requestId)) visualFallback();
+      };
+      // Stop the previous word/phrase so rapid taps never queue stale audio.
+      stopActiveHtmlAudio();
+      try {
+        const synth = window.speechSynthesis;
+        if (synth && (synth.speaking || synth.pending)) synth.cancel();
+      } catch (_) {}
+
+      if (isSingleWord) {
+        // Prefer a real dictionary MP3 whenever it was preloaded before the tap.
+        if (tryPlayPreparedDictionaryAudio(text, () => playGoogleTranslateTts(text, speechFallback, requestId) || speechFallback(), requestId)) return;
+        // Dictionary lookup/download continues in the background for the next tap.
+        warmDictionaryAudio(text);
       }
-      const started = trySpeechSynthesis(text, fallback);
-      if (isSingleWord) warmDictionaryAudio(text); // Prepare a natural recording for a later tap, in the background.
-      if (!started) fallback();
+
+      // Start an HTML5 audio stream synchronously inside the tap handler. Web Speech is only a fallback.
+      if (!playGoogleTranslateTts(text, speechFallback, requestId)) speechFallback();
     }
     function showWordPopover(wordId, anchor) {
       const entry=wordCatalog[wordId];const pop=document.getElementById('wordPopover');
@@ -3191,19 +3317,12 @@
       tap(); currentTab = button.dataset.tab; render();
     });
 
-    // Сначала загружаем облачный снимок, и только потом показываем игру:
-    // так локальные данные не успеют перезаписать более свежий прогресс Telegram.
-    async function bootstrapLumiApp() {
-      await initializeProgressStorage();
-      // Ensure the welcome flow remains first for fresh installs, and recover cleanly after reloads.
-      if (state.today !== localDateKey()) {
-        // Streak is only advanced when the learner actually completes an activity today.
-      }
-      ensureLeagueWeek();
-      const startupAchievements = checkAchievements();
-      if (startupAchievements.length) saveState();
-      await verifyProOnStartup();
-      render();
+    // Render from synchronously available localStorage/default state first.
+    // Telegram CloudStorage and the Worker are background enhancements, never startup gates.
+    let runtimeTimersStarted = false;
+    function startLumiRuntimeTimers() {
+      if (runtimeTimersStarted) return;
+      runtimeTimersStarted = true;
       lastProAccessState = isProEnabled();
       updateEnergyTimerUI();
       window.setInterval(() => {
@@ -3226,6 +3345,23 @@
       window.setInterval(() => { verifyProOnStartup(); }, 5 * 60 * 1000);
     }
 
+    function renderFirstScreenImmediately() {
+      ensureLeagueWeek();
+      const startupAchievements = checkAchievements();
+      if (startupAchievements.length) saveState();
+      render();
+      startLumiRuntimeTimers();
+    }
+
+    async function bootstrapLumiApp() {
+      const initialRevision = stateUpdatedAt;
+      // The two remote checks are bounded independently to 2.5 seconds and run only after first paint.
+      await initializeProgressStorage(initialRevision);
+      await verifyProOnStartup();
+      render();
+      updateStorageStatusUI();
+    }
+
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') flushCloudProgressSave();
     });
@@ -3234,13 +3370,23 @@
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') refreshSpeechVoices();
     });
+    // This is intentionally synchronous: a new user gets the goal chooser and a returning
+    // user gets the planet map before any Telegram/Worker request is awaited.
+    try {
+      renderFirstScreenImmediately();
+    } catch (error) {
+      console.error('Lumi immediate render failed:', error);
+      const screen = document.getElementById('screen');
+      if (screen) screen.innerHTML = '<div class="page"><section class="card"><h2>Луми готовится к полёту 🚀</h2><p>Попробуй обновить приложение. Твой сохранённый прогресс не удалён.</p></section></div>';
+    }
     bootstrapLumiApp().catch(error => {
-      console.error('Lumi startup failed:', error);
+      console.error('Lumi background startup failed:', error);
       cloudStorageReady = false;
       cloudStorageStatus = 'local';
       progressStorageReady = true;
-      render();
-      showToast('Запущен локальный режим сохранения');
+      writeLocalProgressSnapshot();
+      updateStorageStatusUI();
+      showToast('Облачная синхронизация временно недоступна. Прогресс сохранён на устройстве.');
     });
   </script>
 </body>
