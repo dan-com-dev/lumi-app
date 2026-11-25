@@ -147,7 +147,13 @@
     .hero-copy p { margin: 0; max-width: 225px; font-size: 12px; line-height: 1.45; color: #78859c; }
     .hero-mascot { display: grid; place-items: center; min-width: 0; }
     .lumi-wrap { position: relative; width: 100%; max-width: 166px; aspect-ratio: 1 / 1; display: grid; place-items: center; isolation: isolate; }
-    .lumi-svg { width: 100%; height: 100%; overflow: visible; animation: floaty 3.7s ease-in-out infinite; transform-origin: 50% 58%; filter: drop-shadow(0 9px 8px rgba(91,111,158,.13)); }
+    .lumi-svg { width: 100%; height: 100%; overflow: visible; animation: floaty 3.7s ease-in-out infinite; transform-origin: 50% 58%; filter: drop-shadow(0 4px 0 rgba(15,42,67,.16)); }
+    .lumi-head { transform-box:fill-box; transform-origin:50% 90%; animation:lumiHeadNod 4.8s ease-in-out infinite; }
+    @keyframes lumiHeadNod { 0%,88%,100% { transform:rotate(0); } 92% { transform:rotate(-2deg); } 96% { transform:rotate(1.5deg); } }
+    .lumi-wrap.is-happy .lumi-head { animation:lumiHeadCheer .55s ease-in-out 3; }
+    @keyframes lumiHeadCheer { 0%,100% { transform:rotate(0) translateY(0); } 50% { transform:rotate(-3deg) translateY(-3px); } }
+    .lumi-wrap.is-sad .lumi-head { animation:lumiHeadShy .6s ease-in-out 2; }
+    @keyframes lumiHeadShy { 0%,100% { transform:rotate(0); } 50% { transform:rotate(4deg) translateY(2px); } }
     @keyframes floaty { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-8px) rotate(1deg); } }
     .gill { transform-box: fill-box; transform-origin: center; animation: gillWiggle 2.4s ease-in-out infinite; }
     .gill:nth-of-type(2n) { animation-delay: .25s; }
@@ -158,7 +164,7 @@
     .lumi-wrap.is-happy .eye-normal { opacity: 0; }
     .lumi-wrap.is-happy .eye-star { opacity: 1; transform: scale(1); }
     .lumi-wrap.is-happy .lumi-svg { animation: happyHop .65s ease-in-out 2; }
-    @keyframes happyHop { 0%,100% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-20px) rotate(-4deg) scale(1.04); } 70% { transform: translateY(1px) rotate(4deg); } }
+    @keyframes happyHop { 0%,100% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-12px) rotate(-3deg) scale(1.025); } 70% { transform: translateY(1px) rotate(3deg); } }
     .lumi-wrap.is-sad .lumi-svg { animation: shy .6s ease-in-out 2; }
     .lumi-wrap.is-sad .gill-shape { fill: #ffad72 !important; filter: drop-shadow(0 0 5px #ffad72); }
     @keyframes shy { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-6deg) translateY(2px); } 75% { transform: rotate(6deg) translateY(2px); } }
@@ -673,28 +679,157 @@
     .legal-form-check { display:flex; align-items:flex-start; gap:9px; margin-top:14px; font-size:12px; line-height:1.5; }
     .legal-form-check input { flex:0 0 18px; width:18px; height:18px; margin:2px 0 0; accent-color:var(--purple); }
     .legal-config-warning { margin-top:10px; padding:10px 12px; border-radius:12px; background:color-mix(in srgb,var(--gold) 12%,var(--card)); color:var(--ink); font-size:10px; line-height:1.45; }
+
+
+    /* Lumi Academy — approved galactic home redesign. Character art is bespoke inline SVG, not a generated raster image. */
+    :root { --lumi-night:#07132f; --lumi-deep:#091d49; --lumi-blue:#123c91; --lumi-cyan:#27dff2; --lumi-violet:#7862ff; }
+    .app-frame { background-color:#07132f; background-image:radial-gradient(circle at 13% 17%,rgba(56,194,255,.18) 0 1px,transparent 2px),radial-gradient(circle at 78% 32%,rgba(192,153,255,.2) 0 1px,transparent 2px),radial-gradient(circle at 55% 68%,rgba(255,255,255,.13) 0 1px,transparent 2px),radial-gradient(ellipse at 50% 0%,#132d73 0%,#091b48 42%,#06112b 100%); background-size:83px 83px,117px 117px,151px 151px,100% 100%; }
+    .topbar { min-height:66px; padding:calc(9px + env(safe-area-inset-top)) 13px 8px; color:#f4fbff; background:rgba(5,15,42,.94); border-bottom:1px solid rgba(83,143,236,.28); box-shadow:0 7px 22px rgba(0,0,0,.18); }
+    .brand { gap:8px; }
+    .brand-mark { width:43px; height:43px; border-radius:50%; background:radial-gradient(circle at 35% 25%,#49f2ff,#1475d5 66%,#4039a6); box-shadow:0 0 19px rgba(34,204,255,.34),inset 0 0 0 2px rgba(153,244,255,.45); overflow:hidden; }
+    .brand-mark svg { width:100%; height:100%; }
+    .brand-name { color:#f4fbff; font-size:18px; line-height:.92; font-weight:950; letter-spacing:-.65px; text-shadow:0 0 14px rgba(72,207,255,.22); }
+    .brand-sub { display:none; }
+    .top-stats { gap:6px; }
+    .stat-pill { min-height:38px; padding:0 10px; gap:6px; border:1px solid rgba(101,130,255,.62); border-radius:22px; color:#f2f6ff; background:linear-gradient(145deg,rgba(22,42,103,.96),rgba(12,29,75,.96)); box-shadow:inset 0 0 0 1px rgba(255,255,255,.035),0 4px 15px rgba(0,0,0,.2); font-size:12px; }
+    .stat-pill .stat-icon { font-size:17px; }
+    .xp-pill { border-color:rgba(244,196,83,.65); }
+    .gem-pill { border-color:rgba(172,119,255,.68); }
+    .settings-shortcut { width:40px; min-height:40px; border:1px solid rgba(118,146,245,.55); border-radius:50%; color:#e8f6ff; background:linear-gradient(145deg,#263f91,#151d5e); font-size:22px; line-height:1; cursor:pointer; box-shadow:0 4px 15px rgba(0,0,0,.2); transition:transform .18s,filter .18s; }
+    .settings-shortcut:active { transform:rotate(25deg) scale(.92); filter:brightness(1.25); }
+    .header-hidden-stat { display:none !important; }
+    .scroll-area { padding:8px 12px max(24px,calc(18px + env(safe-area-inset-bottom))); scrollbar-color:#38599a transparent; }
+    .scroll-area::-webkit-scrollbar-thumb { background:#38599a; }
+    .bottom-nav { padding:8px 7px calc(7px + env(safe-area-inset-bottom)); gap:4px; border-top:1px solid rgba(91,128,226,.38); background:rgba(5,15,44,.97); box-shadow:0 -9px 28px rgba(0,0,0,.26); backdrop-filter:blur(18px); }
+    .nav-btn { min-height:56px; color:#9eafe9; border-radius:13px; font-size:10px; }
+    .nav-btn .nav-icon { display:grid; place-items:center; width:28px; height:25px; font-size:25px; font-weight:700; }
+    .nav-btn.active { color:#48edff; background:rgba(38,139,255,.13); box-shadow:inset 0 -3px 0 #20cfff,0 0 20px rgba(17,183,255,.09); }
+    .nav-btn.pro.active { color:#e8d4ff; background:rgba(142,90,255,.17); box-shadow:inset 0 -3px 0 #ae83ff; }
+    .home-screen { min-height:100%; color:#f4f8ff; padding-bottom:12px; }
+    .home-hero { min-height:310px; position:relative; display:grid; grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr); align-items:center; gap:2px; overflow:hidden; padding:12px 0 16px; isolation:isolate; }
+    .home-hero:before { content:""; position:absolute; z-index:-2; inset:0; background:radial-gradient(ellipse at 22% 50%,rgba(16,154,230,.25),transparent 48%),radial-gradient(ellipse at 86% 58%,rgba(82,67,206,.23),transparent 50%); }
+    .home-hero:after { content:""; position:absolute; z-index:-1; width:125%; height:75px; left:-12%; bottom:-32px; border-radius:50%; background:linear-gradient(180deg,rgba(44,190,255,.1),rgba(30,35,119,.48)); border-top:2px solid rgba(77,211,255,.55); box-shadow:0 -8px 30px rgba(38,115,255,.24); }
+    .home-visual { position:relative; min-width:0; min-height:280px; display:grid; place-items:center; }
+    .home-mascot { width:100%; max-width:222px; aspect-ratio:320/360; z-index:2; filter:drop-shadow(0 15px 12px rgba(0,0,0,.25)); }
+    .home-mascot .lumi-svg { animation:homeLumiFloat 4.2s ease-in-out infinite; }
+    @keyframes homeLumiFloat { 0%,100% { transform:translateY(1px) rotate(-1deg); } 50% { transform:translateY(-8px) rotate(1.1deg); } }
+    .home-ground-glow { position:absolute; z-index:0; bottom:10px; left:4%; width:92%; height:30px; border-radius:50%; background:radial-gradient(ellipse,rgba(46,219,255,.34),rgba(71,72,220,.12) 50%,transparent 72%); filter:blur(8px); }
+    .home-orbit { position:absolute; border:1px solid rgba(82,206,255,.28); border-radius:50%; pointer-events:none; }
+    .orbit-one { width:92%; height:73%; transform:rotate(-22deg); }
+    .orbit-two { width:77%; height:60%; transform:rotate(26deg); border-color:rgba(171,134,255,.22); }
+    .home-floating-star { position:absolute; z-index:3; color:#91edff; text-shadow:0 0 13px #42cfff; font-size:18px; animation:homeStarDrift 3.4s ease-in-out infinite; }
+    .home-floating-star.star-a { top:14%; left:15%; }
+    .home-floating-star.star-b { top:27%; right:3%; color:#dfb6ff; animation-delay:.8s; }
+    .home-floating-star.star-c { bottom:20%; left:9%; font-size:26px; animation-delay:1.3s; }
+    @keyframes homeStarDrift { 0%,100% { opacity:.55; transform:translateY(0) scale(.85); } 50% { opacity:1; transform:translateY(-8px) scale(1.18); } }
+    .home-main { min-width:0; position:relative; z-index:2; padding:2px 0 4px 3px; }
+    .home-greeting { display:inline-flex; align-items:center; gap:7px; max-width:100%; padding:8px 12px; border-radius:22px 22px 22px 5px; color:#132c70; background:linear-gradient(120deg,#effbff,#bdefff); box-shadow:0 4px 18px rgba(54,196,255,.2); font-size:13px; font-weight:900; white-space:nowrap; }
+    .home-greeting span { color:#ffbf58; font-size:17px; }
+    .home-name { margin:12px 0 2px; color:#f4f8ff; font-size:clamp(31px,8vw,44px); line-height:.98; font-weight:1000; letter-spacing:1px; text-shadow:0 3px 0 rgba(30,74,166,.55),0 0 22px rgba(86,187,255,.24); }
+    .home-tagline { margin:6px 0 10px; color:#b9d9ff; font-size:12px; line-height:1.32; font-weight:650; }
+    .home-divider { display:flex; align-items:center; gap:8px; margin:8px 1px 12px; color:#40dfff; text-shadow:0 0 11px #41bfff; }
+    .home-divider i { display:block; flex:1; height:2px; border-radius:3px; background:linear-gradient(90deg,#26d9ef,rgba(72,126,255,.25)); }
+    .home-actions { display:grid; gap:8px; }
+    .home-action { display:flex; align-items:center; gap:9px; width:100%; min-width:0; min-height:61px; padding:8px 10px; border:2px solid rgba(99,225,255,.88); border-radius:18px; color:#fff; text-align:left; cursor:pointer; background:linear-gradient(110deg,#00bce9,#1467d9 76%,#244dc1); box-shadow:0 4px 0 rgba(0,49,139,.55),0 8px 22px rgba(0,139,255,.18),inset 0 0 12px rgba(255,255,255,.08); transition:transform .15s,filter .15s,box-shadow .15s; }
+    .home-action.planets { border-color:rgba(175,151,255,.92); background:linear-gradient(110deg,#754ce3,#3447c9 76%,#2445b0); box-shadow:0 4px 0 rgba(33,27,119,.6),0 8px 22px rgba(113,85,255,.18),inset 0 0 12px rgba(255,255,255,.08); }
+    .home-action.textbook { border-color:rgba(44,230,234,.92); background:linear-gradient(110deg,#04bfc9,#0875bd 76%,#1746aa); box-shadow:0 4px 0 rgba(0,59,119,.6),0 8px 22px rgba(0,196,221,.16),inset 0 0 12px rgba(255,255,255,.08); }
+    .home-action:active { transform:translateY(3px) scale(.985); filter:brightness(1.12); }
+    .home-action-icon { display:grid; place-items:center; flex:0 0 39px; width:39px; height:39px; border-radius:12px; background:rgba(5,25,92,.3); font-size:23px; text-shadow:0 2px 4px rgba(0,0,0,.25); }
+    .home-action-copy { display:grid; min-width:0; gap:3px; flex:1; }
+    .home-action-copy strong { font-size:clamp(11px,2.7vw,13px); line-height:1.1; font-weight:950; }
+    .home-action-copy small { overflow:hidden; color:rgba(230,245,255,.82); font-size:9px; line-height:1.2; text-overflow:ellipsis; white-space:nowrap; }
+    .home-action-arrow { flex:0 0 auto; font-size:27px; line-height:1; font-weight:300; }
+    .home-screen .card { color:#eaf3ff; border:1px solid rgba(93,143,227,.28); background:linear-gradient(145deg,rgba(15,37,88,.95),rgba(9,25,65,.96)); box-shadow:0 10px 27px rgba(0,0,0,.17),inset 0 1px 0 rgba(255,255,255,.035); }
+    .home-screen .muted,.home-screen .progress-line,.home-screen .daily-energy-row { color:#a9bfdf; }
+    .home-screen .energy-info-trigger { display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; margin-top:9px; padding:0; border:0; background:transparent; text-align:left; font:inherit; cursor:pointer; }
+    .home-screen .energy-info-trigger .energy-hearts { color:#e6f7ff; font-weight:850; }
+    .home-screen .energy-info-caret { color:#65dff7; font-size:14px; }
+    .home-screen .section-row h2,.home-screen .home-section-title h2 { color:#f1f7ff; }
+    .home-screen .tiny-link { color:#54e9ff; }
+    .home-screen .goal-track { background:#243967; }
+    .home-screen .goal-fill { background:linear-gradient(90deg,#20d9ef,#7d84ff); box-shadow:0 0 12px rgba(34,204,255,.4); }
+    .home-screen .course-planet { background:linear-gradient(145deg,rgba(15,37,88,.97),rgba(9,25,65,.97)); border-color:rgba(91,149,235,.28); }
+    .home-screen .course-planet-copy h2,.home-screen .lesson-node-copy strong { color:#f3f7ff; }
+    .home-screen .course-planet-copy p,.home-screen .lesson-node-copy span { color:#9fb7d9; }
+    .home-screen .lesson-node { background:rgba(25,52,108,.82); border-color:rgba(98,150,224,.27); color:#eaf3ff; }
+    .home-screen .lesson-node.done { background:rgba(10,114,108,.23); border-color:rgba(64,222,184,.38); }
+    .home-screen .footer-note { color:#8faad1; }
+    .lumi-wrap.home-mascot .lumi-wave-arm { transform-box:fill-box; transform-origin:20% 75%; animation:lumiWave 2.8s ease-in-out infinite; }
+    @keyframes lumiWave { 0%,72%,100% { transform:rotate(0); } 78% { transform:rotate(-13deg); } 84% { transform:rotate(9deg); } 90% { transform:rotate(-8deg); } 96% { transform:rotate(3deg); } }
+    .lumi-wrap .lumi-tail { transform-box:fill-box; transform-origin:20% 55%; animation:lumiTailSway 3.2s ease-in-out infinite; }
+    @keyframes lumiTailSway { 0%,100% { transform:rotate(-2deg); } 50% { transform:rotate(3deg); } }
+    .lumi-wrap .lumi-svg { filter:drop-shadow(0 4px 0 rgba(5,48,96,.14)); }
+    .lumi-wrap.is-happy .lumi-wave-arm { animation:lumiWaveHappy .55s ease-in-out 3; }
+    @keyframes lumiWaveHappy { 0%,100% { transform:rotate(0); } 50% { transform:rotate(-24deg); } }
+    .lumi-wrap.is-sad .lumi-wave-arm { animation:none; }
+    .lumi-wrap.is-sad .lumi-svg { animation:shy .6s ease-in-out 2; }
+    .lumi-wrap.is-sad .gill-shape { fill:#f6a17d !important; }
+    .lumi-wrap.skin-gold .lumi-svg { filter:sepia(.48) saturate(1.35) hue-rotate(350deg) drop-shadow(0 9px 9px rgba(190,135,35,.2)); }
+    .lumi-wrap.skin-cyber .lumi-svg { filter:hue-rotate(125deg) saturate(1.22) drop-shadow(0 8px 9px rgba(20,180,220,.22)); }
+    .lumi-wrap.skin-hero .lumi-svg { filter:hue-rotate(22deg) saturate(1.18) drop-shadow(0 8px 9px rgba(245,77,120,.2)); }
+    @media (min-width:600px) {
+      .app-frame { background-color:#07132f; border-color:rgba(86,142,234,.45); box-shadow:0 25px 80px rgba(0,0,0,.4); }
+      .home-hero { min-height:350px; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); }
+      .home-mascot { max-width:248px; }
+    }
+    @media (max-width:390px) {
+      .topbar { padding-left:10px; padding-right:9px; }
+      .brand-mark { width:37px; height:37px; }
+      .brand-name { font-size:16px; }
+      .top-stats { gap:4px; }
+      .stat-pill { min-height:35px; padding:0 7px; gap:4px; font-size:11px; }
+      .stat-pill .stat-icon { font-size:15px; }
+      .settings-shortcut { width:36px; min-height:36px; font-size:20px; }
+      .home-hero { min-height:286px; grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr); gap:0; padding-top:7px; }
+      .home-visual { min-height:250px; }
+      .home-mascot { max-width:185px; width:108%; margin-left:-8px; }
+      .home-main { padding-left:0; }
+      .home-greeting { padding:7px 9px; font-size:11px; }
+      .home-name { font-size:32px; }
+      .home-tagline { font-size:10px; }
+      .home-action { min-height:56px; padding:7px; gap:6px; border-radius:15px; }
+      .home-action-icon { flex-basis:32px; width:32px; height:34px; font-size:19px; }
+      .home-action-copy strong { font-size:11px; }
+      .home-action-copy small { font-size:8px; }
+      .home-action-arrow { font-size:23px; }
+    }
+    @media (max-width:340px) {
+      .top-stats { gap:3px; }
+      .stat-pill { padding:0 5px; font-size:10px; }
+      .settings-shortcut { width:33px; min-height:33px; }
+      .home-hero { grid-template-columns:minmax(0,.77fr) minmax(0,1.23fr); min-height:270px; }
+      .home-mascot { width:116%; margin-left:-13px; }
+      .home-greeting { font-size:10px; padding:6px 7px; }
+      .home-name { font-size:29px; }
+      .home-action-copy strong { font-size:10px; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .home-mascot .lumi-svg,.lumi-wrap .lumi-tail,.lumi-wrap .lumi-wave-arm,.home-floating-star { animation:none !important; }
+    }
+
   </style>
 </head>
 <body>
   <main class="app-frame" id="app">
     <header class="topbar" id="topbar">
       <div class="brand">
-        <div class="brand-mark">🚀</div>
-        <div class="brand-copy"><div class="brand-name">LUMI ACADEMY</div><div class="brand-sub">КОСМИЧЕСКИЙ АНГЛИЙСКИЙ</div></div>
+        <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="16" fill="#159fe0"/><path d="M5 27C14 13 30 10 43 15C34 28 18 34 5 27Z" fill="none" stroke="#54e4f2" stroke-width="4" stroke-linecap="round"/><path d="M14 28C18 33 29 35 35 29" fill="none" stroke="#b3faff" stroke-width="2"/><circle cx="19" cy="18" r="4" fill="#8ff7ff"/></svg></div>
+        <div class="brand-copy"><div class="brand-name">Lumi<br>Academy</div></div>
       </div>
       <div class="top-stats" id="topStats">
-        <div class="stat-pill streak-pill" id="streakPill" title="Твоя серия занятий"><span class="stat-icon">🔥</span><span id="streakTop">0</span></div>
-        <button type="button" class="stat-pill energy-stat-pill" id="energyPill" aria-controls="energyInfo" aria-expanded="false" title="Показать восстановление энергии"><span class="stat-icon">⚡</span><span id="energyTop">5/5</span></button>
-        <div class="stat-pill"><span class="stat-icon">💎</span><span id="gemsTop">0</span></div>
+        <div class="stat-pill xp-pill" title="Накопленный опыт"><span class="stat-icon">⭐</span><span id="xpTop">0</span></div>
+        <div class="stat-pill gem-pill" title="Кристаллы"><span class="stat-icon">💎</span><span id="gemsTop">0</span></div>
+        <button type="button" class="settings-shortcut" id="settingsShortcut" aria-label="Открыть профиль и настройки" title="Профиль и настройки">⚙</button>
+        <span class="header-hidden-stat" id="streakPill"><span id="streakTop">0</span></span>
       </div>
       <div class="energy-info" id="energyInfo" hidden role="status" aria-live="polite"><div class="energy-info-title">ВОССТАНОВЛЕНИЕ ЭНЕРГИИ</div><div class="energy-info-time" id="energyInfoTime">⏳ 01:00:00</div><div class="energy-info-note" id="energyInfoNote">Полное восстановление всех 5 жизней через...</div></div>
     </header>
     <section class="scroll-area" id="screen" aria-live="polite"></section>
     <nav class="bottom-nav" id="bottomNav" aria-label="Основная навигация" hidden>
-      <button class="nav-btn active" data-tab="map"><span class="nav-icon">🪐</span><span>Карта</span></button>
-      <button class="nav-btn" data-tab="book"><span class="nav-icon">📚</span><span>Учебник</span></button>
-      <button class="nav-btn" data-tab="profile"><span class="nav-icon">👩‍🚀</span><span>Профиль</span></button>
-      <button class="nav-btn pro" data-tab="pro"><span class="nav-icon">⭐</span><span>PRO</span></button>
+      <button class="nav-btn active" data-tab="map"><span class="nav-icon">⌂</span><span>Главная</span></button>
+      <button class="nav-btn" data-tab="book"><span class="nav-icon">▤</span><span>Учебник</span></button>
+      <button class="nav-btn" data-tab="profile"><span class="nav-icon">♙</span><span>Профиль</span></button>
+      <button class="nav-btn pro" data-tab="pro"><span class="nav-icon">✧</span><span>PRO</span></button>
     </nav>
     <div class="toast" id="toast" role="status"></div>
     <div class="word-popover" id="wordPopover" hidden role="status" aria-live="polite"></div>
@@ -1965,11 +2100,13 @@
     function updateTopStats() {
       const streak = document.getElementById('streakTop');
       const gems = document.getElementById('gemsTop');
+      const xp = document.getElementById('xpTop');
       const energy = document.getElementById('energyTop');
       if (streak) streak.textContent = state.streak;
       const streakPill=document.getElementById('streakPill');
       if(streakPill){ streakPill.classList.toggle('pro-cryo',isProEnabled()); streakPill.title=isProEnabled()?'Крио-защита Луми активна: серия защищена от пропуска до 3 дней':'Серия занятий'; }
       if (gems) gems.textContent = state.crystals;
+      if (xp) xp.textContent = state.xp;
       if (energy) energy.textContent = isProEnabled() ? '∞' : `${state.energy}/${ENERGY_MAX}`;
       updateEnergyTimerUI();
     }
@@ -2071,97 +2208,74 @@
       return String(value).replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[char]);
     }
 
-    // Inline vector mascot: six glowing feathery gills, clear bubble helmet and a turquoise collar.
+    // Original Lumi character: a hand-drawn vector axolotl astronaut with a distinct silhouette.
+    // The art stays inline so the mascot is crisp at every screen size and keeps its old state hooks.
     let lumiInstance = 0;
     function lumiArt(extraClass = '') {
-      const n = ++lumiInstance;
       const skinClass = getSkinClass(extraClass);
-      const decoration = skinClass === 'skin-gold' ? '👑' : skinClass === 'skin-cyber' ? '🕶️' : skinClass === 'skin-hero' ? '🦸' : '';
+      const decoration = skinClass === 'skin-gold' ? '✦' : skinClass === 'skin-cyber' ? '⌁' : skinClass === 'skin-hero' ? '★' : '';
+      // Lumi is a deliberately simple, hand-drawn 2D cartoon: solid inks, a few matte colors and an asymmetric face.
+      // Keep the named groups below: existing lesson, happy/sad, wave and skin animations depend on them.
       return `<div class="lumi-wrap ${skinClass} ${extraClass}" aria-label="Луми, космический аксолотль" role="img">
         <span class="sparkle s1">✦</span><span class="sparkle s2">✧</span><span class="sparkle s3">✦</span><span class="bubble"></span><span class="bubble b2"></span>
-        <svg class="lumi-svg" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <defs>
-            <linearGradient id="${n}skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8d2df"/><stop offset=".52" stop-color="#cbbaf7"/><stop offset="1" stop-color="#b8e2f2"/></linearGradient>
-            <linearGradient id="${n}gill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffa6c7"/><stop offset=".52" stop-color="#c49df7"/><stop offset="1" stop-color="#67e5df"/></linearGradient>
-            <linearGradient id="${n}collar" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9bfff0"/><stop offset=".5" stop-color="#12cbd4"/><stop offset="1" stop-color="#4b9ee9"/></linearGradient>
-            <linearGradient id="${n}suit" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#fff7ff"/><stop offset=".48" stop-color="#e8e1ff"/><stop offset="1" stop-color="#c8eafa"/></linearGradient>
-            <linearGradient id="${n}glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".35"/><stop offset=".58" stop-color="#b9f4ff" stop-opacity=".07"/><stop offset="1" stop-color="#d7c9ff" stop-opacity=".17"/></linearGradient>
-            <radialGradient id="${n}cheek"><stop stop-color="#ff8eae" stop-opacity=".62"/><stop offset="1" stop-color="#ff8eae" stop-opacity="0"/></radialGradient>
-            <filter id="${n}glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          </defs>
-
-          <!-- Round, roomy helmet bubble -->
-          <ellipse cx="130" cy="130" rx="112" ry="115" fill="url(#${n}glass)"/>
-
-          <!-- A curled, translucent axolotl tail peeks out beside the suit -->
-          <path d="M158 207 C175 195 192 192 202 203 C214 216 205 231 193 232 C182 233 176 225 181 216 C184 210 191 208 197 213 C193 207 185 207 180 213" fill="#c7b8f4" fill-opacity=".43" stroke="#a99be2" stroke-opacity=".72" stroke-width="3" stroke-linecap="round"/>
-          <path d="M176 205 Q193 197 202 209" fill="none" stroke="#fff" stroke-opacity=".72" stroke-width="2.5" stroke-linecap="round"/>
-
-          <!-- Puffy mini space suit and two tiny feet -->
-          <ellipse cx="114" cy="228" rx="13" ry="7" fill="#c8b9ee" stroke="#a995dc" stroke-width="1.7"/>
-          <ellipse cx="146" cy="228" rx="13" ry="7" fill="#c8b9ee" stroke="#a995dc" stroke-width="1.7"/>
-          <path d="M103 225 Q113 231 124 226 M136 226 Q147 231 157 225" fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="2" stroke-linecap="round"/>
-          <ellipse cx="130" cy="199" rx="39" ry="35" fill="url(#${n}suit)" stroke="#b7a7e3" stroke-width="2.2"/>
-          <path d="M103 186 Q130 174 157 186" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="3" stroke-linecap="round"/>
-          <path d="M109 210 Q130 219 151 210" fill="none" stroke="#b3c6e8" stroke-opacity=".85" stroke-width="2" stroke-linecap="round"/>
-          <rect x="119" y="190" width="22" height="19" rx="7" fill="#d8f7f7" stroke="#8dcfd8" stroke-width="1.5"/>
-          <path d="M130 194 L132.5 199 L138 199.5 L134 203 L135 208 L130 205.5 L125 208 L126 203 L122 199.5 L127.5 199Z" fill="#8b72d8" opacity=".9"/>
-
-          <!-- Two small mitten-like paws at the sides of the body -->
-          <path d="M96 188 C86 187 83 195 88 202 C92 207 101 205 106 198Z" fill="url(#${n}skin)" stroke="#b69edb" stroke-width="2"/>
-          <path d="M164 188 C174 187 177 195 172 202 C168 207 159 205 154 198Z" fill="url(#${n}skin)" stroke="#b69edb" stroke-width="2"/>
-          <path d="M90 198 l5 2 M96 200 l4 1 M170 198 l-5 2 M164 200 l-4 1" stroke="#fff" stroke-opacity=".9" stroke-width="1.7" stroke-linecap="round"/>
-
-          <!-- Six smaller, fluffy gill antennae with more breathing room -->
-          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M82 91 C66 88 59 77 64 66 C73 69 80 77 83 85 C81 73 88 64 97 62 C101 73 96 85 89 93 C99 86 108 88 114 95 C105 103 94 102 83 97Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M81 91 Q69 75 66 69 M85 89 Q91 69 96 65 M88 94 Q102 91 110 96" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
-          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M75 112 C59 114 50 105 52 94 C62 94 71 100 77 106 C71 95 74 84 82 79 C91 88 90 101 84 111 C94 102 104 104 110 112 C101 120 88 120 76 117Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M75 113 Q59 101 55 97 M79 109 Q81 89 82 83 M82 115 Q98 108 106 113" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
-          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M83 135 C69 143 57 137 55 127 C65 124 75 129 83 133 C75 123 77 112 86 106 C95 115 95 127 90 136 C100 129 109 132 114 140 C104 146 92 145 83 140Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M83 137 Q65 133 58 130 M86 134 Q84 117 87 110 M89 139 Q102 135 110 141" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
-          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M178 91 C194 88 201 77 196 66 C187 69 180 77 177 85 C179 73 172 64 163 62 C159 73 164 85 171 93 C161 86 152 88 146 95 C155 103 166 102 177 97Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M179 91 Q191 75 194 69 M175 89 Q169 69 164 65 M172 94 Q158 91 150 96" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
-          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M185 112 C201 114 210 105 208 94 C198 94 189 100 183 106 C189 95 186 84 178 79 C169 88 170 101 176 111 C166 102 156 104 150 112 C159 120 172 120 184 117Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M185 113 Q201 101 205 97 M181 109 Q179 89 178 83 M178 115 Q162 108 154 113" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
-          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M177 135 C191 143 203 137 205 127 C195 124 185 129 177 133 C185 123 183 112 174 106 C165 115 165 127 170 136 C160 129 151 132 146 140 C156 146 168 145 177 140Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M177 137 Q195 133 202 130 M174 134 Q176 117 173 110 M171 139 Q158 135 150 141" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
-
-          <!-- Smaller head, centred comfortably inside the bubble helmet -->
-          <path d="M78 111 C78 79 100 58 130 58 C160 58 182 79 182 111 C182 142 162 163 130 163 C98 163 78 142 78 111Z" fill="url(#${n}skin)" stroke="#b99de9" stroke-width="2.2"/>
-          <path d="M95 75 Q130 54 165 75" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/>
-
-          <!-- Expressive, slightly larger eyes with bright white catchlights -->
-          <ellipse cx="99" cy="132" rx="17" ry="11" fill="url(#${n}cheek)"/>
-          <ellipse cx="161" cy="132" rx="17" ry="11" fill="url(#${n}cheek)"/>
-          <g class="eye-normal">
-            <ellipse cx="110" cy="108" rx="12" ry="15" fill="#fff"/>
-            <ellipse cx="150" cy="108" rx="12" ry="15" fill="#fff"/>
-            <ellipse cx="112" cy="110" rx="7" ry="9.5" fill="#35416f"/>
-            <ellipse cx="152" cy="110" rx="7" ry="9.5" fill="#35416f"/>
-            <circle cx="115" cy="105" r="3.4" fill="#fff"/>
-            <circle cx="155" cy="105" r="3.4" fill="#fff"/>
-            <circle cx="108" cy="114" r="1.6" fill="#fff" opacity=".9"/>
-            <circle cx="148" cy="114" r="1.6" fill="#fff" opacity=".9"/>
+        <svg class="lumi-svg" viewBox="0 0 320 360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- Tail: broad, simple and recognisable even at small sizes. -->
+          <path class="lumi-tail" d="M177 263 C151 261 127 276 113 300 C101 321 82 333 65 324 C51 316 53 298 67 287 C78 278 93 282 101 293 C117 268 140 247 170 244Z" fill="#38c6c8" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M71 306 C88 304 101 311 111 300 C123 285 139 269 157 264" fill="none" stroke="#83e5d9" stroke-width="6" stroke-linecap="round"/>
+          <!-- Suit body and short boots. -->
+          <path d="M119 226 Q159 211 201 226 L220 289 Q218 309 197 313 L124 311 Q105 306 104 287Z" fill="#fff0cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M124 298 Q142 306 160 301 L159 333 Q151 346 130 341 L119 327Z" fill="#fff0cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M168 301 Q188 306 207 296 L214 324 Q211 342 191 343 L175 333Z" fill="#fff0cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M119 326 Q139 337 158 326 L160 340 Q144 351 125 342Z M176 328 Q196 338 212 324 L218 338 Q198 353 178 342Z" fill="#28bfc2" stroke="#183552" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M121 341 Q140 348 158 340 Q163 350 150 355 L127 355 Q116 351 121 341Z M178 341 Q199 349 216 338 Q224 348 210 355 L188 355 Q175 353 178 341Z" fill="#f7f2dc" stroke="#183552" stroke-width="5" stroke-linejoin="round"/>
+          <!-- Backpack peeks over the shoulder. -->
+          <path d="M103 226 Q86 225 82 246 L87 278 Q96 288 112 279 L124 245Z" fill="#238eaa" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
+          <rect x="88" y="244" width="18" height="28" rx="7" fill="#fff0cf" stroke="#183552" stroke-width="4"/>
+          <!-- Right arm. -->
+          <path d="M201 238 Q224 232 238 250 L249 275 Q250 290 235 293 Q220 294 214 278 L194 261Z" fill="#fff0cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M232 277 Q247 270 255 282 Q261 296 248 306 Q233 311 224 298Z" fill="#35c6c5" stroke="#183552" stroke-width="5" stroke-linejoin="round"/>
+          <!-- Waving arm remains a separate animated group. -->
+          <g class="lumi-wave-arm">
+            <path d="M119 239 Q98 242 83 224 L65 204 Q54 190 66 180 Q78 171 90 185 L119 211 Q133 224 137 242Z" fill="#fff0cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
+            <path d="M65 191 Q52 180 42 190 Q31 202 42 218 Q53 234 70 228 Q83 221 78 205Z" fill="#35c6c5" stroke="#183552" stroke-width="5" stroke-linejoin="round"/>
+            <path d="M43 204 Q53 210 60 201 M51 218 Q61 223 69 214" fill="none" stroke="#183552" stroke-width="3.5" stroke-linecap="round"/>
           </g>
-          <g class="eye-star" fill="#fff" filter="url(#${n}glow)">
-            <path d="M110 89 L115 102 L128 108 L115 113 L110 127 L105 113 L92 108 L105 102Z"/>
-            <path d="M150 89 L155 102 L168 108 L155 113 L150 127 L145 113 L132 108 L145 102Z"/>
+          <!-- Flat suit seams and the signature Lumi star. -->
+          <path d="M123 263 Q160 275 203 261 M122 286 Q161 296 207 283" fill="none" stroke="#d4c6a6" stroke-width="4" stroke-linecap="round"/>
+          <path d="M160 248 L168 263 L185 265 L172 277 L175 294 L160 285 L145 294 L148 277 L135 265 L152 263Z" fill="#36cbd0" stroke="#183552" stroke-width="4" stroke-linejoin="round"/>
+          <circle cx="195" cy="251" r="4" fill="#e58a69" stroke="#183552" stroke-width="2"/>
+          <!-- Axolotl gills: three leaf-like fronds on each side, not mechanical spikes. -->
+          <g class="gill gill-left-one"><path class="gill-shape" d="M101 126 C78 119 67 101 76 83 C94 88 105 104 108 119 C108 98 119 84 135 84 C143 104 129 122 111 132Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M105 124 Q87 101 80 91 M111 126 Q128 104 133 91" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
+          <g class="gill gill-left-two"><path class="gill-shape" d="M91 158 C67 156 51 141 57 121 C76 121 89 135 96 149 C92 128 104 111 121 112 C131 132 116 149 101 161Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M94 156 Q71 135 63 128 M101 155 Q117 132 119 119" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
+          <g class="gill gill-left-three"><path class="gill-shape" d="M102 185 C81 196 60 188 56 170 C74 164 91 174 102 181 C96 162 108 148 125 149 C133 168 119 181 109 190Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M102 184 Q77 177 63 174 M108 184 Q119 163 123 156" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
+          <g class="gill gill-right-one"><path class="gill-shape" d="M219 126 C242 119 253 101 244 83 C226 88 215 104 212 119 C212 98 201 84 185 84 C177 104 191 122 209 132Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M215 124 Q233 101 240 91 M209 126 Q192 104 187 91" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
+          <g class="gill gill-right-two"><path class="gill-shape" d="M229 158 C253 156 269 141 263 121 C244 121 231 135 224 149 C228 128 216 111 199 112 C189 132 204 149 219 161Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M226 156 Q249 135 257 128 M219 155 Q203 132 201 119" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
+          <g class="gill gill-right-three"><path class="gill-shape" d="M218 185 C239 196 260 188 264 170 C246 164 229 174 218 181 C224 162 212 148 195 149 C187 168 201 181 211 190Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M218 184 Q243 177 257 174 M212 184 Q201 163 197 156" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
+          <!-- Large, slightly uneven head: the silhouette is Lumi's main identifier. -->
+          <g class="lumi-head">
+            <path d="M89 151 C86 108 113 76 153 72 C194 67 230 90 239 128 C250 173 226 211 192 224 C153 238 108 219 92 188 C86 177 86 164 89 151Z" fill="#59d8cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
+            <path d="M104 111 Q119 91 140 89" fill="none" stroke="#a0eee2" stroke-width="5" stroke-linecap="round"/>
+            <ellipse cx="116" cy="181" rx="17" ry="9" fill="#f5a0a4" opacity=".52"/><ellipse cx="211" cy="181" rx="14" ry="8" fill="#f5a0a4" opacity=".45"/>
+            <g class="eye-normal">
+              <ellipse cx="132" cy="148" rx="10.5" ry="13.5" fill="#fff8e8" stroke="#183552" stroke-width="3"/>
+              <ellipse cx="190" cy="151" rx="9.5" ry="12.5" fill="#fff8e8" stroke="#183552" stroke-width="3"/>
+              <ellipse cx="134" cy="151" rx="5.5" ry="8" fill="#28325f"/><ellipse cx="191" cy="154" rx="5" ry="7.5" fill="#28325f"/>
+              <circle cx="136" cy="147" r="2.2" fill="#fff"/><circle cx="193" cy="150" r="2" fill="#fff"/>
+            </g>
+            <g class="eye-star" fill="#fff4b5"><path d="M132 132 L137 143 L149 148 L137 153 L132 165 L127 153 L115 148 L127 143Z"/><path d="M190 136 L194 146 L205 151 L194 156 L190 167 L185 156 L174 151 L185 146Z"/></g>
+            <path d="M119 130 Q130 124 141 129 M181 132 Q190 126 199 133" fill="none" stroke="#183552" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="157" cy="166" r="2.8" fill="#183552"/><circle cx="170" cy="166" r="2.2" fill="#183552"/>
+            <path d="M146 184 Q160 197 177 183 Q169 205 153 197 Q148 193 146 184Z" fill="#a93f61" stroke="#183552" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M151 187 Q161 192 172 187" fill="none" stroke="#ffd0d4" stroke-width="3" stroke-linecap="round"/>
+            <!-- Three freckles on one cheek make the face a little imperfect and memorable. -->
+            <circle cx="108" cy="174" r="2.5" fill="#257e86"/><circle cx="116" cy="180" r="2" fill="#257e86"/><circle cx="123" cy="173" r="1.7" fill="#257e86"/>
+            <circle cx="207" cy="174" r="2" fill="#257e86"/>
           </g>
-          <path d="M119 143 Q130 151 141 143" fill="none" stroke="#98648f" stroke-width="2.7" stroke-linecap="round"/>
-          <ellipse cx="130" cy="136" rx="4" ry="3" fill="#ef91ad"/>
-
-          <!-- Neon-turquoise life-support collar between head and suit -->
-          <path d="M91 157 Q130 174 169 157 L163 177 Q130 191 97 177Z" fill="url(#${n}collar)" stroke="#079bb2" stroke-width="2"/>
-          <path d="M103 164 Q130 177 157 164" fill="none" stroke="#d9ffff" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="130" cy="178" r="5.5" fill="#edffff" stroke="#079bb2" stroke-width="2"/>
-
-          <!-- Paws lift toward the visor when Lumi is shy -->
-          <g class="paw-cover">
-            <ellipse cx="101" cy="126" rx="13" ry="9" transform="rotate(-32 101 126)" fill="#efc9e9" stroke="#b99bd7" stroke-width="1.8"/>
-            <ellipse cx="159" cy="126" rx="13" ry="9" transform="rotate(32 159 126)" fill="#efc9e9" stroke="#b99bd7" stroke-width="1.8"/>
-            <path d="M94 125 l5 -2 M100 129 l5 -2 M155 129 l5 2 M161 125 l5 2" stroke="#a77ab8" stroke-width="1.4" stroke-linecap="round"/>
-          </g>
-
-          <!-- Bubble reflections and outer glass rim -->
-          <path d="M45 92 C53 52 82 25 112 20" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="5.5" stroke-linecap="round"/>
-          <path d="M207 69 Q220 90 220 115" fill="none" stroke="#fff" stroke-opacity=".72" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="57" cy="126" r="3" fill="#fff" opacity=".9"/>
-          <circle cx="204" cy="150" r="2.5" fill="#fff" opacity=".85"/>
-          <ellipse cx="130" cy="130" rx="112" ry="115" fill="none" stroke="#91dce9" stroke-width="3"/>
+          <!-- Broad collar replaces the oversized glass helmet. -->
+          <path d="M105 218 Q159 244 215 215 L222 234 Q163 266 99 237Z" fill="#29bdc4" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
+          <path d="M117 230 Q160 248 204 228" fill="none" stroke="#8be7dc" stroke-width="4" stroke-linecap="round"/>
+          <!-- When Lumi is shy he hides his cheeks with both mittens. -->
+          <g class="paw-cover"><path d="M117 178 Q101 171 97 187 Q95 203 111 211 Q127 213 133 195Z" fill="#35c6c5" stroke="#183552" stroke-width="5"/><path d="M183 194 Q191 176 207 182 Q222 191 211 207 Q196 218 183 194Z" fill="#35c6c5" stroke="#183552" stroke-width="5"/></g>
         </svg>
         ${decoration ? `<span class="lumi-skin-decoration" aria-hidden="true">${decoration}</span>` : ''}
       </div>`;
@@ -2862,33 +2976,50 @@
     function renderMap() {
       const visibleLessonCount = isProEnabled() ? allLessons.length : planets.reduce((sum, planet) => sum + planet.lessons.length, 0);
       const done = allLessons.filter(lesson => state.completedLessons.includes(lesson.id) && (isProEnabled() || !lesson.isPro)).length;
-      const progress = Math.min(100, Math.round(done / visibleLessonCount * 100));
+      const progress = Math.min(100, Math.round(done / Math.max(1,visibleLessonCount) * 100));
       const hearts = isProEnabled() ? '∞ без ограничений' : `${state.energy}/${ENERGY_MAX} сердечек`;
       const dailyTarget = dailyLessonTarget();
       const dailyDone = dailyLessonProgress();
       const dailyPercent = Math.min(100, Math.round(dailyDone / dailyTarget * 100));
       const dailyClaimed = state.dailyGoalClaimedDate === localDateKey();
       if (ensureDailyQuests()) saveState();
-      return `<div class="page">
-        <section class="card hero">
-          <div class="hero-copy"><div class="eyebrow">КОСМИЧЕСКАЯ АКАДЕМИЯ</div><h1>С возвращением,<br>кадет!</h1><p>Луми приготовил ${isProEnabled() ? allLessons.length : planets.reduce((n,p)=>n+p.lessons.length,0)} коротких миссий. Новые слова появляются маленькими порциями.</p></div>
-          <div class="hero-mascot">${lumiArt()}</div>
+      return `<div class="page home-screen">
+        <section class="home-hero">
+          <div class="home-visual">
+            <div class="home-orbit orbit-one"></div><div class="home-orbit orbit-two"></div>
+            <span class="home-floating-star star-a">✦</span><span class="home-floating-star star-b">✧</span><span class="home-floating-star star-c">·</span>
+            ${lumiArt('home-mascot')}
+            <span class="home-ground-glow"></span>
+          </div>
+          <div class="home-main">
+            <div class="home-greeting">Привет, кадет! <span>✦</span></div>
+            <h1 class="home-name">ЛУМИ</h1>
+            <p class="home-tagline">Твой космический напарник</p>
+            <div class="home-divider"><i></i><span>✦</span><i></i></div>
+            <div class="home-actions">
+              <button type="button" class="home-action primary" data-home-action="continue"><span class="home-action-icon">📖</span><span class="home-action-copy"><strong>Продолжить обучение</strong><small>${done} из ${visibleLessonCount} уроков пройдено</small></span><span class="home-action-arrow">›</span></button>
+              <button type="button" class="home-action planets" data-home-action="planets"><span class="home-action-icon">🪐</span><span class="home-action-copy"><strong>Планеты</strong><small>${allPlanets.length} миров Академии</small></span><span class="home-action-arrow">›</span></button>
+              <button type="button" class="home-action textbook" data-home-action="book"><span class="home-action-icon">📚</span><span class="home-action-copy"><strong>Учебник</strong><small>${Object.keys(wordCatalog).length} слов для повторения</small></span><span class="home-action-arrow">›</span></button>
+            </div>
+          </div>
         </section>
-        <section class="card daily-card">
+        <section class="home-daily card daily-card">
           <div class="section-row"><h2>Твоя цель на сегодня</h2><button class="tiny-link" id="changeGoal">Изменить</button></div>
           <div class="progress-line"><span>План: ${state.goal} минут · примерно ${goalOptionCaption(state.goal)}</span><strong>${dailyDone} / ${dailyTarget} миссий</strong></div>
           <div class="goal-track"><div class="goal-fill" style="width:${dailyPercent}%"></div></div>
           <div class="progress-line"><span>${dailyClaimed ? 'Дневная цель выполнена — бонус получен!' : dailyDone >= dailyTarget ? 'Цель достигнута!' : `Ещё ${dailyTarget-dailyDone} ${plural(dailyTarget-dailyDone,'миссия','миссии','миссий')} до награды`}</span><span>${dailyPercent}%</span></div>
           <div class="progress-line" style="margin-top:8px"><span>Путь по Академии</span><span>${done}/${visibleLessonCount} уроков · ${progress}%</span></div>
-          <div class="daily-energy-row"><span>Энергия кадета</span><span class="energy-hearts">${isProEnabled() ? '♾️ Безлимитная энергия' : `❤️ ${hearts}`}</span></div>
+          <button type="button" class="daily-energy-row energy-info-trigger" id="energyPill" aria-controls="energyInfo" aria-expanded="false"><span>Энергия кадета</span><span class="energy-hearts">${isProEnabled() ? '♾️ Безлимитная энергия' : `❤️ ${hearts}`}</span><span class="energy-info-caret">ⓘ</span></button>
           ${!isProEnabled() && state.energy < ENERGY_MAX ? `<div class="energy-reset-hint">⏳ Полное восстановление 5/5 через <strong id="energyCountdownInline">${formatEnergyCountdown()}</strong></div>` : ''}
         </section>
         <div class="daily-quest-mount" id="dailyQuestsMount">${renderDailyQuests()}</div>
         ${renderLeagueCard()}
-        <div class="section-row" style="margin:19px 2px 10px"><h2>Бесплатные планеты</h2><span class="muted small">${planets.length} миров · ${planets.reduce((n,p)=>n+p.lessons.length,0)} уроков</span></div>
-        ${planets.map((planet,index) => renderPlanetCard(planet,index,false)).join('')}
-        <div class="section-row" style="margin:20px 2px 10px"><h2>Секретные миры</h2><span class="pro-planet-label">⭐ ${proPlanets.length} PRO</span></div>
-        ${proPlanets.map((planet,index) => renderPlanetCard(planet,index,true)).join('')}
+        <div id="planetSections" class="home-planet-sections">
+          <div class="section-row home-section-title"><h2>Планеты Академии</h2><span class="muted small">${planets.length} миров · ${planets.reduce((n,p)=>n+p.lessons.length,0)} уроков</span></div>
+          ${planets.map((planet,index) => renderPlanetCard(planet,index,false)).join('')}
+          <div class="section-row home-section-title" style="margin-top:20px"><h2>Секретные миры</h2><span class="pro-planet-label">⭐ ${proPlanets.length} PRO</span></div>
+          ${proPlanets.map((planet,index) => renderPlanetCard(planet,index,true)).join('')}
+        </div>
         <div class="footer-note">Ошибки расходуют энергию, но помогают учиться. В Lumi PRO энергия бесконечна 💫</div>
       </div>`;
     }
@@ -3136,6 +3267,25 @@
     }
 
     function bindPageEvents() {
+      const settingsShortcut = document.getElementById('settingsShortcut');
+      if (settingsShortcut) settingsShortcut.addEventListener('click', () => { tap(); currentTab = 'profile'; render(); });
+      const homeEnergyToggle = document.getElementById('energyPill');
+      if (homeEnergyToggle) homeEnergyToggle.addEventListener('click', event => {
+        event.stopPropagation(); tap(); refreshEnergy();
+        if (isProEnabled()) { showToast('В Lumi PRO энергия бесконечная — таймер не нужен ⭐'); return; }
+        energyInfoOpen = !energyInfoOpen; updateEnergyTimerUI();
+      });
+      document.querySelectorAll('[data-home-action]').forEach(button => button.addEventListener('click', () => {
+        tap();
+        const action = button.dataset.homeAction;
+        if (action === 'book') { currentTab = 'book'; render(); return; }
+        if (action === 'planets') { document.getElementById('planetSections')?.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+        if (action === 'continue') {
+          const nextLesson = allLessons.find(item => !state.completedLessons.includes(item.id) && isLessonUnlocked(item.id));
+          if (nextLesson) startLesson(nextLesson);
+          else showToast('Ты прошёл все доступные уроки! Загляни в PRO ⭐');
+        }
+      }));
       document.querySelectorAll('[data-lesson]').forEach(button => button.addEventListener('click', () => {
         const lesson = allLessons.find(item => item.id === button.dataset.lesson);
         if (!lesson || !isLessonUnlocked(lesson.id)) { tap(); showToast('Сначала заверши предыдущий урок 🔒'); return; }
