@@ -108,7 +108,7 @@
     .scroll-area::-webkit-scrollbar-thumb { background: #d5ddeb; border-radius: 9px; }
     .bottom-nav[hidden] { display: none; }
     .bottom-nav {
-      flex: 0 0 auto; display: grid; grid-template-columns: repeat(4,1fr); gap: 3px;
+      flex: 0 0 auto; display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 3px;
       padding: 8px 9px calc(8px + env(safe-area-inset-bottom)); background: rgba(255,255,255,.96);
       border-top: 1px solid rgba(226,232,242,.9); box-shadow: 0 -7px 22px rgba(42,57,91,.05); z-index: 6;
     }
@@ -149,6 +149,8 @@
     .lumi-wrap { position: relative; width: 100%; max-width: 166px; aspect-ratio: 1 / 1; display: grid; place-items: center; isolation: isolate; }
     .lumi-svg { width: 100%; height: 100%; overflow: visible; animation: floaty 3.7s ease-in-out infinite; transform-origin: 50% 58%; filter: drop-shadow(0 4px 0 rgba(15,42,67,.16)); }
     .lumi-head { transform-box:fill-box; transform-origin:50% 90%; animation:lumiHeadNod 4.8s ease-in-out infinite; }
+    .lumi-smile { transform-box:fill-box; transform-origin:center; animation:lumiSmile 5.6s ease-in-out infinite; }
+    @keyframes lumiSmile { 0%,86%,100% { transform:scaleX(1); } 90% { transform:scaleX(1.08); } 94% { transform:scaleX(.98); } }
     @keyframes lumiHeadNod { 0%,88%,100% { transform:rotate(0); } 92% { transform:rotate(-2deg); } 96% { transform:rotate(1.5deg); } }
     .lumi-wrap.is-happy .lumi-head { animation:lumiHeadCheer .55s ease-in-out 3; }
     @keyframes lumiHeadCheer { 0%,100% { transform:rotate(0) translateY(0); } 50% { transform:rotate(-3deg) translateY(-3px); } }
@@ -693,7 +695,9 @@
     .top-stats { gap:6px; }
     .stat-pill { min-height:38px; padding:0 10px; gap:6px; border:1px solid rgba(101,130,255,.62); border-radius:22px; color:#f2f6ff; background:linear-gradient(145deg,rgba(22,42,103,.96),rgba(12,29,75,.96)); box-shadow:inset 0 0 0 1px rgba(255,255,255,.035),0 4px 15px rgba(0,0,0,.2); font-size:12px; }
     .stat-pill .stat-icon { font-size:17px; }
-    .xp-pill { border-color:rgba(244,196,83,.65); }
+    /* XP is experience, not a payment currency: use a clear typographic badge. */
+    .stat-pill .xp-mark { display:inline-flex; align-items:center; justify-content:center; min-width:24px; height:20px; padding:0 3px; border-radius:6px; color:#baf7ff; font-size:12px; line-height:1; font-weight:1000; font-style:italic; letter-spacing:-1px; text-shadow:0 0 9px rgba(69,225,255,.85); background:linear-gradient(135deg,rgba(24,199,239,.23),rgba(92,105,255,.24)); box-shadow:inset 0 0 0 1px rgba(104,232,255,.32),0 0 10px rgba(34,196,255,.16); }
+    .xp-pill { border-color:rgba(57,205,245,.72); }
     .gem-pill { border-color:rgba(172,119,255,.68); }
     .settings-shortcut { width:40px; min-height:40px; border:1px solid rgba(118,146,245,.55); border-radius:50%; color:#e8f6ff; background:linear-gradient(145deg,#263f91,#151d5e); font-size:22px; line-height:1; cursor:pointer; box-shadow:0 4px 15px rgba(0,0,0,.2); transition:transform .18s,filter .18s; }
     .settings-shortcut:active { transform:rotate(25deg) scale(.92); filter:brightness(1.25); }
@@ -710,7 +714,7 @@
     .home-hero:before { content:""; position:absolute; z-index:-2; inset:0; background:radial-gradient(ellipse at 22% 50%,rgba(16,154,230,.25),transparent 48%),radial-gradient(ellipse at 86% 58%,rgba(82,67,206,.23),transparent 50%); }
     .home-hero:after { content:""; position:absolute; z-index:-1; width:125%; height:75px; left:-12%; bottom:-32px; border-radius:50%; background:linear-gradient(180deg,rgba(44,190,255,.1),rgba(30,35,119,.48)); border-top:2px solid rgba(77,211,255,.55); box-shadow:0 -8px 30px rgba(38,115,255,.24); }
     .home-visual { position:relative; min-width:0; min-height:280px; display:grid; place-items:center; }
-    .home-mascot { width:100%; max-width:222px; aspect-ratio:320/360; z-index:2; filter:drop-shadow(0 15px 12px rgba(0,0,0,.25)); }
+    .home-mascot { width:100%; max-width:252px; aspect-ratio:1/1; z-index:2; filter:drop-shadow(0 15px 12px rgba(0,0,0,.25)); }
     .home-mascot .lumi-svg { animation:homeLumiFloat 4.2s ease-in-out infinite; }
     @keyframes homeLumiFloat { 0%,100% { transform:translateY(1px) rotate(-1deg); } 50% { transform:translateY(-8px) rotate(1.1deg); } }
     .home-ground-glow { position:absolute; z-index:0; bottom:10px; left:4%; width:92%; height:30px; border-radius:50%; background:radial-gradient(ellipse,rgba(46,219,255,.34),rgba(71,72,220,.12) 50%,transparent 72%); filter:blur(8px); }
@@ -770,7 +774,7 @@
     @media (min-width:600px) {
       .app-frame { background-color:#07132f; border-color:rgba(86,142,234,.45); box-shadow:0 25px 80px rgba(0,0,0,.4); }
       .home-hero { min-height:350px; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); }
-      .home-mascot { max-width:248px; }
+      .home-mascot { max-width:270px; }
     }
     @media (max-width:390px) {
       .topbar { padding-left:10px; padding-right:9px; }
@@ -782,7 +786,7 @@
       .settings-shortcut { width:36px; min-height:36px; font-size:20px; }
       .home-hero { min-height:286px; grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr); gap:0; padding-top:7px; }
       .home-visual { min-height:250px; }
-      .home-mascot { max-width:185px; width:108%; margin-left:-8px; }
+      .home-mascot { max-width:205px; width:116%; margin-left:-11px; }
       .home-main { padding-left:0; }
       .home-greeting { padding:7px 9px; font-size:11px; }
       .home-name { font-size:32px; }
@@ -798,13 +802,158 @@
       .stat-pill { padding:0 5px; font-size:10px; }
       .settings-shortcut { width:33px; min-height:33px; }
       .home-hero { grid-template-columns:minmax(0,.77fr) minmax(0,1.23fr); min-height:270px; }
-      .home-mascot { width:116%; margin-left:-13px; }
+      .home-mascot { width:122%; margin-left:-16px; }
       .home-greeting { font-size:10px; padding:6px 7px; }
       .home-name { font-size:29px; }
       .home-action-copy strong { font-size:10px; }
     }
     @media (prefers-reduced-motion:reduce) {
       .home-mascot .lumi-svg,.lumi-wrap .lumi-tail,.lumi-wrap .lumi-wave-arm,.home-floating-star { animation:none !important; }
+    }
+
+
+    /* Lumi character polish only: original astronaut silhouette, enlarged blue head and expressive motions. */
+    .lumi-wrap.home-mascot { max-width:252px; }
+    .lumi-wrap .lumi-head { transform-box:fill-box; transform-origin:50% 88%; animation:lumiHeadIdle 5.2s ease-in-out infinite; }
+    @keyframes lumiHeadIdle { 0%,86%,100% { transform:rotate(0) translateY(0); } 90% { transform:rotate(-1.8deg) translateY(-1px); } 95% { transform:rotate(1.4deg) translateY(0); } }
+    .lumi-wrap.home-mascot .lumi-head { animation-duration:4.6s; }
+    .lumi-wrap .lumi-wave-arm { transform-box:fill-box; transform-origin:80% 80%; animation:lumiArmIdle 3.8s ease-in-out infinite; }
+    @keyframes lumiArmIdle { 0%,100% { transform:rotate(0); } 50% { transform:rotate(-4deg); } }
+    .lumi-wrap.home-mascot .lumi-wave-arm { animation:lumiArmWave 3.4s ease-in-out infinite; }
+    @keyframes lumiArmWave { 0%,72%,100% { transform:rotate(0); } 78% { transform:rotate(-15deg); } 84% { transform:rotate(10deg); } 90% { transform:rotate(-8deg); } 96% { transform:rotate(3deg); } }
+    .lumi-wrap .lumi-tail { transform-box:fill-box; transform-origin:15% 55%; animation:lumiTailSwish 3.1s ease-in-out infinite; }
+    @keyframes lumiTailSwish { 0%,100% { transform:rotate(-2deg); } 50% { transform:rotate(5deg); } }
+    .lumi-wrap .gill { transform-box:fill-box; transform-origin:50% 85%; animation:gillBreath 2.6s ease-in-out infinite; }
+    .lumi-wrap .gill:nth-of-type(2n) { animation-delay:.3s; }
+    @keyframes gillBreath { 0%,100% { transform:rotate(-1deg) scale(1); } 50% { transform:rotate(3.5deg) scale(1.035); } }
+    .lumi-wrap .eye-normal { transform-box:fill-box; transform-origin:center; animation:lumiBlink 5.3s infinite; }
+    @keyframes lumiBlink { 0%,43%,47%,100% { transform:scaleY(1); } 45% { transform:scaleY(.08); } }
+    .lumi-wrap.is-happy .lumi-head { animation:lumiHeadHappy .55s ease-in-out 3; }
+    @keyframes lumiHeadHappy { 0%,100% { transform:rotate(0) translateY(0); } 50% { transform:rotate(-3deg) translateY(-4px); } }
+    .lumi-wrap.is-happy .lumi-wave-arm { animation:lumiArmHappy .55s ease-in-out 4; }
+    @keyframes lumiArmHappy { 0%,100% { transform:rotate(0); } 50% { transform:rotate(-25deg); } }
+    .lumi-wrap.is-sad .lumi-head { animation:lumiHeadSad .65s ease-in-out 2; }
+    @keyframes lumiHeadSad { 0%,100% { transform:rotate(0) translateY(0); } 50% { transform:rotate(4deg) translateY(2px); } }
+    .lumi-wrap.is-sad .lumi-wave-arm { animation:lumiArmSad .65s ease-in-out 2; }
+    @keyframes lumiArmSad { 0%,100% { transform:rotate(0); } 50% { transform:rotate(12deg); } }
+    @media (prefers-reduced-motion:reduce) {
+      /* Respect reduced-motion on every animated part of Lumi, including state reactions. */
+      .lumi-wrap .lumi-svg,
+      .lumi-wrap .lumi-head,
+      .lumi-wrap .lumi-smile,
+      .lumi-wrap .lumi-wave-arm,
+      .lumi-wrap .lumi-tail,
+      .lumi-wrap .gill,
+      .lumi-wrap .eye-normal,
+      .lumi-wrap .sparkle,
+      .lumi-wrap .bubble {
+        animation:none !important;
+      }
+      .lumi-wrap .eye-star,
+      .lumi-wrap .paw-cover {
+        transition:none !important;
+      }
+    }
+
+    /* Lumi wardrobe: clothes are rendered only in the Profile or in the Shop fitting room. */
+    .streak-header-pill { color:#ffc96b; border-color:rgba(255,177,73,.65) !important; background:linear-gradient(145deg,rgba(74,38,66,.96),rgba(47,31,76,.96)) !important; }
+    .streak-header-pill:not(.is-lit) .stat-icon { filter:grayscale(1); opacity:.58; }
+    .streak-header-pill.is-lit { color:#fff0c1; border-color:rgba(255,177,73,.95) !important; box-shadow:0 0 15px rgba(255,132,44,.3),inset 0 0 0 1px rgba(255,255,255,.07); }
+    .streak-header-pill.is-lit .stat-icon { filter:drop-shadow(0 0 7px rgba(255,166,63,.95)); }
+    .lumi-wrap .lumi-wearable { position:absolute; z-index:5; display:grid; place-items:center; line-height:1; pointer-events:none; filter:drop-shadow(0 3px 3px rgba(15,26,52,.28)); }
+    .lumi-wrap .lumi-wearable-hat { top:7%; left:50%; transform:translateX(-50%); font-size:clamp(23px,7vw,34px); }
+    .lumi-wrap .lumi-wearable-face { top:35%; left:50%; transform:translateX(-50%); font-size:clamp(20px,6.2vw,29px); }
+    .lumi-wrap .lumi-wearable-suit { bottom:16%; left:50%; transform:translateX(-50%); font-size:clamp(19px,5.7vw,27px); }
+    .lumi-wrap .lumi-wearable-accessory { bottom:22%; right:7%; font-size:clamp(19px,5.5vw,26px); }
+    .lumi-wrap.wear-suit-nebula .lumi-svg { filter:hue-rotate(205deg) saturate(1.35) drop-shadow(0 8px 9px rgba(83,68,205,.27)); }
+    .lumi-wrap.wear-suit-aurora .lumi-svg { filter:hue-rotate(95deg) saturate(1.25) drop-shadow(0 8px 9px rgba(65,205,172,.25)); }
+    .lumi-wrap.wear-suit-explorer .lumi-svg { filter:sepia(.25) saturate(1.2) hue-rotate(335deg) drop-shadow(0 8px 9px rgba(192,139,65,.2)); }
+    .wardrobe-mascot { display:grid; place-items:center; padding:6px 0 12px; margin:4px 0 10px; border-radius:20px; background:radial-gradient(ellipse at 50% 80%,rgba(65,191,230,.16),transparent 65%),linear-gradient(135deg,#f3fbff,#f7f3ff); }
+    .wardrobe-mascot .lumi-wrap { width:min(190px,65vw); }
+    .wardrobe-slot { padding:12px 0; border-top:1px solid var(--line); }
+    .wardrobe-slot-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:9px; }
+    .wardrobe-slot-head strong { display:block; font-size:13px; }
+    .wardrobe-slot-head small { display:block; margin-top:3px; color:var(--muted); font-size:10px; }
+    .wardrobe-owned-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
+    .wardrobe-owned-item { min-width:0; display:flex; flex-direction:column; align-items:center; gap:4px; padding:9px 5px; border:1px solid var(--line); border-radius:13px; color:var(--ink); background:var(--card); cursor:pointer; }
+    .wardrobe-owned-item.selected { border-color:#54c7e9; background:#eefbff; box-shadow:0 0 0 2px rgba(52,190,224,.13); }
+    .wardrobe-owned-item span { font-size:22px; }
+    .wardrobe-owned-item strong { font-size:10px; line-height:1.25; }
+    .wardrobe-owned-item small { color:var(--muted); font-size:9px; }
+    .wardrobe-empty { margin:2px 0 0; }
+    .inline-link { border:0; padding:0; color:var(--cyan-dark); background:none; font:inherit; font-weight:900; text-decoration:underline; cursor:pointer; }
+    .shop-page-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .shop-balance { flex:0 0 auto; padding:9px 12px; border:1px solid rgba(167,133,255,.32); border-radius:15px; color:#4e3b9c; background:linear-gradient(145deg,#f5f0ff,#fff); font-size:16px; }
+    .shop-preview-card { position:relative; display:grid; grid-template-columns:minmax(0,1fr) minmax(110px,.72fr); align-items:center; gap:8px; overflow:hidden; padding:15px; background:radial-gradient(ellipse at 75% 55%,rgba(56,193,232,.16),transparent 55%),linear-gradient(135deg,#f7fdff,#f5f0ff); }
+    .shop-preview-copy { min-width:0; position:relative; z-index:1; }
+    .shop-preview-copy h2 { margin:5px 0; font-size:18px; }
+    .shop-preview-copy p { margin:0 0 9px; }
+    .shop-preview-copy .btn { min-height:34px; padding:7px 10px; font-size:10px; }
+    .shop-preview-mascot { display:grid; place-items:center; min-width:0; }
+    .shop-preview-mascot .lumi-wrap { width:min(155px,100%); }
+    .shop-preview-note { grid-column:1/-1; margin:0; color:var(--muted); font-size:10px; text-align:center; }
+    .shop-category-tabs { display:flex; gap:7px; overflow-x:auto; padding:3px 1px 9px; margin-top:10px; scrollbar-width:none; }
+    .shop-category-tabs::-webkit-scrollbar { display:none; }
+    .shop-category-tab { flex:0 0 auto; min-height:36px; padding:7px 12px; border:1px solid rgba(115,142,187,.3); border-radius:20px; color:var(--muted); background:rgba(15,32,75,.48); font-size:10px; font-weight:900; cursor:pointer; }
+    .shop-category-tab.active { border-color:#51d8f4; color:#06284d; background:linear-gradient(135deg,#8af1ff,#c7f7ff); box-shadow:0 0 14px rgba(48,198,231,.18); }
+    .shop-catalog-card { padding:13px; }
+    .shop-wardrobe-item { padding:0; overflow:hidden; text-align:left; }
+    .shop-wardrobe-item.previewed { border-color:#55cfe9; box-shadow:0 0 0 2px rgba(57,197,225,.12); }
+    .shop-preview-choice { display:flex; width:100%; min-height:132px; flex-direction:column; align-items:center; justify-content:flex-start; gap:4px; padding:11px 8px 7px; border:0; color:var(--ink); background:transparent; text-align:center; cursor:pointer; }
+    .shop-preview-choice .shop-icon { margin-bottom:1px; font-size:28px; }
+    .shop-preview-choice strong { font-size:11px; line-height:1.25; }
+    .shop-preview-choice small { min-height:27px; color:var(--muted); font-size:9px; line-height:1.35; }
+    .shop-preview-choice em { color:#138cae; font-size:9px; font-style:normal; font-weight:900; }
+    .shop-item-buy-row { display:flex; flex-direction:column; gap:6px; padding:0 8px 9px; }
+    .shop-item-price { color:var(--muted); font-size:10px; font-weight:900; text-align:center; }
+    .shop-item-price s { color:#9aa3b5; font-weight:600; }
+    .shop-item-buy-row button { width:100%; min-height:34px; padding:6px 4px; border:0; border-radius:10px; color:#fff; background:var(--cyan); font-size:9px; font-weight:950; cursor:pointer; }
+    .shop-item-buy-row button:disabled { opacity:.5; cursor:not-allowed; }
+    .shop-freeze-card { display:grid; grid-template-columns:44px minmax(0,1fr); align-items:center; gap:10px; padding:14px; margin-top:12px; }
+    .shop-freeze-icon { display:grid; place-items:center; width:42px; height:42px; border-radius:14px; color:#147ca8; background:linear-gradient(145deg,#dff8ff,#eff4ff); font-size:25px; }
+    .shop-freeze-copy h2 { margin:3px 0; font-size:16px; }
+    .shop-freeze-copy p { margin:0 0 4px; }
+    .shop-freeze-copy small { color:var(--muted); font-size:10px; }
+    .shop-freeze-card > button { grid-column:1/-1; min-height:38px; }
+    .shop-footer-note { margin:12px 4px 4px; color:var(--muted); font-size:10px; line-height:1.45; text-align:center; }
+    .streak-ignition-overlay[hidden] { display:none; }
+    .streak-ignition-overlay { position:fixed; z-index:200; inset:0; display:grid; place-items:center; overflow:hidden; padding:18px; background:radial-gradient(circle at 50% 43%,rgba(255,142,47,.34),transparent 36%),linear-gradient(145deg,rgba(8,15,43,.96),rgba(22,29,76,.97)); opacity:0; transition:opacity .25s ease; }
+    .streak-ignition-overlay.show { opacity:1; }
+    .streak-fire-message { position:relative; z-index:2; width:min(420px,100%); padding:25px 20px 20px; border:1px solid rgba(255,226,163,.45); border-radius:27px; color:#fff8e8; background:linear-gradient(145deg,rgba(47,34,72,.97),rgba(22,39,80,.97)); box-shadow:0 22px 65px rgba(0,0,0,.4),0 0 38px rgba(255,128,43,.22); text-align:center; }
+    .streak-fire-symbol { font-size:74px; line-height:1.1; filter:drop-shadow(0 0 22px rgba(255,142,44,.9)); animation:streakFirePop .75s cubic-bezier(.18,.85,.25,1.25) both; }
+    .streak-fire-message .eyebrow { margin-top:12px; color:#ffc978; }
+    .streak-fire-message h2 { margin:7px 0; color:#fff5da; font-size:30px; }
+    .streak-fire-message p { margin:0 0 16px; color:#cbd9ff; font-size:13px; line-height:1.5; }
+    .streak-fire-message strong { color:#ffe09a; }
+    .streak-fire-message .btn { color:#3e2855; background:linear-gradient(135deg,#ffe1a0,#ffae62); box-shadow:0 5px 0 #b96c44; }
+    .streak-fire-burst { position:absolute; inset:0; pointer-events:none; }
+    .streak-fire-burst i { position:absolute; left:50%; top:22%; color:#ffb34e; font-size:clamp(90px,24vw,180px); font-style:normal; opacity:.2; transform:translateX(-50%); filter:blur(1px); animation:streakRing 1.8s ease-out both; }
+    .streak-fire-burst span { position:absolute; left:50%; top:50%; color:#ffe6a8; font-size:24px; animation:streakParticleRise 1.9s ease-out both; }
+    .streak-fire-burst span:nth-child(2) { margin-left:-34%; margin-top:12%; animation-delay:.1s; }
+    .streak-fire-burst span:nth-child(3) { margin-left:32%; margin-top:8%; animation-delay:.22s; }
+    .streak-fire-burst span:nth-child(4) { margin-left:-26%; margin-top:-17%; animation-delay:.3s; }
+    .streak-fire-burst span:nth-child(5) { margin-left:27%; margin-top:-21%; animation-delay:.42s; }
+    .streak-fire-burst span:nth-child(6) { margin-left:-40%; margin-top:-7%; animation-delay:.52s; }
+    .streak-fire-burst span:nth-child(7) { margin-left:39%; margin-top:-3%; animation-delay:.62s; }
+    .streak-fire-burst span:nth-child(8) { margin-left:1%; margin-top:-32%; animation-delay:.72s; }
+    @keyframes streakFirePop { from { opacity:0; transform:translateY(25px) scale(.5); } to { opacity:1; transform:translateY(0) scale(1); } }
+    @keyframes streakRing { from { opacity:.3; transform:translateX(-50%) scale(.4); } to { opacity:0; transform:translateX(-50%) scale(2.2); } }
+    @keyframes streakParticleRise { 0% { opacity:0; transform:translateY(35px) scale(.4) rotate(-25deg); } 25% { opacity:1; } 100% { opacity:0; transform:translateY(-125px) scale(1.3) rotate(35deg); } }
+    @media (max-width:390px) {
+      .bottom-nav { gap:2px; padding-left:4px; padding-right:4px; }
+      .nav-btn { font-size:8px; }
+      .nav-btn .nav-icon { width:24px; font-size:22px; }
+      .shop-preview-card { grid-template-columns:minmax(0,1fr) minmax(96px,.6fr); padding:12px; }
+      .shop-preview-copy h2 { font-size:16px; }
+      .shop-preview-mascot .lumi-wrap { width:min(125px,100%); }
+      .shop-grid { gap:7px; }
+      .shop-preview-choice { min-height:138px; padding-left:5px; padding-right:5px; }
+      .wardrobe-owned-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .streak-header-pill { padding:0 6px !important; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .streak-ignition-overlay, .streak-ignition-overlay *, .lumi-wrap .lumi-wearable { animation:none !important; transition:none !important; }
+      .streak-fire-burst { display:none; }
     }
 
   </style>
@@ -817,10 +966,10 @@
         <div class="brand-copy"><div class="brand-name">Lumi<br>Academy</div></div>
       </div>
       <div class="top-stats" id="topStats">
-        <div class="stat-pill xp-pill" title="Накопленный опыт"><span class="stat-icon">⭐</span><span id="xpTop">0</span></div>
+        <div class="stat-pill xp-pill" title="Накопленный опыт (XP)" aria-label="Опыт: XP"><span class="stat-icon xp-mark" aria-hidden="true">XP</span><span id="xpTop">0</span></div>
         <div class="stat-pill gem-pill" title="Кристаллы"><span class="stat-icon">💎</span><span id="gemsTop">0</span></div>
+        <div class="stat-pill streak-header-pill" id="streakPill" title="Огонёк привычки"><span class="stat-icon" aria-hidden="true">🔥</span><span id="streakTop">0</span></div>
         <button type="button" class="settings-shortcut" id="settingsShortcut" aria-label="Открыть профиль и настройки" title="Профиль и настройки">⚙</button>
-        <span class="header-hidden-stat" id="streakPill"><span id="streakTop">0</span></span>
       </div>
       <div class="energy-info" id="energyInfo" hidden role="status" aria-live="polite"><div class="energy-info-title">ВОССТАНОВЛЕНИЕ ЭНЕРГИИ</div><div class="energy-info-time" id="energyInfoTime">⏳ 01:00:00</div><div class="energy-info-note" id="energyInfoNote">Полное восстановление всех 5 жизней через...</div></div>
     </header>
@@ -829,6 +978,7 @@
       <button class="nav-btn active" data-tab="map"><span class="nav-icon">⌂</span><span>Главная</span></button>
       <button class="nav-btn" data-tab="book"><span class="nav-icon">▤</span><span>Учебник</span></button>
       <button class="nav-btn" data-tab="profile"><span class="nav-icon">♙</span><span>Профиль</span></button>
+      <button class="nav-btn" data-tab="shop"><span class="nav-icon">🛍️</span><span>Магазин</span></button>
       <button class="nav-btn pro" data-tab="pro"><span class="nav-icon">✧</span><span>PRO</span></button>
     </nav>
     <div class="toast" id="toast" role="status"></div>
@@ -836,6 +986,7 @@
     <div class="exit-modal" id="exitModal" hidden aria-hidden="true"></div>
     <div class="lumi-tour-overlay" id="tourOverlay" hidden aria-hidden="true"></div>
     <div class="welcome-gift-overlay" id="welcomeGiftOverlay" hidden aria-hidden="true"></div>
+    <div class="streak-ignition-overlay" id="streakIgnitionOverlay" hidden aria-hidden="true"></div>
     <div class="pronunciation-fallback" id="pronunciationFallback" hidden aria-live="polite"></div>
     <audio id="lumiPronunciationAudio" preload="none" playsinline aria-hidden="true"></audio>
     <div class="legal-modal" id="legalModal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle">
@@ -906,15 +1057,34 @@
     const ENERGY_CYCLE_SECONDS = 3 * 60 * 60; // 10 800 секунд от первой потери заряда
     const ENERGY_CYCLE_MS = ENERGY_CYCLE_SECONDS * 1000; // 10 800 000 мс — полный цикл для всех 5 зарядов
     const ENERGY_CYCLE_VERSION = 4;
+    const STREAK_FREEZE_PRICE = 120;
+    const LUMI_WARDROBE_SLOTS = ['hat','face','suit','accessory'];
+    const LUMI_WARDROBE_ITEMS = [
+      {id:'gold',name:'Золотой скафандр',icon:'👑',visual:'✨',price:500,slot:'suit',category:'Костюмы',skinClass:'skin-gold',description:'Праздничный золотой скафандр'},
+      {id:'cyber',name:'Кибер-визор',icon:'🕶️',visual:'🕶️',price:300,slot:'face',category:'Очки и украшения',skinClass:'skin-cyber',description:'Неоновый визор для космических миссий'},
+      {id:'hero',name:'Плащ супергероя',icon:'🦸',visual:'🦸',price:700,slot:'suit',category:'Костюмы',skinClass:'skin-hero',description:'Образ защитника галактики'},
+      {id:'hat_crown',name:'Корона Новой звезды',icon:'👑',visual:'👑',price:180,slot:'hat',category:'Головные уборы',description:'Корона для капитана созвездия'},
+      {id:'hat_wizard',name:'Шляпа звездочёта',icon:'🧙',visual:'🧙',price:150,slot:'hat',category:'Головные уборы',description:'Шляпа с магией далёких миров'},
+      {id:'hat_beanie',name:'Тёплая шапка',icon:'🧢',visual:'🧢',price:90,slot:'hat',category:'Головные уборы',description:'Уютная шапка для холодных планет'},
+      {id:'face_star_glasses',name:'Очки звёздного пилота',icon:'🤓',visual:'🤓',price:120,slot:'face',category:'Очки и украшения',description:'Помогают видеть новые слова ярче'},
+      {id:'face_heart_glasses',name:'Очки-сердечки',icon:'💗',visual:'💗',price:110,slot:'face',category:'Очки и украшения',description:'Милая деталь для хорошего настроения'},
+      {id:'face_monocle',name:'Лунный монокль',icon:'🔎',visual:'🔎',price:150,slot:'face',category:'Очки и украшения',description:'Стиль исследователя лунных кратеров'},
+      {id:'suit_nebula',name:'Костюм Туманности',icon:'🌌',visual:'🌌',price:260,slot:'suit',category:'Костюмы',description:'Цвета далёкой фиолетовой туманности',wearClass:'wear-suit-nebula'},
+      {id:'suit_aurora',name:'Костюм Авроры',icon:'🌈',visual:'🌈',price:220,slot:'suit',category:'Костюмы',description:'Переливы северного сияния',wearClass:'wear-suit-aurora'},
+      {id:'suit_explorer',name:'Костюм исследователя',icon:'🧑‍🚀',visual:'🧑‍🚀',price:240,slot:'suit',category:'Костюмы',description:'Практичный образ первооткрывателя',wearClass:'wear-suit-explorer'},
+      {id:'acc_jetpack',name:'Мини-джетпак',icon:'🚀',visual:'🚀',price:190,slot:'accessory',category:'Аксессуары',description:'Маленький двигатель для больших идей'},
+      {id:'acc_star_satellite',name:'Спутник-компаньон',icon:'🪐',visual:'🪐',price:140,slot:'accessory',category:'Аксессуары',description:'Миниатюрный спутник рядом с Луми'},
+      {id:'acc_bow',name:'Космический бантик',icon:'🎀',visual:'🎀',price:100,slot:'accessory',category:'Аксессуары',description:'Небольшой яркий акцент'}
+    ];
     const TRIAL_PRO_DURATION_SECONDS = 60 * 60; // 3 600 секунд
     const TRIAL_PRO_DURATION_MS = TRIAL_PRO_DURATION_SECONDS * 1000; // 3 600 000 мс
     const defaultState = {
       goal: 10, goalChosen: false, crystals: 0, xp: 0, streak: 0, lessonsCompleted: 0,
-      totalCorrect: 0, totalAnswered: 0, dailyMinutes: 0, dailyCompletedLessons: [], dailyGoalClaimedDate: '', vocabLearned: 0,
+      totalCorrect: 0, totalAnswered: 0, dailyMinutes: 0, dailyActiveSeconds: 0, dailyCompletedLessons: [], dailyGoalClaimedDate: '', vocabLearned: 0,
       energy: ENERGY_MAX, energyUpdatedAt: Date.now(), energy_reset_at: null, energy_cycle_version: ENERGY_CYCLE_VERSION, proActive: false, demoPro: false,
       trial_pro_until: 0, trial_pro_claimed: false, trial_pro_claim_pending: false,
       warmupRewardClaimed: false,
-      selectedSkin: 'default', ownedSkins: ['default'], selectedTheme: 'aurora', ownedThemes: ['aurora','ocean','lavender'], errorWords: [],
+      selectedSkin: 'default', ownedSkins: ['default'], wardrobeOwned: [], wardrobeEquipped: {hat:'',face:'',suit:'',accessory:''}, selectedTheme: 'aurora', ownedThemes: ['aurora','ocean','lavender'], errorWords: [],
       lessonHistory: [], exerciseHistory: [], rewardedExerciseIds: [], dailyReviewRewardDate: '', dailyReviewRewardedWords: [], claimedAchievements: [], levelRewardsClaimed: [],
       streakLastDate: '', freeFreezeUsed: false, cryoFreezeDates: [],
       leaguePoints: 0, leagueWeekKey: '',
@@ -949,6 +1119,13 @@
     let dialogTimer = null;
     let currentTab = 'map';
     let selectedGoal = state.goal || 10;
+    let activeShopCategory = 'all';
+    let shopPreviewLoadout = {};
+    let shopPreviewReady = false;
+    let studyLastActivityAt = Date.now();
+    let studyLastTickAt = Date.now();
+    let studyLastSavedAt = Date.now();
+    let streakCelebrationTimer = null;
     let lessonSession = null;
     let reviewSession = null;
     let selectedBookFilter = 'Все';
@@ -1025,6 +1202,15 @@
     document.addEventListener('touchend', unlockAudioFromGesture, { capture: true, passive: true });
     document.addEventListener('keydown', unlockAudioFromGesture, { capture: true });
     document.addEventListener('click', unlockAudioFromGesture, { capture: true, passive: true });
+    const markStudyActivity = () => {
+      const now = Date.now();
+      studyLastActivityAt = now;
+      // Do not carry shop/profile time into the first study tick after returning to learning.
+      if (!(currentTab === 'map' || currentTab === 'book' || lessonSession || dialogSession)) studyLastTickAt = now;
+    };
+    ['pointerdown','keydown','touchstart','scroll','input','change'].forEach(type => {
+      document.addEventListener(type, markStudyActivity, {capture:true, passive:true});
+    });
 
     function localDateKey(date = new Date()) {
       const year = date.getFullYear();
@@ -1077,7 +1263,7 @@
         const hadTourState = Object.prototype.hasOwnProperty.call(saved,'tutorialCompleted') || Object.prototype.hasOwnProperty.call(saved,'tutorialPending');
         merged.tutorialCompleted = merged.tutorialCompleted === true;
         merged.tutorialPending = merged.tutorialPending === true && !merged.tutorialCompleted;
-        merged.tutorialStep = safeInteger(merged.tutorialStep,0,0,3);
+        merged.tutorialStep = safeInteger(merged.tutorialStep,0,0,4);
         merged.welcomeGiftClaimed = merged.welcomeGiftClaimed === true;
         merged.trial_pro_until = safeInteger(merged.trial_pro_until,0,0,Number.MAX_SAFE_INTEGER);
         merged.trial_pro_claimed = merged.trial_pro_claimed === true || merged.trial_pro_until > 0;
@@ -1128,6 +1314,19 @@
         merged.ownedSkins = safeList(merged.ownedSkins);
         if (!merged.ownedSkins.includes('default')) merged.ownedSkins.unshift('default');
         merged.ownedSkins = merged.ownedSkins.filter(id => ['default','gold','cyber','hero'].includes(id));
+        const validWardrobeIds = LUMI_WARDROBE_ITEMS.map(item => item.id);
+        const legacyEquippedSkin = ['gold','cyber','hero'].includes(merged.selectedSkin) ? merged.selectedSkin : '';
+        if (legacyEquippedSkin && !merged.ownedSkins.includes(legacyEquippedSkin)) merged.ownedSkins.push(legacyEquippedSkin);
+        merged.wardrobeOwned = [...new Set([...safeList(merged.wardrobeOwned), ...merged.ownedSkins.filter(id => id !== 'default')])].filter(id => validWardrobeIds.includes(id));
+        const rawWardrobe = merged.wardrobeEquipped && typeof merged.wardrobeEquipped === 'object' && !Array.isArray(merged.wardrobeEquipped) ? merged.wardrobeEquipped : {};
+        const legacySlot = legacyEquippedSkin === 'cyber' ? 'face' : legacyEquippedSkin ? 'suit' : '';
+        merged.wardrobeEquipped = {};
+        for (const slot of LUMI_WARDROBE_SLOTS) {
+          const candidate = typeof rawWardrobe[slot] === 'string' ? rawWardrobe[slot] : (slot === legacySlot ? legacyEquippedSkin : '');
+          const item = LUMI_WARDROBE_ITEMS.find(entry => entry.id === candidate && entry.slot === slot);
+          merged.wardrobeEquipped[slot] = item && merged.wardrobeOwned.includes(item.id) ? item.id : '';
+        }
+        merged.selectedSkin = ['gold','cyber','hero'].find(id => Object.values(merged.wardrobeEquipped).includes(id)) || 'default';
         const validThemes = ['aurora','ocean','lavender','sunset','forest','midnight','rose','galaxy'];
         merged.ownedThemes = safeList(merged.ownedThemes).filter(id => validThemes.includes(id));
         for (const id of ['aurora','ocean','lavender']) if (!merged.ownedThemes.includes(id)) merged.ownedThemes.push(id);
@@ -1148,6 +1347,19 @@
         }
         merged.rewardedExerciseIds = [...new Set(rewardIds)].slice(-5000);
         merged.dailyGoalClaimedDate = typeof merged.dailyGoalClaimedDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(merged.dailyGoalClaimedDate) ? merged.dailyGoalClaimedDate : '';
+        const hasActiveStudySeconds = Object.prototype.hasOwnProperty.call(saved,'dailyActiveSeconds');
+        merged.dailyActiveSeconds = safeInteger(hasActiveStudySeconds ? saved.dailyActiveSeconds : 0,0,0,86400);
+        if (!hasActiveStudySeconds) {
+          if (merged.dailyDate === localDateKey() && merged.dailyGoalClaimedDate === localDateKey()) {
+            merged.dailyActiveSeconds = merged.goal * 60;
+            merged.dailyMinutes = merged.goal;
+          } else {
+            merged.dailyActiveSeconds = 0;
+            merged.dailyMinutes = 0;
+          }
+        } else {
+          merged.dailyMinutes = Math.floor(merged.dailyActiveSeconds / 60);
+        }
         merged.energy = safeInteger(merged.energy,ENERGY_MAX,0,ENERGY_MAX);
         merged.energyUpdatedAt = safeInteger(merged.energyUpdatedAt,Date.now(),0,Number.MAX_SAFE_INTEGER);
         if (merged.energy >= ENERGY_MAX) {
@@ -1184,6 +1396,7 @@
         merged.demoPro = DEMO_PRO_ALLOWED && merged.demoPro === true;
         if (merged.dailyDate !== localDateKey()) {
           merged.dailyMinutes = 0;
+          merged.dailyActiveSeconds = 0;
           merged.dailyCompletedLessons = [];
           merged.dailyDate = localDateKey();
         }
@@ -1319,7 +1532,7 @@
       const preferred = normalizeState(preferredState || {});
       const secondary = normalizeState(secondaryState || {});
       const merged = { ...secondary, ...preferred };
-      const unionKeys = ['completedPlanets','completedLessons','learnedWords','errorWords','activeDays','dailyCompletedLessons','ownedSkins','ownedThemes','claimedAchievements','levelRewardsClaimed','cryoFreezeDates','dialogDailyRewards','rewardedExerciseIds'];
+      const unionKeys = ['completedPlanets','completedLessons','learnedWords','errorWords','activeDays','dailyCompletedLessons','ownedSkins','wardrobeOwned','ownedThemes','claimedAchievements','levelRewardsClaimed','cryoFreezeDates','dialogDailyRewards','rewardedExerciseIds'];
       for (const key of unionKeys) merged[key] = [...new Set([...(secondary[key] || []), ...(preferred[key] || [])])].slice(key === 'activeDays' ? -90 : -5000);
       // Spendable balances stay on the newer snapshot. XP and league rewards use
       // stable event ledgers so separate offline sessions can merge without duplicates.
@@ -1365,6 +1578,14 @@
       const mastery = { ...(secondary.wordMastery || {}) };
       for (const [id, value] of Object.entries(preferred.wordMastery || {})) mastery[id] = Math.max(Number(mastery[id] || 0), Number(value || 0));
       merged.wordMastery = mastery;
+      merged.wardrobeEquipped = {};
+      for (const slot of LUMI_WARDROBE_SLOTS) {
+        const preferredItem = preferred.wardrobeEquipped?.[slot];
+        const secondaryItem = secondary.wardrobeEquipped?.[slot];
+        const selected = preferredItem && merged.wardrobeOwned.includes(preferredItem) ? preferredItem : secondaryItem;
+        merged.wardrobeEquipped[slot] = selected && merged.wardrobeOwned.includes(selected) ? selected : '';
+      }
+      merged.selectedSkin = ['gold','cyber','hero'].find(id => Object.values(merged.wardrobeEquipped).includes(id)) || 'default';
       const dedupeRows = (rows, keyOf, limit) => {
         const map = new Map();
         for (const row of rows) {
@@ -1395,11 +1616,13 @@
       const dailyDate = [secondary.dailyDate, preferred.dailyDate].filter(Boolean).sort().slice(-1)[0] || localDateKey();
       merged.dailyDate = dailyDate;
       if (secondary.dailyDate === preferred.dailyDate) {
-        merged.dailyMinutes = Math.max(Number(secondary.dailyMinutes || 0), Number(preferred.dailyMinutes || 0));
+        merged.dailyActiveSeconds = Math.max(Number(secondary.dailyActiveSeconds || 0), Number(preferred.dailyActiveSeconds || 0));
+        merged.dailyMinutes = Math.floor(merged.dailyActiveSeconds / 60);
         merged.dailyCompletedLessons = [...new Set([...(secondary.dailyCompletedLessons || []), ...(preferred.dailyCompletedLessons || [])])].slice(-500);
       } else {
         const source = preferred.dailyDate === dailyDate ? preferred : secondary;
-        merged.dailyMinutes = Number(source.dailyMinutes || 0);
+        merged.dailyActiveSeconds = Number(source.dailyActiveSeconds || 0);
+        merged.dailyMinutes = Math.floor(merged.dailyActiveSeconds / 60);
         merged.dailyCompletedLessons = [...(source.dailyCompletedLessons || [])];
       }
       const questDate = [secondary.dailyQuestDate, preferred.dailyQuestDate].filter(Boolean).sort().slice(-1)[0] || localDateKey();
@@ -1698,11 +1921,11 @@
       {id:'aurora',name:'Аврора',icon:'🌈',free:true,colors:['#06b6d4','#8b5cf6','#10b981']},
       {id:'ocean',name:'Океан',icon:'🌊',free:true,colors:['#159fbd','#087d9b','#55b9c9']},
       {id:'lavender',name:'Лаванда',icon:'🪻',free:true,colors:['#7b8ee8','#9672d6','#e98db5']},
-      {id:'sunset',name:'Закат',icon:'🌅',free:false,colors:['#ed8a70','#e2a43b','#a17acb']},
-      {id:'forest',name:'Лес',icon:'🌿',free:false,colors:['#55a98c','#347c64','#c49b45']},
-      {id:'midnight',name:'Полночь',icon:'🌌',free:false,colors:['#54c5dc','#b29aff','#ffd071']},
-      {id:'rose',name:'Розовая туманность',icon:'🌸',free:false,colors:['#d879aa','#b85d8e','#a17bd1']},
-      {id:'galaxy',name:'Галактика',icon:'🪐',free:false,colors:['#6f8fe4','#9474df','#e77fae']}
+      {id:'sunset',name:'Закат',icon:'🌅',free:false,price:220,colors:['#ed8a70','#e2a43b','#a17acb']},
+      {id:'forest',name:'Лес',icon:'🌿',free:false,price:180,colors:['#55a98c','#347c64','#c49b45']},
+      {id:'midnight',name:'Полночь',icon:'🌌',free:false,price:220,colors:['#54c5dc','#b29aff','#ffd071']},
+      {id:'rose',name:'Розовая туманность',icon:'🌸',free:false,price:200,colors:['#d879aa','#b85d8e','#a17bd1']},
+      {id:'galaxy',name:'Галактика',icon:'🪐',free:false,price:260,colors:['#6f8fe4','#9474df','#e77fae']}
     ];
     const LUMI_SKINS = [
       {id:'gold',name:'Золотой скафандр',icon:'👑',price:500},
@@ -1870,22 +2093,64 @@
       }
       return unlocked;
     }
-    function buySkin(skinId) {
-      const skin = LUMI_SKINS.find(item=>item.id===skinId);
-      if (!skin || state.ownedSkins.includes(skinId)) return false;
-      if (state.crystals < skin.price) { showToast('Не хватает кристаллов 💎'); return false; }
-      state.crystals -= skin.price;
-      state.ownedSkins.push(skinId);
-      state.selectedSkin = skinId;
-      saveState(); render(); showToast(`${skin.name} куплен и надет! ✨`);
+    function getShopPrice(basePrice) {
+      const price = Math.max(0,Math.floor(Number(basePrice)||0));
+      return isProEnabled() && price > 0 ? Math.ceil(price / 2) : price;
+    }
+    function buyWardrobeItem(itemId) {
+      const item = LUMI_WARDROBE_ITEMS.find(entry => entry.id === itemId);
+      if (!item || state.wardrobeOwned.includes(itemId)) return false;
+      const price = getShopPrice(item.price);
+      if (state.crystals < price) { showToast('Не хватает кристаллов 💎'); return false; }
+      state.crystals -= price;
+      state.wardrobeOwned.push(itemId);
+      if (['gold','cyber','hero'].includes(itemId) && !state.ownedSkins.includes(itemId)) state.ownedSkins.push(itemId);
+      saveState(); render(); showToast(`${item.name} куплен! Надеть его можно в Профиле ✨`);
       return true;
+    }
+    function equipWardrobeItem(itemId) {
+      const item = LUMI_WARDROBE_ITEMS.find(entry => entry.id === itemId);
+      if (!item || !state.wardrobeOwned.includes(itemId)) { showToast('Сначала купи этот предмет в Магазине.'); return false; }
+      state.wardrobeEquipped = { ...(state.wardrobeEquipped || {}), [item.slot]:itemId };
+      state.selectedSkin = ['gold','cyber','hero'].includes(itemId) ? itemId : 'default';
+      saveState(); render(); showToast(`${item.name} надет на Луми!`);
+      return true;
+    }
+    function unequipWardrobeSlot(slot) {
+      if (!LUMI_WARDROBE_SLOTS.includes(slot)) return;
+      state.wardrobeEquipped = { ...(state.wardrobeEquipped || {}), [slot]:'' };
+      state.selectedSkin = ['gold','cyber','hero'].find(id => Object.values(state.wardrobeEquipped).includes(id)) || 'default';
+      saveState(); render(); showToast('Предмет снят.');
+    }
+    function buyStreakFreeze() {
+      if (Number(state.bonusFreezeCharges||0) >= 20) { showToast('У тебя уже максимальный запас: 20 заморозок.'); return false; }
+      const price = getShopPrice(STREAK_FREEZE_PRICE);
+      if (state.crystals < price) { showToast('Не хватает кристаллов 💎'); return false; }
+      state.crystals -= price;
+      state.bonusFreezeCharges = Math.min(20,Number(state.bonusFreezeCharges||0)+1);
+      saveState(); render(); showToast('Заморозка огонька добавлена в запас ❄️');
+      return true;
+    }
+    function selectShopPreview(itemId) {
+      const item = LUMI_WARDROBE_ITEMS.find(entry => entry.id === itemId);
+      if (!item) return;
+      shopPreviewLoadout = { ...(shopPreviewLoadout || {}), [item.slot]:itemId };
+      render();
+    }
+    function resetShopPreview() {
+      shopPreviewLoadout = { ...(state.wardrobeEquipped || {}) };
+      render();
     }
     function selectTheme(themeId) {
       const theme = LUMI_THEMES.find(item=>item.id===themeId);
       if (!theme) return;
-      if (!theme.free && !isProEnabled()) { showToast('Эта тема доступна в Lumi PRO ⭐'); return; }
+      if (!state.ownedThemes.includes(themeId)) {
+        const price = getShopPrice(theme.price || 0);
+        if (price > 0 && state.crystals < price) { showToast('Не хватает кристаллов 💎'); return; }
+        state.crystals -= price;
+        state.ownedThemes.push(themeId);
+      }
       state.selectedTheme = themeId;
-      if (!state.ownedThemes.includes(themeId)) state.ownedThemes.push(themeId);
       saveState(); render(); showToast(`Тема «${theme.name}» применена!`);
     }
 
@@ -1906,7 +2171,7 @@
     }
     function isProEnabled() { return isServerPaidProEnabled() || (DEMO_PRO_ALLOWED && state.demoPro === true) || isTrialProEnabled(); }
     function isSkinAvailable(skinId) {
-      return state.ownedSkins.includes(skinId) || (isProEnabled() && ['gold','cyber','hero'].includes(skinId));
+      return state.wardrobeOwned.includes(skinId);
     }
     async function requestTrialProClaim() {
       if (trialClaimInFlight || !tg?.initData || !workerIsConfigured()) return false;
@@ -2058,11 +2323,15 @@
       if (!word) return 'Посмотри на карточку ещё раз и обрати внимание на значение слова.';
       return `${word.en} означает «${word.ru}». ${word.note}`;
     }
-    function getSkinClass(extraClass = '') {
+    function getSkinClass(extraClass = '', wardrobeOverride = null) {
       if (extraClass.includes('skin-gold')) return 'skin-gold';
       if (extraClass.includes('skin-cyber')) return 'skin-cyber';
       if (extraClass.includes('skin-hero')) return 'skin-hero';
-      return isSkinAvailable(state.selectedSkin) && state.selectedSkin !== 'default' ? `skin-${state.selectedSkin}` : '';
+      if (!extraClass.includes('wardrobe-show') && !extraClass.includes('wardrobe-preview')) return '';
+      const loadout = wardrobeOverride || state.wardrobeEquipped || {};
+      const activeIds = Object.values(loadout).filter(Boolean);
+      const item = LUMI_WARDROBE_ITEMS.find(entry => activeIds.includes(entry.id) && entry.skinClass);
+      return item?.skinClass || '';
     }
     function saveState() {
       localStateRevision++;
@@ -2089,8 +2358,7 @@
       const previousSkin = state.selectedSkin;
       state.proActive = authoritativeProStatus === true;
       if (!isProEnabled()) {
-        if (['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme = 'aurora';
-        if (state.selectedSkin !== 'default' && !state.ownedSkins.includes(state.selectedSkin)) state.selectedSkin = 'default';
+        if (['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme) && !state.ownedThemes.includes(state.selectedTheme)) state.selectedTheme = 'aurora';
       }
       const changed = previousAccess !== isProEnabled() || previousTheme !== state.selectedTheme || previousSkin !== state.selectedSkin;
       lastProAccessState = isProEnabled();
@@ -2104,7 +2372,7 @@
       const energy = document.getElementById('energyTop');
       if (streak) streak.textContent = state.streak;
       const streakPill=document.getElementById('streakPill');
-      if(streakPill){ streakPill.classList.toggle('pro-cryo',isProEnabled()); streakPill.title=isProEnabled()?'Крио-защита Луми активна: серия защищена от пропуска до 3 дней':'Серия занятий'; }
+      if(streakPill){ const lit=state.dailyGoalClaimedDate===localDateKey(); streakPill.classList.toggle('is-lit',lit); streakPill.classList.toggle('pro-cryo',isProEnabled()); streakPill.title=lit?`Огонёк горит: цель ${state.goal} минут выполнена. Серия ${state.streak} дней.`:`Выполни цель ${state.goal} минут активного обучения, чтобы зажечь огонёк.`; }
       if (gems) gems.textContent = state.crystals;
       if (xp) xp.textContent = state.xp;
       if (energy) energy.textContent = isProEnabled() ? '∞' : `${state.energy}/${ENERGY_MAX}`;
@@ -2211,73 +2479,106 @@
     // Original Lumi character: a hand-drawn vector axolotl astronaut with a distinct silhouette.
     // The art stays inline so the mascot is crisp at every screen size and keeps its old state hooks.
     let lumiInstance = 0;
-    function lumiArt(extraClass = '') {
-      const skinClass = getSkinClass(extraClass);
-      const decoration = skinClass === 'skin-gold' ? '✦' : skinClass === 'skin-cyber' ? '⌁' : skinClass === 'skin-hero' ? '★' : '';
-      // Lumi is a deliberately simple, hand-drawn 2D cartoon: solid inks, a few matte colors and an asymmetric face.
-      // Keep the named groups below: existing lesson, happy/sad, wave and skin animations depend on them.
-      return `<div class="lumi-wrap ${skinClass} ${extraClass}" aria-label="Луми, космический аксолотль" role="img">
+    function lumiArt(extraClass = '', wardrobeOverride = null) {
+      const n = ++lumiInstance;
+      const showWardrobe = extraClass.includes('wardrobe-show') || extraClass.includes('wardrobe-preview');
+      const wardrobe = showWardrobe ? (wardrobeOverride || state.wardrobeEquipped || {}) : null;
+      const skinClass = getSkinClass(extraClass, wardrobe);
+      const wardrobeItems = showWardrobe ? LUMI_WARDROBE_SLOTS.map(slot => LUMI_WARDROBE_ITEMS.find(item => item.id === wardrobe?.[slot])).filter(Boolean) : [];
+      const wearClass = wardrobeItems.map(item => item.wearClass || '').filter(Boolean).join(' ');
+      const wearableMarkup = wardrobeItems.map(item => `<span class="lumi-wearable lumi-wearable-${item.slot}" aria-hidden="true">${item.visual || item.icon}</span>`).join('');
+      const decoration = '';
+      return `<div class="lumi-wrap ${skinClass} ${wearClass} ${extraClass}" aria-label="Луми, голубой космический аксолотль" role="img">
         <span class="sparkle s1">✦</span><span class="sparkle s2">✧</span><span class="sparkle s3">✦</span><span class="bubble"></span><span class="bubble b2"></span>
-        <svg class="lumi-svg" viewBox="0 0 320 360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <!-- Tail: broad, simple and recognisable even at small sizes. -->
-          <path class="lumi-tail" d="M177 263 C151 261 127 276 113 300 C101 321 82 333 65 324 C51 316 53 298 67 287 C78 278 93 282 101 293 C117 268 140 247 170 244Z" fill="#38c6c8" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
-          <path d="M71 306 C88 304 101 311 111 300 C123 285 139 269 157 264" fill="none" stroke="#83e5d9" stroke-width="6" stroke-linecap="round"/>
-          <!-- Suit body and short boots. -->
-          <path d="M119 226 Q159 211 201 226 L220 289 Q218 309 197 313 L124 311 Q105 306 104 287Z" fill="#fff0cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
-          <path d="M124 298 Q142 306 160 301 L159 333 Q151 346 130 341 L119 327Z" fill="#fff0cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
-          <path d="M168 301 Q188 306 207 296 L214 324 Q211 342 191 343 L175 333Z" fill="#fff0cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
-          <path d="M119 326 Q139 337 158 326 L160 340 Q144 351 125 342Z M176 328 Q196 338 212 324 L218 338 Q198 353 178 342Z" fill="#28bfc2" stroke="#183552" stroke-width="5" stroke-linejoin="round"/>
-          <path d="M121 341 Q140 348 158 340 Q163 350 150 355 L127 355 Q116 351 121 341Z M178 341 Q199 349 216 338 Q224 348 210 355 L188 355 Q175 353 178 341Z" fill="#f7f2dc" stroke="#183552" stroke-width="5" stroke-linejoin="round"/>
-          <!-- Backpack peeks over the shoulder. -->
-          <path d="M103 226 Q86 225 82 246 L87 278 Q96 288 112 279 L124 245Z" fill="#238eaa" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
-          <rect x="88" y="244" width="18" height="28" rx="7" fill="#fff0cf" stroke="#183552" stroke-width="4"/>
-          <!-- Right arm. -->
-          <path d="M201 238 Q224 232 238 250 L249 275 Q250 290 235 293 Q220 294 214 278 L194 261Z" fill="#fff0cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
-          <path d="M232 277 Q247 270 255 282 Q261 296 248 306 Q233 311 224 298Z" fill="#35c6c5" stroke="#183552" stroke-width="5" stroke-linejoin="round"/>
-          <!-- Waving arm remains a separate animated group. -->
-          <g class="lumi-wave-arm">
-            <path d="M119 239 Q98 242 83 224 L65 204 Q54 190 66 180 Q78 171 90 185 L119 211 Q133 224 137 242Z" fill="#fff0cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
-            <path d="M65 191 Q52 180 42 190 Q31 202 42 218 Q53 234 70 228 Q83 221 78 205Z" fill="#35c6c5" stroke="#183552" stroke-width="5" stroke-linejoin="round"/>
-            <path d="M43 204 Q53 210 60 201 M51 218 Q61 223 69 214" fill="none" stroke="#183552" stroke-width="3.5" stroke-linecap="round"/>
-          </g>
-          <!-- Flat suit seams and the signature Lumi star. -->
-          <path d="M123 263 Q160 275 203 261 M122 286 Q161 296 207 283" fill="none" stroke="#d4c6a6" stroke-width="4" stroke-linecap="round"/>
-          <path d="M160 248 L168 263 L185 265 L172 277 L175 294 L160 285 L145 294 L148 277 L135 265 L152 263Z" fill="#36cbd0" stroke="#183552" stroke-width="4" stroke-linejoin="round"/>
-          <circle cx="195" cy="251" r="4" fill="#e58a69" stroke="#183552" stroke-width="2"/>
-          <!-- Axolotl gills: three leaf-like fronds on each side, not mechanical spikes. -->
-          <g class="gill gill-left-one"><path class="gill-shape" d="M101 126 C78 119 67 101 76 83 C94 88 105 104 108 119 C108 98 119 84 135 84 C143 104 129 122 111 132Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M105 124 Q87 101 80 91 M111 126 Q128 104 133 91" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
-          <g class="gill gill-left-two"><path class="gill-shape" d="M91 158 C67 156 51 141 57 121 C76 121 89 135 96 149 C92 128 104 111 121 112 C131 132 116 149 101 161Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M94 156 Q71 135 63 128 M101 155 Q117 132 119 119" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
-          <g class="gill gill-left-three"><path class="gill-shape" d="M102 185 C81 196 60 188 56 170 C74 164 91 174 102 181 C96 162 108 148 125 149 C133 168 119 181 109 190Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M102 184 Q77 177 63 174 M108 184 Q119 163 123 156" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
-          <g class="gill gill-right-one"><path class="gill-shape" d="M219 126 C242 119 253 101 244 83 C226 88 215 104 212 119 C212 98 201 84 185 84 C177 104 191 122 209 132Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M215 124 Q233 101 240 91 M209 126 Q192 104 187 91" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
-          <g class="gill gill-right-two"><path class="gill-shape" d="M229 158 C253 156 269 141 263 121 C244 121 231 135 224 149 C228 128 216 111 199 112 C189 132 204 149 219 161Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M226 156 Q249 135 257 128 M219 155 Q203 132 201 119" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
-          <g class="gill gill-right-three"><path class="gill-shape" d="M218 185 C239 196 260 188 264 170 C246 164 229 174 218 181 C224 162 212 148 195 149 C187 168 201 181 211 190Z" fill="#f4779c" stroke="#183552" stroke-width="5" stroke-linejoin="round"/><path d="M218 184 Q243 177 257 174 M212 184 Q201 163 197 156" fill="none" stroke="#ffd0d4" stroke-width="4" stroke-linecap="round"/></g>
-          <!-- Large, slightly uneven head: the silhouette is Lumi's main identifier. -->
+        <svg class="lumi-svg" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="${n}skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d8f5ff"/><stop offset=".48" stop-color="#83d5f4"/><stop offset="1" stop-color="#42aee4"/></linearGradient>
+            <linearGradient id="${n}gill" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffa6c7"/><stop offset=".52" stop-color="#c49df7"/><stop offset="1" stop-color="#67e5df"/></linearGradient>
+            <linearGradient id="${n}collar" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9bfff0"/><stop offset=".5" stop-color="#12cbd4"/><stop offset="1" stop-color="#4b9ee9"/></linearGradient>
+            <linearGradient id="${n}suit" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#fffdf5"/><stop offset=".48" stop-color="#e5f6ff"/><stop offset="1" stop-color="#b9e2f7"/></linearGradient>
+            <linearGradient id="${n}glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".31"/><stop offset=".58" stop-color="#9eeaff" stop-opacity=".06"/><stop offset="1" stop-color="#54bde9" stop-opacity=".13"/></linearGradient>
+            <radialGradient id="${n}cheek"><stop stop-color="#ff8eae" stop-opacity=".62"/><stop offset="1" stop-color="#ff8eae" stop-opacity="0"/></radialGradient>
+            <filter id="${n}glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+
+          <!-- Round, roomy helmet bubble -->
+          <ellipse cx="130" cy="130" rx="112" ry="115" fill="url(#${n}glass)"/>
+
+          <!-- A curled, translucent axolotl tail peeks out beside the suit -->
+          <path class="lumi-tail" d="M158 207 C175 195 192 192 202 203 C214 216 205 231 193 232 C182 233 176 225 181 216 C184 210 191 208 197 213 C193 207 185 207 180 213" fill="#70c9ed" fill-opacity=".52" stroke="#55aee0" stroke-opacity=".72" stroke-width="3" stroke-linecap="round"/>
+          <path d="M176 205 Q193 197 202 209" fill="none" stroke="#fff" stroke-opacity=".72" stroke-width="2.5" stroke-linecap="round"/>
+
+          <!-- Puffy mini space suit and two tiny feet -->
+          <ellipse cx="114" cy="228" rx="13" ry="7" fill="#a9def4" stroke="#6ca9d3" stroke-width="1.7"/>
+          <ellipse cx="146" cy="228" rx="13" ry="7" fill="#a9def4" stroke="#6ca9d3" stroke-width="1.7"/>
+          <path d="M103 225 Q113 231 124 226 M136 226 Q147 231 157 225" fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="130" cy="199" rx="39" ry="35" fill="url(#${n}suit)" stroke="#8dbbdd" stroke-width="2.2"/>
+          <path d="M103 186 Q130 174 157 186" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="3" stroke-linecap="round"/>
+          <path d="M109 210 Q130 219 151 210" fill="none" stroke="#b3c6e8" stroke-opacity=".85" stroke-width="2" stroke-linecap="round"/>
+          <rect x="119" y="190" width="22" height="19" rx="7" fill="#d8f7f7" stroke="#64c2df" stroke-width="1.5"/>
+          <path d="M130 194 L132.5 199 L138 199.5 L134 203 L135 208 L130 205.5 L125 208 L126 203 L122 199.5 L127.5 199Z" fill="#8b72d8" opacity=".9"/>
+
+          <!-- Two small mitten-like paws at the sides of the body -->
+          <g class="lumi-wave-arm"><path d="M96 188 C86 187 83 195 88 202 C92 207 101 205 106 198Z" fill="url(#${n}skin)" stroke="#74b9df" stroke-width="2"/><path d="M90 198 l5 2 M96 200 l4 1" stroke="#fff" stroke-opacity=".9" stroke-width="1.7" stroke-linecap="round"/></g>
+          <path d="M164 188 C174 187 177 195 172 202 C168 207 159 205 154 198Z" fill="url(#${n}skin)" stroke="#74b9df" stroke-width="2"/>
+          <path d="M170 198 l-5 2 M164 200 l-4 1" stroke="#fff" stroke-opacity=".9" stroke-width="1.7" stroke-linecap="round"/>
+
+          <!-- Six smaller, fluffy gill antennae with more breathing room -->
+          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M82 91 C66 88 59 77 64 66 C73 69 80 77 83 85 C81 73 88 64 97 62 C101 73 96 85 89 93 C99 86 108 88 114 95 C105 103 94 102 83 97Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M81 91 Q69 75 66 69 M85 89 Q91 69 96 65 M88 94 Q102 91 110 96" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
+          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M75 112 C59 114 50 105 52 94 C62 94 71 100 77 106 C71 95 74 84 82 79 C91 88 90 101 84 111 C94 102 104 104 110 112 C101 120 88 120 76 117Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M75 113 Q59 101 55 97 M79 109 Q81 89 82 83 M82 115 Q98 108 106 113" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
+          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M83 135 C69 143 57 137 55 127 C65 124 75 129 83 133 C75 123 77 112 86 106 C95 115 95 127 90 136 C100 129 109 132 114 140 C104 146 92 145 83 140Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M83 137 Q65 133 58 130 M86 134 Q84 117 87 110 M89 139 Q102 135 110 141" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
+          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M178 91 C194 88 201 77 196 66 C187 69 180 77 177 85 C179 73 172 64 163 62 C159 73 164 85 171 93 C161 86 152 88 146 95 C155 103 166 102 177 97Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M179 91 Q191 75 194 69 M175 89 Q169 69 164 65 M172 94 Q158 91 150 96" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
+          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M185 112 C201 114 210 105 208 94 C198 94 189 100 183 106 C189 95 186 84 178 79 C169 88 170 101 176 111 C166 102 156 104 150 112 C159 120 172 120 184 117Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M185 113 Q201 101 205 97 M181 109 Q179 89 178 83 M178 115 Q162 108 154 113" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
+          <g class="gill" filter="url(#${n}glow)"><path class="gill-shape" d="M177 135 C191 143 203 137 205 127 C195 124 185 129 177 133 C185 123 183 112 174 106 C165 115 165 127 170 136 C160 129 151 132 146 140 C156 146 168 145 177 140Z" fill="url(#${n}gill)" stroke="#d58fce" stroke-width="1.7"/><path d="M177 137 Q195 133 202 130 M174 134 Q176 117 173 110 M171 139 Q158 135 150 141" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.7" stroke-linecap="round"/></g>
+
+          <!-- Larger, more expressive Lumi head: same rounded silhouette, clearer cheek and brow shapes. -->
           <g class="lumi-head">
-            <path d="M89 151 C86 108 113 76 153 72 C194 67 230 90 239 128 C250 173 226 211 192 224 C153 238 108 219 92 188 C86 177 86 164 89 151Z" fill="#59d8cf" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
-            <path d="M104 111 Q119 91 140 89" fill="none" stroke="#a0eee2" stroke-width="5" stroke-linecap="round"/>
-            <ellipse cx="116" cy="181" rx="17" ry="9" fill="#f5a0a4" opacity=".52"/><ellipse cx="211" cy="181" rx="14" ry="8" fill="#f5a0a4" opacity=".45"/>
+            <path d="M66 111 C66 70 92 45 130 45 C168 45 194 70 194 111 C194 153 168 178 130 178 C92 178 66 153 66 111Z" fill="url(#${n}skin)" stroke="#54a9dc" stroke-width="2.8"/>
+            <path d="M82 78 Q103 51 132 52 Q162 52 180 79" fill="none" stroke="#fff" stroke-opacity=".58" stroke-width="4" stroke-linecap="round"/>
+            <path d="M87 91 Q98 85 109 90 M151 90 Q164 84 174 92" fill="none" stroke="#3289bd" stroke-width="3.1" stroke-linecap="round"/>
+            <ellipse cx="89" cy="136" rx="19" ry="13" fill="url(#${n}cheek)"/>
+            <ellipse cx="171" cy="136" rx="19" ry="13" fill="url(#${n}cheek)"/>
             <g class="eye-normal">
-              <ellipse cx="132" cy="148" rx="10.5" ry="13.5" fill="#fff8e8" stroke="#183552" stroke-width="3"/>
-              <ellipse cx="190" cy="151" rx="9.5" ry="12.5" fill="#fff8e8" stroke="#183552" stroke-width="3"/>
-              <ellipse cx="134" cy="151" rx="5.5" ry="8" fill="#28325f"/><ellipse cx="191" cy="154" rx="5" ry="7.5" fill="#28325f"/>
-              <circle cx="136" cy="147" r="2.2" fill="#fff"/><circle cx="193" cy="150" r="2" fill="#fff"/>
+              <ellipse cx="105" cy="111" rx="13" ry="16.5" fill="#fff"/>
+              <ellipse cx="155" cy="111" rx="13" ry="16.5" fill="#fff"/>
+              <ellipse cx="107" cy="113" rx="7.7" ry="10.5" fill="#263c72"/>
+              <ellipse cx="157" cy="113" rx="7.7" ry="10.5" fill="#263c72"/>
+              <circle cx="111" cy="107" r="4" fill="#fff"/>
+              <circle cx="161" cy="107" r="4" fill="#fff"/>
+              <circle cx="102" cy="119" r="1.9" fill="#fff" opacity=".88"/>
+              <circle cx="152" cy="119" r="1.9" fill="#fff" opacity=".88"/>
             </g>
-            <g class="eye-star" fill="#fff4b5"><path d="M132 132 L137 143 L149 148 L137 153 L132 165 L127 153 L115 148 L127 143Z"/><path d="M190 136 L194 146 L205 151 L194 156 L190 167 L185 156 L174 151 L185 146Z"/></g>
-            <path d="M119 130 Q130 124 141 129 M181 132 Q190 126 199 133" fill="none" stroke="#183552" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="157" cy="166" r="2.8" fill="#183552"/><circle cx="170" cy="166" r="2.2" fill="#183552"/>
-            <path d="M146 184 Q160 197 177 183 Q169 205 153 197 Q148 193 146 184Z" fill="#a93f61" stroke="#183552" stroke-width="4" stroke-linejoin="round"/>
-            <path d="M151 187 Q161 192 172 187" fill="none" stroke="#ffd0d4" stroke-width="3" stroke-linecap="round"/>
-            <!-- Three freckles on one cheek make the face a little imperfect and memorable. -->
-            <circle cx="108" cy="174" r="2.5" fill="#257e86"/><circle cx="116" cy="180" r="2" fill="#257e86"/><circle cx="123" cy="173" r="1.7" fill="#257e86"/>
-            <circle cx="207" cy="174" r="2" fill="#257e86"/>
+            <g class="eye-star" fill="#fff" filter="url(#${n}glow)">
+              <path d="M105 88 L110 102 L124 108 L110 114 L105 128 L100 114 L86 108 L100 102Z"/>
+              <path d="M155 88 L160 102 L174 108 L160 114 L155 128 L150 114 L136 108 L150 102Z"/>
+            </g>
+            <path d="M123 139 Q130 144 137 139" fill="none" stroke="#2776a9" stroke-width="2.4" stroke-linecap="round"/>
+            <!-- Single closed smile: no open mouth and no pink tongue -->
+            <path class="lumi-smile" d="M113 153 Q130 169 147 153" fill="none" stroke="#173c70" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M84 127 l-4 3 M91 130 l-4 3 M169 130 l4 3 M176 127 l4 3" stroke="#3a91bf" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+            <circle cx="130" cy="124" r="2.3" fill="#2d82b3"/>
           </g>
-          <!-- Broad collar replaces the oversized glass helmet. -->
-          <path d="M105 218 Q159 244 215 215 L222 234 Q163 266 99 237Z" fill="#29bdc4" stroke="#183552" stroke-width="6" stroke-linejoin="round"/>
-          <path d="M117 230 Q160 248 204 228" fill="none" stroke="#8be7dc" stroke-width="4" stroke-linecap="round"/>
-          <!-- When Lumi is shy he hides his cheeks with both mittens. -->
-          <g class="paw-cover"><path d="M117 178 Q101 171 97 187 Q95 203 111 211 Q127 213 133 195Z" fill="#35c6c5" stroke="#183552" stroke-width="5"/><path d="M183 194 Q191 176 207 182 Q222 191 211 207 Q196 218 183 194Z" fill="#35c6c5" stroke="#183552" stroke-width="5"/></g>
+
+          <!-- Neon-turquoise life-support collar between head and suit -->
+          <path d="M91 157 Q130 174 169 157 L163 177 Q130 191 97 177Z" fill="url(#${n}collar)" stroke="#079bb2" stroke-width="2"/>
+          <path d="M103 164 Q130 177 157 164" fill="none" stroke="#d9ffff" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="130" cy="178" r="5.5" fill="#edffff" stroke="#079bb2" stroke-width="2"/>
+
+          <!-- Paws lift toward the visor when Lumi is shy -->
+          <g class="paw-cover">
+            <ellipse cx="101" cy="126" rx="13" ry="9" transform="rotate(-32 101 126)" fill="#a9def4" stroke="#5fa9d8" stroke-width="1.8"/>
+            <ellipse cx="159" cy="126" rx="13" ry="9" transform="rotate(32 159 126)" fill="#a9def4" stroke="#5fa9d8" stroke-width="1.8"/>
+            <path d="M94 125 l5 -2 M100 129 l5 -2 M155 129 l5 2 M161 125 l5 2" stroke="#4d8fb9" stroke-width="1.4" stroke-linecap="round"/>
+          </g>
+
+          <!-- Bubble reflections and outer glass rim -->
+          <path d="M45 92 C53 52 82 25 112 20" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="5.5" stroke-linecap="round"/>
+          <path d="M207 69 Q220 90 220 115" fill="none" stroke="#fff" stroke-opacity=".72" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="57" cy="126" r="3" fill="#fff" opacity=".9"/>
+          <circle cx="204" cy="150" r="2.5" fill="#fff" opacity=".85"/>
+          <ellipse cx="130" cy="130" rx="112" ry="115" fill="none" stroke="#71c9ed" stroke-width="3"/>
         </svg>
-        ${decoration ? `<span class="lumi-skin-decoration" aria-hidden="true">${decoration}</span>` : ''}
+        ${decoration ? `<span class="lumi-skin-decoration" aria-hidden="true">${decoration}</span>` : ''}${wearableMarkup}
       </div>`;
     }
 
@@ -2612,15 +2913,16 @@
     const LUMI_TOUR_STEPS = [
       {title:'Твоя карта планет 🪐',text:'Здесь твои планеты знаний! Проходи уроки по порядку — новые слова добавляются по чуть-чуть, а если нажать на любое английское слово в задании, я сразу подскажу его перевод.',selector:'.course-planet .course-planet-head'},
       {title:'Учебник и Звёздная Лига 📚',text:'Во вкладке «Учебник» копятся все твои слова для повторения, а в «Звёздной Лиге» ты соревнуешься с 15 виртуальными кадетами за первое место.',selector:'#bottomNav'},
-      {title:'Твой профиль 👩‍🚀',text:'В «Профиле» живёт твой огонёк ударного режима, статистика и гардероб моих космических костюмов.',selector:'#bottomNav [data-tab="profile"]'},
-      {title:'Отсек Lumi PRO ⭐',text:'А здесь находится отсек PRO! В обычном режиме у тебя 5 зарядов энергии, а с Lumi PRO — бесконечная энергия, крио-защита огонька, двойной опыт (2x XP), закрытые планеты и три интерактивных диалога по сценариям. Заверши все четыре шага обучения, и после инструктажа получишь 1 час Lumi PRO в подарок.',selector:'#bottomNav [data-tab="pro"]'}
+      {title:'Твой профиль и гардероб 👩‍🚀',text:'В Профиле находятся статистика, огонёк привычки и гардероб. Купленную одежду можно надеть только здесь. Вещи из разных категорий сочетаются, а две вещи из одной категории заменяют друг друга.',selector:'#bottomNav [data-tab="profile"]'},
+      {title:'Огонёк привычки 🔥',text:'Огонёк загорается, когда ты выполняешь выбранную при первом запуске цель: 5, 10 или 15 минут активного обучения за день. Время засчитывается на главной карте, в учебнике, уроках и диалогах; магазин, профиль и долгий простой не считаются. На главной виден прогресс, а заморозку одного пропущенного дня можно купить в Магазине. Lumi PRO даёт скидку 50%.',selector:'#streakPill'},
+      {title:'Магазин и Lumi PRO ⭐',text:'В отдельной вкладке «Магазин» можно примерить одежду на Луми, купить понравившееся за кристаллы, выбрать тему и пополнить запас заморозок. PRO не выдаёт вещи бесплатно, а снижает цены в магазине вдвое. Вкладка PRO открывает бесконечную энергию, двойной XP, закрытые планеты и диалоги. Заверши все пять шагов обучения, и после инструктажа получишь 1 час Lumi PRO в подарок.',selector:'#bottomNav [data-tab="shop"]'}
     ];
     let tutorialActive = false;
     function startPendingTutorial() {
       if (tutorialActive || !state.onboardingDone || !state.tutorialPending || state.tutorialCompleted || lessonSession || dialogSession) return;
       if (currentTab !== 'map') { currentTab='map'; render(); return; }
       tutorialActive = true;
-      showTutorialStep(Math.min(3,state.tutorialStep||0));
+      showTutorialStep(Math.min(LUMI_TOUR_STEPS.length-1,state.tutorialStep||0));
     }
     function positionTourSpotlight(target) {
       const overlay=document.getElementById('tourOverlay');
@@ -2643,7 +2945,7 @@
       tutorialActive=true;
       state.tutorialStep=index;
       saveState();
-      overlay.innerHTML=`<div class="tour-spotlight" aria-hidden="true"></div><section class="tour-card" role="dialog" aria-modal="true" aria-labelledby="tourTitle"><div class="tour-topline"><span class="tour-step-count">ПОЛЁТ С ЛУМИ · ${index+1} / 4</span><button class="tour-skip" id="skipLumiTour">Пропустить</button></div><div class="tour-main"><div class="tour-mascot">${lumiArt()}</div><div class="tour-copy"><h3 id="tourTitle">${step.title}</h3><p>${step.text}</p></div></div><div class="tour-footer"><div class="tour-progress-dots" aria-label="Шаг ${index+1} из 4">${LUMI_TOUR_STEPS.map((_,i)=>`<i class="${i<=index?'active':''}"></i>`).join('')}</div><button class="tour-next" id="nextLumiTour">${index>=LUMI_TOUR_STEPS.length-1?'Завершить ✓':'Дальше →'}</button></div></section>`;
+      overlay.innerHTML=`<div class="tour-spotlight" aria-hidden="true"></div><section class="tour-card" role="dialog" aria-modal="true" aria-labelledby="tourTitle"><div class="tour-topline"><span class="tour-step-count">ПОЛЁТ С ЛУМИ · ${index+1} / ${LUMI_TOUR_STEPS.length}</span><button class="tour-skip" id="skipLumiTour">Пропустить</button></div><div class="tour-main"><div class="tour-mascot">${lumiArt()}</div><div class="tour-copy"><h3 id="tourTitle">${step.title}</h3><p>${step.text}</p></div></div><div class="tour-footer"><div class="tour-progress-dots" aria-label="Шаг ${index+1} из ${LUMI_TOUR_STEPS.length}">${LUMI_TOUR_STEPS.map((_,i)=>`<i class="${i<=index?'active':''}"></i>`).join('')}</div><button class="tour-next" id="nextLumiTour">${index>=LUMI_TOUR_STEPS.length-1?'Завершить ✓':'Дальше →'}</button></div></section>`;
       overlay.hidden=false; overlay.setAttribute('aria-hidden','false');
       const target=document.querySelector(step.selector) || document.querySelector('.hero');
       if(target && target.closest('#screen')) {
@@ -2682,7 +2984,10 @@
       if(overlay){overlay.hidden=true;overlay.setAttribute('aria-hidden','true');overlay.innerHTML='';}
       tutorialActive=false;
       state.tutorialCompleted=true; state.tutorialPending=false; state.tutorialStep=0;
-      // Skipping is allowed, but the automatic 1-hour PRO trial is a reward for finishing all four steps.
+      // Start counting active learning only after the tour is dismissed.
+      studyLastActivityAt = Date.now();
+      studyLastTickAt = studyLastActivityAt;
+      // Skipping is allowed, but the automatic 1-hour PRO trial is a reward for finishing all five steps.
       const trialAwarded = !skipped && grantTrialProOnce();
       saveState();
       showWelcomeGift(trialAwarded);
@@ -2702,6 +3007,7 @@
       const wordPopover = document.getElementById('wordPopover'); if (wordPopover) wordPopover.hidden = true;
       if (currentTab === 'map') screen.innerHTML = renderMap();
       else if (currentTab === 'book') screen.innerHTML = renderBook();
+      else if (currentTab === 'shop') screen.innerHTML = renderShop();
       else if (currentTab === 'profile') screen.innerHTML = renderProfile();
       else if (currentTab === 'pro') screen.innerHTML = renderPro();
       screen.scrollTop = 0;
@@ -2803,9 +3109,9 @@
         state.wordMastery.hello = Math.max(1, Number(state.wordMastery.hello) || 0);
         state.vocabLearned = state.learnedWords.length;
         recordExerciseTask('warmup-1','warmup','hello',options[picked]?.textContent?.trim() || '',correct);
-        state.totalAnswered += 1; state.dailyMinutes = Math.min(state.goal, state.dailyMinutes + 1); state.warmupDone = true; state.onboardingDone = true; state.goalChosen = true; state.onboardingStep = 'completed';
+        state.totalAnswered += 1; state.warmupDone = true; state.onboardingDone = true; state.goalChosen = true; state.onboardingStep = 'completed';
         if (!state.tutorialCompleted) { state.tutorialPending = true; state.tutorialStep = 0; }
-        registerActiveDay(localDateKey()); saveState();
+        saveState();
         const check = document.getElementById('warmupCheck'); check.textContent = 'Открыть карту планет 🪐'; check.classList.toggle('green', correct); check.disabled = false;
         check.onclick = () => { tap(); currentTab = 'map'; render(); showToast(correct ? 'Ты получил 10 кристаллов! 💎' : 'За смелость — 3 кристалла! 💎'); };
       });
@@ -2813,8 +3119,11 @@
 
     function registerActiveDay(day) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return;
-      if (state.streakLastDate === day || state.activeDays.includes(day)) { state.today=day; return; }
-      const lastDate=state.streakLastDate || state.activeDays.slice().sort().slice(-1)[0] || (state.streak>0?state.today:'');
+      if (state.streakLastDate === day) { state.today=day; return; }
+      // Consider only dates before the day being registered. Cloud snapshot merges
+      // can contain a later date from another device; it must not reset or stall the streak.
+      const savedStreakDate = typeof state.streakLastDate === 'string' && state.streakLastDate < day ? state.streakLastDate : '';
+      const lastDate=savedStreakDate || state.activeDays.filter(activeDay => activeDay < day).sort().slice(-1)[0] || (state.streak>0 && typeof state.today === 'string' && state.today < day ? state.today : '');
       if (!lastDate) state.streak=Math.max(1,state.streak||0);
       else {
         const lastMs=Date.parse(lastDate+'T00:00:00');
@@ -2840,32 +3149,111 @@
       state.streakLastDate=day; state.today=day;
     }
 
-    // The 5/10/15-minute choice sets a concrete daily lesson plan: approximately 1/2/3 missions.
+    function ensureDailyStudyDate() {
+      const today = localDateKey();
+      if (state.dailyDate !== today) {
+        state.dailyDate = today;
+        state.dailyMinutes = 0;
+        state.dailyActiveSeconds = 0;
+        state.dailyCompletedLessons = [];
+      }
+    }
+    function updateDailyGoalUI() {
+      const goal = Math.max(5,Number(state.goal)||10);
+      const done = Math.min(goal,Number(state.dailyMinutes)||0);
+      const percent = Math.min(100,Math.round(done/goal*100));
+      const reached = state.dailyGoalClaimedDate === localDateKey();
+      const progress = document.getElementById('dailyGoalProgress');
+      const fill = document.getElementById('dailyGoalFill');
+      const status = document.getElementById('dailyGoalStatus');
+      const percentNode = document.getElementById('dailyGoalPercent');
+      if (progress) progress.textContent = `${done} / ${goal} мин`;
+      if (fill) fill.style.width = `${percent}%`;
+      if (status) status.textContent = reached ? '🔥 Огонёк горит! Цель выполнена.' : `Осталось ${goal-done} ${plural(goal-done,'минута','минуты','минут')} до зажигания огонька`;
+      if (percentNode) percentNode.textContent = `${percent}%`;
+      const profileProgress = document.getElementById('profileDailyGoalProgress');
+      const profileFill = document.getElementById('profileDailyGoalFill');
+      const profileStatus = document.getElementById('profileDailyGoalStatus');
+      if (profileProgress) profileProgress.textContent = `${done} / ${goal} мин`;
+      if (profileFill) profileFill.style.width = `${percent}%`;
+      if (profileStatus) profileStatus.textContent = reached ? 'Огонёк уже горит! 🔥' : 'Выполни цель, чтобы зажечь огонёк и продолжить серию.';
+    }
+    function celebrateStreakIgnition() {
+      const app = document.getElementById('app');
+      if (!app) return;
+      let overlay = document.getElementById('streakIgnitionOverlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'streakIgnitionOverlay';
+        overlay.className = 'streak-ignition-overlay';
+        overlay.hidden = true;
+        overlay.setAttribute('aria-hidden','true');
+        app.appendChild(overlay);
+      }
+      if (streakCelebrationTimer) window.clearTimeout(streakCelebrationTimer);
+      overlay.innerHTML = `<div class="streak-fire-burst" aria-hidden="true"><i>🔥</i><span>✦</span><span>✧</span><span>✨</span><span>🔥</span><span>✦</span><span>✧</span><span>🌟</span></div><section class="streak-fire-message" role="status" aria-live="assertive"><div class="streak-fire-symbol">🔥</div><div class="eyebrow">ЦЕЛЬ НА СЕГОДНЯ ВЫПОЛНЕНА</div><h2>Огонёк зажёгся!</h2><p>Ты уделил английскому ${state.goal} минут. Серия продолжается: <strong>${state.streak} ${plural(state.streak,'день','дня','дней')}</strong>.</p><button type="button" class="btn full" id="closeStreakIgnition">Продолжить 🚀</button></section>`;
+      overlay.hidden = false;
+      overlay.setAttribute('aria-hidden','false');
+      overlay.classList.remove('show');
+      requestAnimationFrame(() => overlay.classList.add('show'));
+      const close = () => {
+        if (streakCelebrationTimer) { window.clearTimeout(streakCelebrationTimer); streakCelebrationTimer = null; }
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden','true');
+        streakCelebrationTimer = window.setTimeout(() => { overlay.hidden = true; overlay.innerHTML = ''; streakCelebrationTimer = null; }, 250);
+      };
+      overlay.querySelector('#closeStreakIgnition')?.addEventListener('click',close,{once:true});
+      overlay.addEventListener('click',event=>{if(event.target===overlay)close();},{once:true});
+      streakCelebrationTimer = window.setTimeout(close,5200);
+      sound('success'); haptic('success');
+    }
+    function completeDailyGoal() {
+      const today = localDateKey();
+      const requiredSeconds = Math.max(5,Number(state.goal)||10) * 60;
+      if (!state.goalChosen || state.dailyGoalClaimedDate === today || Number(state.dailyActiveSeconds||0) < requiredSeconds) return false;
+      state.dailyMinutes = Math.floor(Number(state.dailyActiveSeconds||0)/60);
+      state.dailyGoalClaimedDate = today;
+      addXp(15,`reward:daily-goal:${today}`);
+      addCrystals(15);
+      registerActiveDay(today);
+      saveState();
+      updateDailyGoalUI();
+      updateTopStats();
+      celebrateStreakIgnition();
+      return true;
+    }
+    function trackStudyTime(now = Date.now(), force = false) {
+      const elapsed = Math.max(0,Math.min(20000,now-studyLastTickAt));
+      studyLastTickAt = now;
+      const studyView = currentTab === 'map' || currentTab === 'book' || Boolean(lessonSession || dialogSession);
+      const tutorialInProgress = state.tutorialPending && !state.tutorialCompleted;
+      if (!state.goalChosen || !state.onboardingDone || tutorialInProgress || !studyView || (!force && document.visibilityState === 'hidden') || now-studyLastActivityAt > 90000) return;
+      const previousDailyDate = state.dailyDate;
+      ensureDailyStudyDate();
+      if (state.dailyDate !== previousDailyDate) updateTopStats();
+      const previousMinute = Math.floor(Number(state.dailyActiveSeconds||0)/60);
+      state.dailyActiveSeconds = Math.min(86400,Number(state.dailyActiveSeconds||0)+Math.floor(elapsed/1000));
+      state.dailyMinutes = Math.floor(state.dailyActiveSeconds/60);
+      const minuteChanged = state.dailyMinutes !== previousMinute;
+      const goalReached = completeDailyGoal();
+      updateDailyGoalUI();
+      if (minuteChanged && !goalReached && now-studyLastSavedAt >= 50000) {
+        studyLastSavedAt = now;
+        saveState();
+      }
+    }
     function dailyLessonTarget(goal = state.goal) { return Math.max(1, Math.min(3, Math.round(Number(goal || 10) / 5))); }
     function dailyLessonProgress() {
-      if (state.dailyDate !== localDateKey()) {
-        state.dailyDate = localDateKey(); state.dailyMinutes = 0; state.dailyCompletedLessons = [];
-      }
+      ensureDailyStudyDate();
       return Math.min(dailyLessonTarget(), state.dailyCompletedLessons.length);
     }
     function recordDailyLessonCompletion(lessonId) {
-      const today = localDateKey();
-      if (state.dailyDate !== today) {
-        state.dailyDate = today; state.dailyMinutes = 0; state.dailyCompletedLessons = [];
-      }
+      ensureDailyStudyDate();
       if (!state.dailyCompletedLessons.includes(lessonId)) state.dailyCompletedLessons.push(lessonId);
-      const target = dailyLessonTarget();
-      if (state.dailyCompletedLessons.length >= target && state.dailyGoalClaimedDate !== today) {
-        state.dailyGoalClaimedDate = today;
-        const bonusXp = addXp(15, `reward:daily-goal:${today}`);
-        addCrystals(15);
-        return { reached:true, bonusXp };
-      }
-      return { reached:false, bonusXp:0 };
+      return { reached:state.dailyGoalClaimedDate===localDateKey(), bonusXp:0 };
     }
     function goalOptionCaption(value) {
-      const lessons = dailyLessonTarget(value);
-      return `${lessons} ${plural(lessons,'урок','урока','уроков')} в день`;
+      return `Огонёк за ${value} минут активного обучения`;
     }
 
     function ensureDailyQuests() {
@@ -2978,8 +3366,8 @@
       const done = allLessons.filter(lesson => state.completedLessons.includes(lesson.id) && (isProEnabled() || !lesson.isPro)).length;
       const progress = Math.min(100, Math.round(done / Math.max(1,visibleLessonCount) * 100));
       const hearts = isProEnabled() ? '∞ без ограничений' : `${state.energy}/${ENERGY_MAX} сердечек`;
-      const dailyTarget = dailyLessonTarget();
-      const dailyDone = dailyLessonProgress();
+      const dailyTarget = Math.max(5,Number(state.goal)||10);
+      const dailyDone = Math.min(dailyTarget,Number(state.dailyMinutes)||0);
       const dailyPercent = Math.min(100, Math.round(dailyDone / dailyTarget * 100));
       const dailyClaimed = state.dailyGoalClaimedDate === localDateKey();
       if (ensureDailyQuests()) saveState();
@@ -3005,9 +3393,10 @@
         </section>
         <section class="home-daily card daily-card">
           <div class="section-row"><h2>Твоя цель на сегодня</h2><button class="tiny-link" id="changeGoal">Изменить</button></div>
-          <div class="progress-line"><span>План: ${state.goal} минут · примерно ${goalOptionCaption(state.goal)}</span><strong>${dailyDone} / ${dailyTarget} миссий</strong></div>
-          <div class="goal-track"><div class="goal-fill" style="width:${dailyPercent}%"></div></div>
-          <div class="progress-line"><span>${dailyClaimed ? 'Дневная цель выполнена — бонус получен!' : dailyDone >= dailyTarget ? 'Цель достигнута!' : `Ещё ${dailyTarget-dailyDone} ${plural(dailyTarget-dailyDone,'миссия','миссии','миссий')} до награды`}</span><span>${dailyPercent}%</span></div>
+          <div class="progress-line"><span>Активное обучение · цель ${dailyTarget} минут</span><strong id="dailyGoalProgress">${dailyDone} / ${dailyTarget} мин</strong></div>
+          <div class="goal-track"><div class="goal-fill" id="dailyGoalFill" style="width:${dailyPercent}%"></div></div>
+          <div class="progress-line"><span id="dailyGoalStatus">${dailyClaimed ? '🔥 Огонёк горит! Цель выполнена.' : `Осталось ${dailyTarget-dailyDone} ${plural(dailyTarget-dailyDone,'минута','минуты','минут')} до зажигания огонька`}</span><span id="dailyGoalPercent">${dailyPercent}%</span></div>
+          <p class="small muted" style="margin:7px 0 0">Время начисляется, пока ты пользуешься Академией. Если оставить приложение без действий, счётчик остановится.</p>
           <div class="progress-line" style="margin-top:8px"><span>Путь по Академии</span><span>${done}/${visibleLessonCount} уроков · ${progress}%</span></div>
           <button type="button" class="daily-energy-row energy-info-trigger" id="energyPill" aria-controls="energyInfo" aria-expanded="false"><span>Энергия кадета</span><span class="energy-hearts">${isProEnabled() ? '♾️ Безлимитная энергия' : `❤️ ${hearts}`}</span><span class="energy-info-caret">ⓘ</span></button>
           ${!isProEnabled() && state.energy < ENERGY_MAX ? `<div class="energy-reset-hint">⏳ Полное восстановление 5/5 через <strong id="energyCountdownInline">${formatEnergyCountdown()}</strong></div>` : ''}
@@ -3092,7 +3481,33 @@
       return `<section class="card economy-section"><div class="section-row"><h2>Магазин Луми</h2><strong>💎 ${state.crystals}</strong></div><p class="small muted">Покупай косметические образы за кристаллы. Купленные предметы останутся с тобой.${isProEnabled()?' Сейчас все образы также открыты по PRO — кристаллы тратить не нужно.':''}</p><div class="shop-grid">${LUMI_SKINS.map(skin=>{const owned=state.ownedSkins.includes(skin.id),proUnlocked=isProEnabled()&&!owned;return `<div class="shop-item"><span class="shop-icon">${skin.icon}</span><strong>${skin.name}</strong><small>${owned?'Уже куплено':proUnlocked?'Открыто в Lumi PRO':`Цена: ${skin.price} 💎`}</small><button data-shop-skin="${skin.id}" ${owned || proUnlocked || state.crystals<skin.price?'disabled':''}>${owned?'Куплено':proUnlocked?'Доступно в PRO':state.crystals<skin.price?'Не хватает 💎':`Купить · ${skin.price} 💎`}</button></div>`;}).join('')}</div><p class="economy-note">Награды: +10 💎 за первый проход урока, +15 💎 за дневную цель, бонусы за достижения и повышение уровня.</p></section>`;
     }
     function renderThemeShop() {
-      return `<section class="card theme-section"><div class="section-row"><h2>Оформление Академии</h2><span class="pro-planet-label">3 FREE · 5 PRO</span></div><p class="small muted">Выбери атмосферу своей космической академии.</p><div class="theme-grid">${LUMI_THEMES.map(theme=>{const locked=!theme.free&&!isProEnabled();return `<div class="theme-choice ${state.selectedTheme===theme.id?'selected':''}"><span class="theme-icon">${theme.icon}</span><strong>${theme.name}</strong><div class="theme-swatch">${theme.colors.map(color=>`<i style="background:${color}"></i>`).join('')}</div><small>${theme.free?'Бесплатная тема':locked?'⭐ Только PRO':'⭐ PRO-тема'}</small><button data-theme-select="${theme.id}" ${locked?'disabled':''}>${state.selectedTheme===theme.id?'Выбрана':locked?'Заблокирована':'Применить'}</button></div>`;}).join('')}</div></section>`;
+      return `<section class="card theme-section"><div class="section-row"><h2>Оформление Академии</h2><span class="small muted">3 бесплатные темы</span></div><p class="small muted">Выбирай атмосферу Академии. Lumi PRO снижает цену каждой платной темы на 50%.</p><div class="theme-grid">${LUMI_THEMES.map(theme=>{const owned=state.ownedThemes.includes(theme.id);const price=getShopPrice(theme.price||0);return `<div class="theme-choice ${state.selectedTheme===theme.id?'selected':''}"><span class="theme-icon">${theme.icon}</span><strong>${theme.name}</strong><div class="theme-swatch">${theme.colors.map(color=>`<i style="background:${color}"></i>`).join('')}</div><small>${owned?theme.free?'Бесплатная тема':'Куплено':`Цена: ${price} 💎`}${isProEnabled()&&!theme.free&&!owned?` · <s>${theme.price} 💎</s>`:''}</small><button data-theme-select="${theme.id}" ${!owned && !theme.free && state.crystals<price?'disabled':''}>${state.selectedTheme===theme.id?'Выбрана':owned?'Применить':theme.free?'Открыть':'Купить · '+price+' 💎'}</button></div>`;}).join('')}</div></section>`;
+    }
+    function renderShop() {
+      if (!shopPreviewReady) { shopPreviewLoadout = { ...(state.wardrobeEquipped || {}) }; shopPreviewReady = true; }
+      const categories = [
+        {id:'all',label:'Все'},
+        {id:'hat',label:'Шляпы'},
+        {id:'face',label:'Очки'},
+        {id:'suit',label:'Костюмы'},
+        {id:'accessory',label:'Аксессуары'}
+      ];
+      const filtered = activeShopCategory === 'all' ? LUMI_WARDROBE_ITEMS : LUMI_WARDROBE_ITEMS.filter(item=>item.slot===activeShopCategory);
+      const cards = filtered.map(item=>{
+        const owned=state.wardrobeOwned.includes(item.id);
+        const price=getShopPrice(item.price);
+        const previewed=shopPreviewLoadout?.[item.slot]===item.id;
+        return `<article class="shop-item shop-wardrobe-item ${previewed?'previewed':''}"><button type="button" class="shop-preview-choice" data-shop-preview="${item.id}" aria-pressed="${previewed?'true':'false'}"><span class="shop-icon">${item.icon}</span><strong>${item.name}</strong><small>${item.description}</small><em>${previewed?'✓ Сейчас примеряется':'Нажми, чтобы примерить'}</em></button><div class="shop-item-buy-row"><span class="shop-item-price">${owned?'В коллекции':`${price} 💎${isProEnabled()?` <s>${item.price} 💎</s>`:''}`}</span><button type="button" data-buy-wardrobe="${item.id}" ${owned || state.crystals<price?'disabled':''}>${owned?'Куплено':state.crystals<price?'Не хватает 💎':`Купить · ${price} 💎`}</button></div></article>`;
+      }).join('');
+      const freezePrice=getShopPrice(STREAK_FREEZE_PRICE);
+      return `<div class="page shop-page"><div class="page-head shop-page-head"><div><div class="eyebrow">КОСМИЧЕСКИЙ БУТИК</div><h1>Магазин Луми ✨</h1><p>Примеряй предметы на Луми, выбирай любимые и покупай за кристаллы.</p></div><div class="shop-balance">💎 <strong>${state.crystals}</strong></div></div>
+        <section class="card shop-preview-card"><div class="shop-preview-copy"><span class="eyebrow">ПРИМЕРОЧНАЯ</span><h2>Посмотри, как сидит образ</h2><p class="small muted">Выбери вещь ниже — Луми примерит её здесь. Примерка временная и не меняет твой профиль.</p><button type="button" class="btn secondary" data-shop-preview-clear>Сбросить примерку</button></div><div class="shop-preview-mascot">${lumiArt('wardrobe-preview',shopPreviewLoadout)}</div><p class="shop-preview-note">Покупки надеваются только в Профиле → Гардероб.</p></section>
+        <div class="shop-category-tabs" role="tablist" aria-label="Категории магазина">${categories.map(category=>`<button type="button" role="tab" aria-selected="${activeShopCategory===category.id?'true':'false'}" class="shop-category-tab ${activeShopCategory===category.id?'active':''}" data-shop-category="${category.id}">${category.label}</button>`).join('')}</div>
+        <section class="card shop-catalog-card"><div class="section-row"><h2>${categories.find(category=>category.id===activeShopCategory)?.label==='Все'?'Одежда и образы':categories.find(category=>category.id===activeShopCategory)?.label}</h2><span class="small muted">${filtered.length} предметов</span></div><div class="shop-grid">${cards || '<p class="small muted">В этой категории пока нет предметов.</p>'}</div><p class="economy-note">В одной категории можно надеть только одну вещь. Предметы из разных категорий сочетаются.</p></section>
+        <section class="card shop-freeze-card"><div class="shop-freeze-icon">❄️</div><div class="shop-freeze-copy"><div class="eyebrow">ЗАЩИТА СЕРИИ</div><h2>Заморозка огонька</h2><p class="small muted">Сохрани один пропущенный день серии. Одна покупка = один заряд. Бесплатная заморозка и крио-защита PRO сохраняются.</p><small>В запасе: <strong>${Number(state.bonusFreezeCharges||0)}</strong> · максимум 20</small></div><button type="button" class="btn ${state.crystals<freezePrice||state.bonusFreezeCharges>=20?'secondary':'purple'}" data-buy-freeze ${state.crystals<freezePrice||state.bonusFreezeCharges>=20?'disabled':''}>${state.bonusFreezeCharges>=20?'Максимум':`Купить · ${freezePrice} 💎${isProEnabled()?` (−50%)`:''}`}</button></section>
+        ${renderThemeShop()}
+        <p class="shop-footer-note">Lumi PRO не выдаёт вещи бесплатно: он снижает цены в магазине вдвое. Купленные предметы остаются в твоей коллекции.</p>
+      </div>`;
     }
     function renderAchievements() {
       const unlocked=state.claimedAchievements;
@@ -3112,8 +3527,14 @@
     }
 
     function renderWardrobe() {
-      return `<section class="card skin-section"><div class="section-row"><h2>Гардероб Луми</h2><span class="small muted">${isProEnabled()?'⭐ Все образы открыты в PRO':'Кристаллы 💎'}</span></div><p class="small muted">${isProEnabled()?'Все три премиальных образа доступны без кристаллов, пока действует Lumi PRO. Купленные образы останутся навсегда.':'Покупай образы за кристаллы или открой все три сразу с Lumi PRO.'}</p>
-        <div class="skin-grid">${[{id:'default',icon:'🚀',name:'Космический кадет',price:0},...LUMI_SKINS].map(skin=>{const available=isSkinAvailable(skin.id);return `<button class="skin-choice ${state.selectedSkin===skin.id?'selected':''}" data-skin="${skin.id}"><span class="skin-icon">${skin.icon}</span><span>${skin.name}</span><span>${state.selectedSkin===skin.id?'✓ Надет':available?'Надеть':`${skin.price} 💎`}</span></button>`;}).join('')}</div><div style="display:grid;place-items:center;margin-top:9px">${lumiArt()}</div>
+      const groups = [
+        {slot:'hat',title:'Головной убор',hint:'Корона, шляпа или другой головной убор'},
+        {slot:'face',title:'Очки и украшения',hint:'Один предмет для лица'},
+        {slot:'suit',title:'Костюм',hint:'Один костюм или плащ'},
+        {slot:'accessory',title:'Аксессуары',hint:'Спутник, джетпак и другие детали'}
+      ];
+      return `<section class="card skin-section wardrobe-profile"><div class="section-row"><h2>Гардероб Луми</h2><span class="small muted">${state.wardrobeOwned.length} предметов</span></div><p class="small muted">Одежда отображается на Луми только в Профиле. В каждой категории можно надеть один предмет; вещи из разных категорий сочетаются.</p><div class="wardrobe-mascot">${lumiArt('wardrobe-show')}</div>
+        ${groups.map(group => {const items=LUMI_WARDROBE_ITEMS.filter(item=>item.slot===group.slot && state.wardrobeOwned.includes(item.id));const active=state.wardrobeEquipped?.[group.slot]||'';return `<section class="wardrobe-slot"><div class="wardrobe-slot-head"><div><strong>${group.title}</strong><small>${group.hint}</small></div>${active?`<button class="tiny-link" data-unequip-slot="${group.slot}">Снять</button>`:''}</div>${items.length?`<div class="wardrobe-owned-grid">${items.map(item=>`<button type="button" class="wardrobe-owned-item ${active===item.id?'selected':''}" data-equip-item="${item.id}"><span>${item.icon}</span><strong>${item.name}</strong><small>${active===item.id?'✓ Надето':'Надеть'}</small></button>`).join('')}</div>`:`<p class="small muted wardrobe-empty">Пока пусто. Найди вещь в <button type="button" class="inline-link" data-tab-go="shop">Магазине</button>.</p>`}</section>`;}).join('')}
       </section>`;
     }
     function renderProfile() {
@@ -3141,19 +3562,17 @@
           <div class="card metric"><div class="metric-icon">📖</div><strong>${state.learnedWords.length}</strong><span>ИЗУЧЕНО СЛОВ</span></div>
           <div class="card metric"><div class="metric-icon">🎯</div><strong>${state.totalAnswered?Math.round(state.totalCorrect/state.totalAnswered*100):0}%</strong><span>ТОЧНОСТЬ</span></div>
         </div>
-        <section class="card streak-card"><div class="section-row"><h2>Огонёк привычки</h2><strong style="color:var(--gold)">🔥 ${state.streak} ${plural(state.streak,'день','дня','дней')}</strong></div><p class="small muted" style="margin:0">Заглядывай каждый день, чтобы поддерживать свою серию.</p>
+        <section class="card streak-card"><div class="section-row"><h2>Огонёк привычки</h2><strong style="color:var(--gold)">🔥 ${state.streak} ${plural(state.streak,'день','дня','дней')}</strong></div><p class="small muted" style="margin:0">Огонёк загорается, когда ты выполняешь выбранную в начале цель — ${state.goal} минут активного обучения за день. Если приложение долго не трогать, это время не засчитывается.</p>
           <div class="streak-days">${currentWeek.map(day => {const done=active.has(day.date),frozen=!done&&state.cryoFreezeDates.includes(day.date);return `<div class="streak-day ${done?'done':frozen?'frozen':''}"><i>${done?'🔥':frozen?'❄️':'·'}</i>${day.label}</div>`;}).join('')}</div>
           <div class="cryo-status">${isProEnabled()?'❄️ Крио-защита Луми активна: серия выдерживает до 3 пропущенных дней подряд без ограничения числа использований.':`${state.freeFreezeUsed?'Базовая заморозка использована.':'У тебя есть 1 бесплатная заморозка.'}${state.bonusFreezeCharges>0?` Дополнительных от Луми: ${state.bonusFreezeCharges} ❄️.`:''}`}</div>
         </section>
-        <section class="card" style="padding:14px"><div class="section-row"><h3 style="margin:0">Твоя цель на день</h3><button class="tiny-link" id="changeGoalProfile">Изменить</button></div><strong style="font-size:23px">${state.goal} минут <span class="muted small">в день</span></strong><p class="small muted" style="margin:4px 0 0">План: ${dailyLessonProgress()}/${dailyLessonTarget()} разных уроков сегодня. При выполнении — +15 кристаллов и бонус XP.</p></section>
-        ${DEMO_PRO_ALLOWED ? `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : isTrialProEnabled() ? '🎁 Подарочный PRO активен' : state.demoPro ? '🧪 Включён ДЕМО-PRO' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Статус подписки подтверждён сервером Telegram.' : isTrialProEnabled() ? `Пробный доступ действует до ${formatProDate(state.trial_pro_until)}.` : state.demoPro ? 'Все премиум-функции включены только на этом устройстве для проверки.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><div class="eyebrow">ТЕСТОВЫЙ ДОСТУП</div><h3 style="margin:5px 0">Проверить все платные функции</h3><p class="small muted" style="margin:0">Демо-PRO открывает секретные планеты, бесконечную энергию, двойной XP, продвинутый учебник и все скины. Оплата не требуется.</p><button class="btn ${state.demoPro?'secondary':'purple'} full" id="toggleDemoPro">${state.demoPro?'Выключить ДЕМО-PRO':'Включить ДЕМО-PRO (для теста)'}</button></section>` : `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Подписка подтверждена сервером Telegram.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><button class="btn purple full" data-tab-go="pro">Посмотреть возможности Lumi PRO ⭐</button></section>`}
+        <section class="card profile-daily-goal" style="padding:14px"><div class="section-row"><h3 style="margin:0">Твоя цель на день</h3><button class="tiny-link" id="changeGoalProfile">Изменить</button></div><strong style="font-size:23px">${state.goal} минут <span class="muted small">активного обучения</span></strong><div class="goal-track"><div class="goal-fill" id="profileDailyGoalFill" style="width:${Math.min(100,Math.round(state.dailyMinutes/state.goal*100))}%"></div></div><p class="small muted" style="margin:7px 0 0"><span id="profileDailyGoalProgress">${Math.min(state.dailyMinutes,state.goal)} / ${state.goal} мин</span> · <span id="profileDailyGoalStatus">${state.dailyGoalClaimedDate===localDateKey()?'Огонёк уже горит! 🔥':'Выполни цель, чтобы зажечь огонёк и продолжить серию.'}</span></p></section>
+        ${DEMO_PRO_ALLOWED ? `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : isTrialProEnabled() ? '🎁 Подарочный PRO активен' : state.demoPro ? '🧪 Включён ДЕМО-PRO' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Статус подписки подтверждён сервером Telegram.' : isTrialProEnabled() ? `Пробный доступ действует до ${formatProDate(state.trial_pro_until)}.` : state.demoPro ? 'Все премиум-функции включены только на этом устройстве для проверки.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><div class="eyebrow">ТЕСТОВЫЙ ДОСТУП</div><h3 style="margin:5px 0">Проверить все платные функции</h3><p class="small muted" style="margin:0">Демо-PRO открывает секретные планеты, бесконечную энергию, двойной XP, продвинутый учебник и скидку 50% в магазине. Оплата не требуется.</p><button class="btn ${state.demoPro?'secondary':'purple'} full" id="toggleDemoPro">${state.demoPro?'Выключить ДЕМО-PRO':'Включить ДЕМО-PRO (для теста)'}</button></section>` : `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Подписка подтверждена сервером Telegram.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><button class="btn purple full" data-tab-go="pro">Посмотреть возможности Lumi PRO ⭐</button></section>`}
         <section class="card" style="padding:14px;margin-top:13px"><div class="section-row"><h3 style="margin:0">⭐ Lumi PRO и спутник</h3><strong>${state.proActive?(proAccount.lastPlan==='week'?'ТАРИФ · 7 ДНЕЙ':`Месяцев в PRO: ${Math.max(1,proAccount.months||1)}`):state.demoPro?'ДЕМО-PRO':isTrialProEnabled()?'ПРОБНЫЙ PRO':'FREE'}</strong></div>${state.proActive?`<p class="small muted" style="margin:6px 0 0">Оплаченная подписка подтверждена сервером и действует до ${formatProDate(proAccount.expiresAt)}. Статус продления: ${proAccount.billingState==='payment_failed'?'платёж не прошёл':proAccount.autoRenew===false?'отключено':'включено'}. Мини-дрон Луми 🛸 активен.</p>`:isTrialProEnabled()?`<p class="small muted" style="margin:6px 0 0">🎁 Подарочный Lumi PRO действует до ${formatProDate(state.trial_pro_until)}. Все закрытые планеты, интерактивные диалоги, двойной XP и бесконечная энергия открыты на время пробного доступа.</p>`:state.demoPro?'<p class="small muted" style="margin:6px 0 0">Все премиум-функции включены только на этом устройстве для тестирования.</p>':proAccount.wasPro?'<div class="profile-expired-note">Луми немного грустит: подписка закончилась, а мини-дрон и крио-защита ушли в спящий режим. Возобнови Lumi PRO, чтобы снова отправиться в полёт вместе с ними.</div><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Вернуть спутника и защиту ⭐</button>':'<p class="small muted" style="margin:6px 0 0">Подключи Lumi PRO, чтобы открыть мини-дрона-спутника, крио-защиту и новые режимы.</p><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Узнать о Lumi PRO</button>'}</section>
-        <section class="card tutorial-settings"><div class="eyebrow">ПОМОЩЬ ОТ ЛУМИ</div><h3 style="margin:5px 0">Хочешь освежить правила?</h3><p class="small muted" style="margin:0 0 9px">Я снова покажу карту, учебник, профиль и возможности PRO — всего четыре шага.</p><button class="btn secondary full" id="restartLumiTutorial">Пройти обучение с Луми заново</button></section>
+        <section class="card tutorial-settings"><div class="eyebrow">ПОМОЩЬ ОТ ЛУМИ</div><h3 style="margin:5px 0">Хочешь освежить правила?</h3><p class="small muted" style="margin:0 0 9px">Я снова покажу карту, учебник, огонёк, профиль, магазин и возможности PRO — всего пять шагов.</p><button class="btn secondary full" id="restartLumiTutorial">Пройти обучение с Луми заново</button></section>
         <section class="card support-card"><div class="eyebrow">МЫ НА СВЯЗИ</div><h3 style="margin:5px 0">Нужна помощь?</h3><p class="small muted" style="margin:0 0 9px">Напиши команде Lumi Academy, если у тебя возник вопрос или ты заметил проблему.</p><button type="button" class="btn secondary full" id="openSupport">Написать в поддержку</button></section>
         <section class="card legal-settings-card"><div class="eyebrow">ПРАВА И ДАННЫЕ</div><h3 style="margin:5px 0">Документы и конфиденциальность</h3><p class="small muted" style="margin:0">Условия использования, информация об обработке данных и запросы по твоему аккаунту.</p><div class="legal-links"><button type="button" data-legal-open="terms">Условия использования</button><button type="button" data-legal-open="privacy">Политика конфиденциальности</button></div><button type="button" class="btn secondary full" id="requestDataDeletion" style="margin-top:10px">Запросить удаление моих данных</button></section>
         ${renderWardrobe()}
-        ${renderCrystalShop()}
-        ${renderThemeShop()}
         ${renderAchievements()}
         ${renderLessonHistory()}
         <div style="margin-top:13px"><button class="btn secondary full" id="resetProgress">Сбросить демо-прогресс</button></div>
@@ -3172,7 +3591,7 @@
         <section class="card pro-hero"><div class="pro-hero-layout"><div class="pro-copy"><div class="eyebrow">КОСМИЧЕСКИЙ ПРЕМИУМ</div><h1>Lumi PRO ⭐</h1><p>Открой секретные миры, забудь об ограничениях и прокачивай английский с Луми.</p><span class="pro-plan-status">${state.proActive ? '⭐ ОПЛАЧЕННЫЙ PRO АКТИВЕН' : isTrialProEnabled() ? '🎁 ПРОБНЫЙ PRO АКТИВЕН' : state.demoPro ? '🧪 ДЕМО-PRO АКТИВЕН' : '✦ Премиум-режим Академии'}</span></div><div class="pro-mascot">${lumiArt('skin-gold')}</div></div></section>
         <div class="tariff-grid">
           <section class="card tariff-card"><h3>🪐 Бесплатно</h3><p>• ${planets.length} тематических планет и ${planets.reduce((n,p)=>n+p.lessons.length,0)} уроков</p><p>• 5 энергетических сердечек</p><p>• Все 5 зарядов восстанавливаются за 3 часа после первой потери</p><p>• Базовый учебник и повторение</p></section>
-          <section class="card tariff-card pro-choice"><h3>⭐ Lumi PRO</h3><p>• ${proPlanets.length} эксклюзивных планет и ${proPlanets.reduce((n,p)=>n+p.lessons.length,0)} уроков</p><p>• Бесконечная энергия</p><p>• 2× XP и премиум-гардероб</p><p>• Грамматика и тренажёр ошибок</p></section>
+          <section class="card tariff-card pro-choice"><h3>⭐ Lumi PRO</h3><p>• ${proPlanets.length} эксклюзивных планет и ${proPlanets.reduce((n,p)=>n+p.lessons.length,0)} уроков</p><p>• Бесконечная энергия</p><p>• 2× XP и скидка 50% в магазине</p><p>• Грамматика и тренажёр ошибок</p></section>
         </div>
         <section class="card pro-benefits"><h2>Что входит в PRO?</h2>
           <div class="benefit"><b>♾️</b><span><strong>Бесконечная энергия</strong><br>Ошибки не останавливают обучение.</span></div>
@@ -3354,16 +3773,20 @@
       });
       const disableDemo = DEMO_PRO_ALLOWED ? document.getElementById('disableDemoPro') : null;
       if (disableDemo) disableDemo.addEventListener('click', () => { tap(); state.demoPro=false; if(!isProEnabled()){if(['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme='aurora';if(state.selectedSkin!=='default'&&!state.ownedSkins.includes(state.selectedSkin))state.selectedSkin='default';} saveState(); render(); showToast('ДЕМО-PRO выключен'); });
-      document.querySelectorAll('[data-skin]').forEach(button => button.addEventListener('click', () => {
-        const skinId=button.dataset.skin;
-        if (!isSkinAvailable(skinId)) { showToast('Купи этот образ за кристаллы или открой все образы с Lumi PRO ⭐'); return; }
-        tap(); state.selectedSkin = skinId; saveState(); render(); showToast('Новый образ Луми надет! ✨');
-      }));
-      document.querySelectorAll('[data-shop-skin]').forEach(button => button.addEventListener('click', () => { tap(); buySkin(button.dataset.shopSkin); }));
+      document.querySelectorAll('[data-equip-item]').forEach(button => button.addEventListener('click', () => { tap(); equipWardrobeItem(button.dataset.equipItem); }));
+      document.querySelectorAll('[data-unequip-slot]').forEach(button => button.addEventListener('click', () => { tap(); unequipWardrobeSlot(button.dataset.unequipSlot); }));
+      document.querySelectorAll('[data-shop-category]').forEach(button => button.addEventListener('click', () => { tap(); activeShopCategory=button.dataset.shopCategory; render(); }));
+      document.querySelectorAll('[data-shop-preview]').forEach(button => button.addEventListener('click', () => { tap(); selectShopPreview(button.dataset.shopPreview); }));
+      const clearShopPreview = document.querySelector('[data-shop-preview-clear]');
+      if (clearShopPreview) clearShopPreview.addEventListener('click', () => { tap(); resetShopPreview(); });
+      document.querySelectorAll('[data-buy-wardrobe]').forEach(button => button.addEventListener('click', event => { event.stopPropagation(); tap(); buyWardrobeItem(button.dataset.buyWardrobe); }));
+      const buyFreezeButton = document.querySelector('[data-buy-freeze]');
+      if (buyFreezeButton) buyFreezeButton.addEventListener('click', () => { tap(); buyStreakFreeze(); });
       document.querySelectorAll('[data-theme-select]').forEach(button => button.addEventListener('click', () => { tap(); selectTheme(button.dataset.themeSelect); }));
       const hardPractice = document.getElementById('hardWordsPractice');
       if (hardPractice) hardPractice.addEventListener('click', () => startReview(true));
       document.querySelectorAll('[data-tab-go="pro"]').forEach(button => button.addEventListener('click', () => { tap(); currentTab='pro'; render(); }));
+      document.querySelectorAll('[data-tab-go="shop"]').forEach(button => button.addEventListener('click', () => { tap(); currentTab='shop'; render(); }));
       document.querySelectorAll('[data-dialog-start]').forEach(button=>button.addEventListener('click',()=>{tap();startDialog(button.dataset.dialogStart);}));
       document.querySelectorAll('[data-dialog-trial]').forEach(button=>button.addEventListener('click',()=>{tap();startDialog(button.dataset.dialogTrial,{freeTrial:true});}));
     }
@@ -3381,6 +3804,7 @@
       const repeat = document.getElementById('repeatWords'); if (repeat) repeat.addEventListener('click', () => startReview(false));
       bindReviewEvents(); bindSpeechButtons(document.getElementById('screen')); bindWordTips(document.getElementById('screen'));
       document.querySelectorAll('[data-tab-go="pro"]').forEach(button => button.addEventListener('click', () => { tap(); currentTab='pro'; render(); }));
+      document.querySelectorAll('[data-tab-go="shop"]').forEach(button => button.addEventListener('click', () => { tap(); currentTab='shop'; render(); }));
       const hardPractice = document.getElementById('hardWordsPractice'); if (hardPractice) hardPractice.addEventListener('click', () => startReview(true));
     }
     function bindReviewEvents() {
@@ -3445,10 +3869,10 @@
     function openGoalChooser() {
       const current = state.goal;
       const screen = document.getElementById('screen');
-      screen.innerHTML = `<div class="page"><div class="page-head"><div class="eyebrow">ТВОЙ РИТМ</div><h1>Выбери цель</h1><p>Цель задаёт количество разных уроков на день: чем больше времени, тем больше миссий. За выполнение — бонус.</p></div><div class="card" style="padding:15px"><div class="goal-picks">${[5,10,15].map(value => `<button class="goal-pick ${current===value?'selected':''}" data-goal="${value}"><strong>${value}</strong><span>МИНУТ</span><small>${goalOptionCaption(value)}</small></button>`).join('')}</div><button class="btn full" id="saveGoal">Сохранить цель</button><button class="btn secondary full" id="cancelGoal" style="margin-top:10px">Отмена</button></div></div>`;
+      screen.innerHTML = `<div class="page"><div class="page-head"><div class="eyebrow">ТВОЙ РИТМ</div><h1>Выбери цель</h1><p>Огонёк загорается, когда ты набираешь выбранное количество минут активного обучения за день. Долгий простой не засчитывается. За выполнение — +15 💎 и бонус XP.</p></div><div class="card" style="padding:15px"><div class="goal-picks">${[5,10,15].map(value => `<button class="goal-pick ${current===value?'selected':''}" data-goal="${value}"><strong>${value}</strong><span>МИНУТ</span><small>${goalOptionCaption(value)}</small></button>`).join('')}</div><button class="btn full" id="saveGoal">Сохранить цель</button><button class="btn secondary full" id="cancelGoal" style="margin-top:10px">Отмена</button></div></div>`;
       let choice = current;
       screen.querySelectorAll('[data-goal]').forEach(button => button.addEventListener('click', () => { tap(); choice = Number(button.dataset.goal); screen.querySelectorAll('[data-goal]').forEach(item => item.classList.toggle('selected',item===button)); }));
-      document.getElementById('saveGoal').addEventListener('click', () => { tap(); state.goal=choice; saveState(); render(); showToast('Цель обновлена ✨'); });
+      document.getElementById('saveGoal').addEventListener('click', () => { tap(); state.goal=choice; selectedGoal=choice; completeDailyGoal(); saveState(); render(); showToast('Цель обновлена ✨'); });
       document.getElementById('cancelGoal').addEventListener('click', () => { tap(); render(); });
     }
     let purchaseInFlight = false;
@@ -4464,15 +4888,13 @@
           });
           const planet=allPlanets.find(item=>item.id===lesson.planetId);
           if(planet && planet.lessons.every(item=>state.completedLessons.includes(item.id)) && !state.completedPlanets.includes(planet.id))state.completedPlanets.push(planet.id);
-          addCrystals(reward);addXp(xpRewardBase, `reward:lesson-completion:${lesson.id}`);state.dailyMinutes=Math.min(state.goal,state.dailyMinutes+2);
+          addCrystals(reward);addXp(xpRewardBase, `reward:lesson-completion:${lesson.id}`);
         }else{
           lesson.words.forEach(id=>{state.wordMastery[id]=Math.min(5,masteryValue(id)+(session.correct>0?1:0));});
         }
-        registerActiveDay(localDateKey());
         if (!wasCompleted) {
-          const dailyReward = recordDailyLessonCompletion(lesson.id);
-          dailyGoalReached = dailyReward.reached;
-          dailyBonusXp = dailyReward.bonusXp;
+          recordDailyLessonCompletion(lesson.id);
+          dailyGoalReached = state.dailyGoalClaimedDate === localDateKey();
         }
         state.vocabLearned=state.learnedWords.length;
         state.lessonHistory.push({lessonId:lesson.id,date:localDateKey(),correct:session.correct,total:lesson.words.length+1+(session.retryCount||0)+(lesson.grammar?1:0),xp:xpReward,crystals:reward});
@@ -4486,7 +4908,7 @@
       document.getElementById('screen').innerHTML=`<div class="page"><div class="card lesson-result">
         ${lumiArt('is-happy')}<div class="eyebrow">МИССИЯ ${wasCompleted?'ПОВТОРЕНА':'ЗАВЕРШЕНА'}</div><h1>${wasCompleted?'Отличное повторение!':'Ты справился! 🌟'}</h1><p class="muted small">${escapeHtml(lesson.title)} завершён. ${wasCompleted?'Твои слова стали ещё крепче в памяти.':'Все новые слова отправлены в учебник. Луми гордится тобой!'}</p>
         ${wasCompleted?'<div class="result-reward">🧠 Запоминание обновлено</div>':`<div class="result-reward">💎 +${reward} кристаллов · ⚡ +${xpReward} XP за миссию</div>`}
-        ${dailyGoalReached ? `<div class="result-reward" style="background:#e9faf3;color:#087d58">🎯 Дневная цель выполнена · +15 💎 · +${dailyBonusXp} XP</div>` : `<p class="small muted">Дневной план: ${dailyLessonProgress()}/${dailyLessonTarget()} миссий. За выполнение цели — +15 💎 и бонус XP.</p>`}
+        ${dailyGoalReached ? `<div class="result-reward" style="background:#e9faf3;color:#087d58">🔥 Огонёк уже горит — дневная цель выполнена!</div>` : `<p class="small muted">Огонёк зажжётся после ${state.goal} минут активного обучения. Сейчас: ${Math.min(state.dailyMinutes,state.goal)}/${state.goal} мин.</p>`}
         <div class="stats-grid" style="text-align:left"><div class="card metric"><div class="metric-icon">✅</div><strong>${session.correct}/${totalQuestions}</strong><span>ВЕРНЫХ ЗАДАНИЙ</span></div><div class="card metric"><div class="metric-icon">📚</div><strong>${state.learnedWords.length}</strong><span>СЛОВ В УЧЕБНИКЕ</span></div></div><p class="small muted" style="text-align:center">Результаты всех упражнений сохранены в журнале учебника.</p>
         <button class="btn green full" id="backToMap">Вернуться на карту 🪐</button>
         <button class="btn secondary full" id="openTextbook" style="margin-top:10px">Открыть учебник 📚</button>
@@ -4553,6 +4975,7 @@
         updateStorageStatusUI();
       }
 
+      window.setInterval(() => trackStudyTime(), 15000);
       window.setInterval(() => {
         const previousAccess = lastProAccessState;
         const changed = refreshEnergy();
@@ -4579,10 +5002,10 @@
     }
 
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') flushCloudProgressSave();
-      else if (document.visibilityState === 'visible' && tg?.initData) verifyProOnStartup();
+      if (document.visibilityState === 'hidden') { trackStudyTime(Date.now(),true); flushCloudProgressSave(); }
+      else if (document.visibilityState === 'visible') { studyLastActivityAt=Date.now(); studyLastTickAt=Date.now(); if (tg?.initData) verifyProOnStartup(); }
     });
-    window.addEventListener('pagehide', flushCloudProgressSave);
+    window.addEventListener('pagehide', () => { trackStudyTime(Date.now(),true); flushCloudProgressSave(); });
     try {
       bootstrapLumiApp();
       const legalRoute = new URLSearchParams(window.location.search).get('legal');
