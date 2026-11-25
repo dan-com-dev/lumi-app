@@ -653,7 +653,27 @@
     }
 
     [data-speak].pronunciation-speaking { outline: 2px solid var(--accent, #8b5cf6); outline-offset: 3px; box-shadow: 0 0 0 5px rgba(139,92,246,.13); }
-</style>
+
+    .legal-modal[hidden] { display:none !important; }
+    .legal-modal { position:fixed; inset:0; z-index:130; display:flex; align-items:flex-end; justify-content:center; padding:12px; background:rgba(18,27,47,.58); backdrop-filter:blur(5px); }
+    .legal-dialog { width:min(100%,480px); max-height:min(88dvh,820px); display:flex; flex-direction:column; overflow:hidden; border:1px solid var(--line); border-radius:22px; background:var(--card); color:var(--ink); box-shadow:0 24px 70px rgba(0,0,0,.28); }
+    .legal-dialog-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 17px; border-bottom:1px solid var(--line); }
+    .legal-dialog-head h2 { margin:0; font-size:17px; }
+    .legal-dialog-close { width:38px; min-height:38px; border:0; border-radius:12px; background:var(--bg); color:var(--ink); font-size:20px; cursor:pointer; }
+    .legal-dialog-body { overflow:auto; padding:16px 18px 22px; font-size:12px; line-height:1.65; white-space:pre-wrap; overflow-wrap:anywhere; -webkit-overflow-scrolling:touch; }
+    .legal-links { display:flex; flex-wrap:wrap; gap:8px; margin-top:9px; }
+    .legal-links button { min-height:36px; padding:7px 11px; border:1px solid var(--line); border-radius:10px; background:var(--bg); color:var(--cyan-dark); font-size:11px; font-weight:850; cursor:pointer; }
+    .legal-settings-card { margin-top:13px; padding:14px; }
+    .legal-consent { display:flex; align-items:flex-start; gap:9px; margin-top:13px; padding:11px 12px; border:1px solid var(--line); border-radius:13px; background:var(--bg); font-size:11px; line-height:1.45; }
+    .legal-consent input { width:18px; height:18px; flex:0 0 18px; margin:1px 0 0; accent-color:var(--purple); }
+    .legal-consent-copy { min-width:0; }
+    .legal-consent-copy strong { display:block; margin-bottom:2px; }
+    .legal-form-label { display:block; margin:12px 0 6px; font-size:12px; font-weight:800; }
+    .legal-form-textarea { display:block; width:100%; min-height:120px; resize:vertical; padding:12px; border:1px solid var(--line); border-radius:13px; background:var(--bg); color:var(--ink); font:inherit; font-size:13px; line-height:1.5; }
+    .legal-form-check { display:flex; align-items:flex-start; gap:9px; margin-top:14px; font-size:12px; line-height:1.5; }
+    .legal-form-check input { flex:0 0 18px; width:18px; height:18px; margin:2px 0 0; accent-color:var(--purple); }
+    .legal-config-warning { margin-top:10px; padding:10px 12px; border-radius:12px; background:color-mix(in srgb,var(--gold) 12%,var(--card)); color:var(--ink); font-size:10px; line-height:1.45; }
+  </style>
 </head>
 <body>
   <main class="app-frame" id="app">
@@ -683,6 +703,12 @@
     <div class="welcome-gift-overlay" id="welcomeGiftOverlay" hidden aria-hidden="true"></div>
     <div class="pronunciation-fallback" id="pronunciationFallback" hidden aria-live="polite"></div>
     <audio id="lumiPronunciationAudio" preload="none" playsinline aria-hidden="true"></audio>
+    <div class="legal-modal" id="legalModal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle">
+      <section class="legal-dialog">
+        <header class="legal-dialog-head"><h2 id="legalModalTitle">Документы Lumi Academy</h2><button type="button" class="legal-dialog-close" id="closeLegalModal" aria-label="Закрыть">×</button></header>
+        <div class="legal-dialog-body" id="legalModalBody"></div>
+      </section>
+    </div>
   </main>
 
   <script>
@@ -691,7 +717,8 @@
     // Вставь сюда адрес опубликованного Cloudflare Worker.
     // Токен бота никогда не помещай в index.html — только в Worker Secret BOT_TOKEN.
     const WORKER_URL = "https://lumi-serve.danirondandan.workers.dev";
-    const SUPPORT_BOT_USERNAME = ""; // Укажи username бота поддержки без символа @, когда он будет известен.
+    const TERMS_VERSION = '2026-11-25-v1';
+    let legalInfoCache = null;
 
     // Telegram SDK загружается асинхронно: даже медленный CDN не блокирует первый экран.
     // Сетевые возможности подключаются после первого локального render().
@@ -2992,6 +3019,7 @@
         <section class="card" style="padding:14px;margin-top:13px"><div class="section-row"><h3 style="margin:0">⭐ Lumi PRO и спутник</h3><strong>${state.proActive?(proAccount.lastPlan==='week'?'ТАРИФ · 7 ДНЕЙ':`Месяцев в PRO: ${Math.max(1,proAccount.months||1)}`):state.demoPro?'ДЕМО-PRO':isTrialProEnabled()?'ПРОБНЫЙ PRO':'FREE'}</strong></div>${state.proActive?`<p class="small muted" style="margin:6px 0 0">Оплаченная подписка подтверждена сервером и действует до ${formatProDate(proAccount.expiresAt)}. Статус продления: ${proAccount.billingState==='payment_failed'?'платёж не прошёл':proAccount.autoRenew===false?'отключено':'включено'}. Мини-дрон Луми 🛸 активен.</p>`:isTrialProEnabled()?`<p class="small muted" style="margin:6px 0 0">🎁 Подарочный Lumi PRO действует до ${formatProDate(state.trial_pro_until)}. Все закрытые планеты, интерактивные диалоги, двойной XP и бесконечная энергия открыты на время пробного доступа.</p>`:state.demoPro?'<p class="small muted" style="margin:6px 0 0">Все премиум-функции включены только на этом устройстве для тестирования.</p>':proAccount.wasPro?'<div class="profile-expired-note">Луми немного грустит: подписка закончилась, а мини-дрон и крио-защита ушли в спящий режим. Возобнови Lumi PRO, чтобы снова отправиться в полёт вместе с ними.</div><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Вернуть спутника и защиту ⭐</button>':'<p class="small muted" style="margin:6px 0 0">Подключи Lumi PRO, чтобы открыть мини-дрона-спутника, крио-защиту и новые режимы.</p><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Узнать о Lumi PRO</button>'}</section>
         <section class="card tutorial-settings"><div class="eyebrow">ПОМОЩЬ ОТ ЛУМИ</div><h3 style="margin:5px 0">Хочешь освежить правила?</h3><p class="small muted" style="margin:0 0 9px">Я снова покажу карту, учебник, профиль и возможности PRO — всего четыре шага.</p><button class="btn secondary full" id="restartLumiTutorial">Пройти обучение с Луми заново</button></section>
         <section class="card support-card"><div class="eyebrow">МЫ НА СВЯЗИ</div><h3 style="margin:5px 0">Нужна помощь?</h3><p class="small muted" style="margin:0 0 9px">Напиши команде Lumi Academy, если у тебя возник вопрос или ты заметил проблему.</p><button type="button" class="btn secondary full" id="openSupport">Написать в поддержку</button></section>
+        <section class="card legal-settings-card"><div class="eyebrow">ПРАВА И ДАННЫЕ</div><h3 style="margin:5px 0">Документы и конфиденциальность</h3><p class="small muted" style="margin:0">Условия использования, информация об обработке данных и запросы по твоему аккаунту.</p><div class="legal-links"><button type="button" data-legal-open="terms">Условия использования</button><button type="button" data-legal-open="privacy">Политика конфиденциальности</button></div><button type="button" class="btn secondary full" id="requestDataDeletion" style="margin-top:10px">Запросить удаление моих данных</button></section>
         ${renderWardrobe()}
         ${renderCrystalShop()}
         ${renderThemeShop()}
@@ -3029,7 +3057,7 @@
           ${proPlanets.map(planet => `<div class="card pro-feature"><b>${planet.icon}</b><strong>${escapeHtml(planet.name)}</strong><span>${escapeHtml(planet.subtitle)} · ${planet.lessons.length} урока</span></div>`).join('')}
         </div>
         ${renderLiveDialogs()}
-        <section class="card price-card"><div class="eyebrow">ПОКУПКА TELEGRAM STARS</div><h2 style="margin-top:6px">Выбери тариф Lumi PRO</h2>${isTrialProEnabled()&&!state.proActive?`<p class="small muted">Подарочный доступ действует до <strong>${formatProDate(state.trial_pro_until)}</strong>. Платный тариф можно оформить отдельно.</p>`:''}${(state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000))?`<p class="small muted">Оплаченный PRO уже активен до <strong>${formatProDate(proAccount.expiresAt)}</strong>. Можно добавить ещё 7 дней — они начнутся после текущего срока.</p>`:''}<div class="price-options"><div class="price-option"><h3>🚀 На неделю</h3><div class="price">⭐ 50 <span style="font-size:11px">Stars</span></div><p class="price-caption">Разовая оплата. PRO на 7 дней без автопродления.</p><button class="btn purple full" id="buyProWeek">${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'Добавить 7 дней · 50 ⭐':'Купить на 7 дней · 50 ⭐'}</button></div><div class="price-option"><h3>🌌 На 30 дней</h3><div class="price">⭐ 199 <span style="font-size:11px">Stars</span></div><p class="price-caption">Повторяющийся платёж каждые 30 дней через Telegram Stars.</p><button class="btn purple full" id="buyProMonth" ${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'disabled':''}>${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'PRO уже активен ⭐':'Оформить на 30 дней · 199 ⭐'}</button></div></div></section>
+        <section class="card price-card"><div class="eyebrow">ПОКУПКА TELEGRAM STARS</div><h2 style="margin-top:6px">Выбери тариф Lumi PRO</h2>${isTrialProEnabled()&&!state.proActive?`<p class="small muted">Подарочный доступ действует до <strong>${formatProDate(state.trial_pro_until)}</strong>. Платный тариф можно оформить отдельно.</p>`:''}${(state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000))?`<p class="small muted">Оплаченный PRO уже активен до <strong>${formatProDate(proAccount.expiresAt)}</strong>. Можно добавить ещё 7 дней — они начнутся после текущего срока.</p>`:''}<div class="price-options"><div class="price-option"><h3>🚀 На неделю</h3><div class="price">⭐ 50 <span style="font-size:11px">Stars</span></div><p class="price-caption">Разовая оплата. PRO на 7 дней без автопродления.</p><button class="btn purple full" id="buyProWeek">${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'Добавить 7 дней · 50 ⭐':'Купить на 7 дней · 50 ⭐'}</button></div><div class="price-option"><h3>🌌 На 30 дней</h3><div class="price">⭐ 199 <span style="font-size:11px">Stars</span></div><p class="price-caption">Повторяющийся платёж каждые 30 дней через Telegram Stars.</p><button class="btn purple full" id="buyProMonth" ${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'disabled':''}>${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'PRO уже активен ⭐':'Оформить на 30 дней · 199 ⭐'}</button></div></div><div class="legal-consent"><input type="checkbox" id="proTermsConsent"><div class="legal-consent-copy"><strong>Подтверждение перед оплатой</strong><span>Я прочитал(а) и принимаю условия использования Lumi Academy и ознакомился(ась) с политикой конфиденциальности.</span><div class="legal-links"><button type="button" data-legal-open="terms">Открыть условия</button><button type="button" data-legal-open="privacy">Открыть политику</button></div></div></div><div class="legal-consent"><input type="checkbox" id="proAgeConsent"><div class="legal-consent-copy"><strong>Возраст и право на покупку</strong><span>Я могу самостоятельно совершить эту покупку по законам моей страны либо получил(а) согласие родителя или опекуна, если оно требуется.</span></div></div><div class="legal-config-warning" id="legalConfigStatus">Перед покупкой нужно подтвердить условия и возрастное право на покупку. Если реквизиты оператора ещё не настроены, платные покупки будут временно недоступны.</div></section>
         ${state.proActive && proAccount.autoRenew && proAccount.canCancelRenewal ? `<section class="card renewal-control"><div class="eyebrow">АВТОПРОДЛЕНИЕ</div><p class="small muted">Следующее списание отключается, но текущий оплаченный PRO останется активен до ${formatProDate(proAccount.expiresAt)}.</p><button class="btn secondary full" id="cancelProRenewal">Отключить автопродление</button></section>` : state.proActive && proAccount.autoRenew === false && proAccount.billingState === 'canceled' ? `<section class="card renewal-control"><div class="eyebrow">АВТОПРОДЛЕНИЕ ОТКЛЮЧЕНО</div><p class="small muted">Новых списаний не будет. Lumi PRO остаётся активен до ${formatProDate(proAccount.expiresAt)}.</p></section>` : ''}
         <section class="card pro-explainer"><strong>🔐 Как защищена покупка</strong><p class="small muted">Ссылка на оплату создаётся Cloudflare Worker с помощью Bot API. Доступ включается только после серверного подтверждения успешного платежа.</p></section>
         ${state.demoPro ? '<button class="btn green full" id="disableDemoPro" style="margin-top:12px">Выключить тестовый PRO</button>' : ''}
@@ -3150,15 +3178,14 @@
       const questChest = document.getElementById('claimDailyQuestChest');
       if (questChest) questChest.addEventListener('click', claimDailyQuestChest);
       const supportButton = document.getElementById('openSupport');
-      if (supportButton) supportButton.addEventListener('click',()=>{
-        tap();
-        const username = String(SUPPORT_BOT_USERNAME || '').trim().replace(/^@/,'');
-        if (!username) { showToast('Юзернейм бота поддержки пока не указан.'); return; }
-        if (!/^[A-Za-z0-9_]{5,32}$/.test(username)) { showToast('Проверь юзернейм бота поддержки в настройках проекта.'); return; }
-        const supportUrl = `https://t.me/${username}`;
-        if (tg && typeof tg.openTelegramLink === 'function') tg.openTelegramLink(supportUrl);
-        else window.open(supportUrl,'_blank','noopener,noreferrer');
+      if (supportButton) supportButton.addEventListener('click', () => { tap(); openSupportForm('support'); });
+      const deleteDataButton = document.getElementById('requestDataDeletion');
+      if (deleteDataButton) deleteDataButton.addEventListener('click', () => { tap(); openSupportForm('deletion'); });
+      document.querySelectorAll('[data-legal-open]').forEach(button => {
+        button.addEventListener('click', () => { tap(); openLegalDocument(button.dataset.legalOpen === 'terms' ? 'terms' : 'privacy'); });
       });
+      const closeLegalButton = document.getElementById('closeLegalModal');
+      if (closeLegalButton) closeLegalButton.onclick = closeLegalDocument;
       const replayTutorial = document.getElementById('restartLumiTutorial');
       if (replayTutorial) replayTutorial.addEventListener('click',()=>{
         tap(); tutorialActive=false; state.tutorialCompleted=false; state.tutorialPending=true; state.tutorialStep=0;
@@ -3320,6 +3347,153 @@
       if(!tg||!tg.initData)throw new Error('Telegram не передал данные авторизации. Открой Mini App из бота.');
       return {'Authorization':`tma ${tg.initData}`,'Accept':'application/json'};
     }
+
+    async function loadLegalInfo(force = false) {
+      if (legalInfoCache && !force) return legalInfoCache;
+      if (!workerIsConfigured()) throw new Error('Не настроен адрес Lumi Worker.');
+      const base = new URL(WORKER_URL.trim());
+      const {response, data} = await fetchWorkerJson(`${base.href.replace(/\/$/,'')}/legal-info`, {method:'GET', headers:{'Accept':'application/json'}, cache:'no-store'});
+      if (!response.ok) throw new Error(data.error || 'Не удалось загрузить юридическую информацию Lumi.');
+      legalInfoCache = data;
+      return data;
+    }
+
+    function legalDocumentText(type, info) {
+      const operator = info?.operator_name || 'Не заполнено владельцем проекта';
+      const country = info?.country || 'Не указана';
+      const address = info?.contact_address || 'Не указан';
+      const email = info?.contact_email || 'Не настроен';
+      const version = info?.terms_version || TERMS_VERSION;
+      if (type === 'terms') return [
+        'УСЛОВИЯ ИСПОЛЬЗОВАНИЯ LUMI ACADEMY', `Редакция: ${version}`, '',
+        `Оператор: ${operator}. Страна: ${country}. Почтовый/юридический адрес: ${address}. Контакт: ${email}. Возрастная аудитория и правила: ${info?.age_policy || 'не указаны'}.`, '',
+        '1. Сервис. Lumi Academy — независимое образовательное приложение в Telegram для изучения английского языка. Telegram не является оператором или продавцом Lumi Academy.',
+        '2. Бесплатный доступ и PRO. Бесплатная версия имеет ограничения, показанные в приложении. PRO открывает перечисленные в приложении премиальные функции на срок выбранного тарифа.',
+        '3. Цены. 50 Telegram Stars — разовый доступ на 7 дней без автопродления. 199 Telegram Stars — повторяющийся платёж за 30 дней через Telegram Stars, который повторяется каждые 30 дней, пока подписка не отменена.',
+        '4. Отмена. Автопродление можно отключить в профиле Lumi (если управление доступно) или в настройках подписок Telegram. Отмена прекращает будущие списания; уже оплаченный доступ остаётся активным до указанной даты окончания.',
+        '5. Оплата и споры. Цифровой доступ внутри Telegram продаётся исключительно за Stars. По ошибочным списаниям, неполученному доступу и возвратам обращайтесь через /paysupport или по контактному адресу. Возвраты выполняются через Telegram Bot API, когда это применимо и допускается правилами и законом.',
+        '6. Использование. Нельзя вмешиваться в работу сервиса, обходить оплату, использовать автоматизацию для получения наград или нарушать права других лиц.',
+        '7. Доступность. Отдельные функции могут временно не работать из-за обслуживания, сбоев Telegram или сети. Это не ограничивает обязательные права потребителя.',
+        '8. Несовершеннолетние. Если закон требует согласия родителя или опекуна для покупки либо обработки данных несовершеннолетнего, оно должно быть получено до покупки. Галочка в Mini App является только заявлением пользователя и не проверяет личность родителя или факт согласия.',
+        '9. Права пользователя. Условия применяются с учётом обязательных прав потребителя и других прав, которые нельзя ограничить договором.',
+        `10. Контакт. Поддержка и вопросы оплаты: ${email}. В Telegram доступны /support и /paysupport.`
+      ].join('\n');
+      return [
+        'ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ LUMI ACADEMY', `Редакция: ${version}`, '',
+        `Оператор данных: ${operator}. Страна: ${country}. Почтовый/юридический адрес: ${address}. Контакт для запросов: ${email}. Возрастная аудитория и правила: ${info?.age_policy || 'не указаны'}.`, '',
+        '1. Данные. Обрабатываются Telegram user ID для авторизации и подписки; имя/username могут поступать в webhook и использоваться в уведомлениях; платёжные идентификаторы, сумма, тариф, время и срок подписки; учебный прогресс, XP, кристаллы, уроки, настройки и достижения.',
+        '2. Хранение. Прогресс хранится в Telegram CloudStorage и локальном хранилище устройства. Данные PRO, счетов и платежей — в Cloudflare Workers KV и Durable Objects. Telegram обрабатывает данные чата и платежа на своей платформе.',
+        '3. Цели и правовые основания. Для аккаунта, учебного прогресса и оплаченного PRO используется необходимость исполнения договора с пользователем; для минимальных платёжных сведений — выполнение юридических обязанностей, когда они применимы; для защиты аккаунта, предотвращения мошенничества, безопасности и разрешения споров — законный интерес оператора при условии соблюдения прав пользователя. Согласие с условиями покупки фиксирует договорное согласие, а не заменяет правовое основание обработки персональных данных.',
+        '4. Получатели. Используются Telegram Bot API и CloudStorage, GitHub Pages для размещения веб-приложения, инфраструктура Cloudflare, а также Dictionary API и Google Translate TTS для отдельных запросов слов/озвучки. В запросы к словарю и озвучке передаётся слово или фраза, а не Telegram ID; не отправляй туда персональные сведения. Провайдеры могут обрабатывать технические данные запросов и данные в разных странах согласно своим условиям и документам о конфиденциальности.',
+        '5. Хранение по срокам. Счета, платёжные записи и подтверждения принятия условий хранятся до 400 дней для сверки, возвратов и предотвращения повторной обработки. Обращения поддержки и запросы пользователя хранятся до 180 дней, если не нужны дольше для разрешения спора или выполнения закона. Данные профиля и прогресса хранятся пока нужны для работы аккаунта или до удовлетворения запроса на удаление. Минимальные финансовые и антифрод-записи могут сохраняться, если это необходимо для разрешения спора или обязательного требования закона.',
+        '6. Права. Можно запросить доступ, исправление, удаление или ограничение обработки, а в случаях, предусмотренных применимым правом, возразить против обработки или запросить переносимость данных. Используй кнопку «Запросить удаление моих данных» в профиле, команду /delete_my_data или контактный адрес. Запросы проверяются для защиты от раскрытия данных третьим лицам и обрабатываются без неоправданной задержки и в сроки применимого закона. Минимальные финансовые записи могут сохраняться, если это необходимо для разрешения спора или обязательного учёта. Также можно обратиться в компетентный надзорный орган по защите данных.',
+        '7. Безопасность. Telegram initData проверяется на сервере; токен бота хранится в Cloudflare Secret; webhook проверяется секретным заголовком; доступ к данным ограничен серверной логикой. Абсолютную безопасность передачи и хранения гарантировать невозможно.',
+        '8. Несовершеннолетние. Когда применимое право требует согласия родителя/опекуна для покупки или обработки данных несовершеннолетнего, такое согласие должно быть получено заранее. Галочка в Mini App фиксирует заявление пользователя и не подтверждает личность или согласие родителя.',
+        `9. Контакт по данным: ${email}.`
+      ].join('\n');
+    }
+
+    async function openLegalDocument(type) {
+      const modal = document.getElementById('legalModal');
+      const title = document.getElementById('legalModalTitle');
+      const body = document.getElementById('legalModalBody');
+      if (!modal || !title || !body) return;
+      title.textContent = type === 'terms' ? 'Условия использования' : 'Политика конфиденциальности';
+      body.textContent = 'Загружаем актуальные реквизиты оператора…';
+      modal.hidden = false;
+      modal.setAttribute('aria-hidden', 'false');
+      try {
+        if (!workerIsConfigured()) throw new Error('Не настроен адрес Lumi Worker.');
+        const base = new URL(WORKER_URL.trim());
+        const {response, data} = await fetchWorkerJson(`${base.href.replace(/\/$/,'')}/legal-document?type=${encodeURIComponent(type)}`, {
+          method:'GET', headers:{'Accept':'application/json'}, cache:'no-store'
+        });
+        if (!response.ok || data.ok !== true || typeof data.document !== 'string') {
+          throw new Error(data.error || 'Не удалось получить юридический документ.');
+        }
+        const warning = (!data.ready || !data.support_ready)
+          ? '\n\nВНИМАНИЕ: юридические реквизиты или канал поддержки ещё не настроены владельцем проекта. Платные покупки заблокированы до заполнения этих данных.'
+          : '';
+        body.textContent = data.document + warning;
+      } catch (error) {
+        body.textContent = legalDocumentText(type, null) + '\n\nНе удалось получить актуальную редакцию документа с сервера. Проверь соединение. Платные покупки временно недоступны.';
+      }
+    }
+
+    function closeLegalDocument() {
+      const modal = document.getElementById('legalModal');
+      if (modal) { modal.hidden = true; modal.setAttribute('aria-hidden','true'); }
+    }
+
+    async function acceptCurrentTermsBeforePurchase() {
+      const checkbox = document.getElementById('proTermsConsent');
+      if (!checkbox?.checked) throw new Error('Перед оплатой отметь, что прочитал(а) и принимаешь условия Lumi.');
+      const ageCheckbox = document.getElementById('proAgeConsent');
+      if (!ageCheckbox?.checked) throw new Error('Подтверди, что можешь совершить покупку с учётом возрастных правил твоей страны.');
+      const info = await loadLegalInfo(true);
+      if (!info.ready || !info.support_ready) throw new Error('Покупки временно отключены: владелец Lumi должен заполнить юридические реквизиты и настроить поддержку.');
+      const userId = telegramUserId();
+      const base = new URL(WORKER_URL.trim());
+      const {response, data} = await fetchWorkerJson(`${base.href.replace(/\/$/,'')}/accept-terms?user_id=${encodeURIComponent(userId)}`, {
+        method:'POST', headers:{...workerAuthHeaders(),'Content-Type':'application/json'},
+        body:JSON.stringify({accepted:true, age_confirmed:true, terms_version:info.terms_version || TERMS_VERSION})
+      });
+      if (!response.ok || data.ok !== true) throw new Error(data.error || 'Не удалось сохранить согласие с условиями.');
+      return true;
+    }
+
+    function openSupportForm(type) {
+      const modal = document.getElementById('legalModal');
+      const title = document.getElementById('legalModalTitle');
+      const body = document.getElementById('legalModalBody');
+      if (!modal || !title || !body) return;
+      const isDeletion = type === 'deletion';
+      const isPayment = type === 'payment';
+      title.textContent = isDeletion ? 'Запрос на удаление данных' : isPayment ? 'Проблема с оплатой PRO' : 'Поддержка Lumi Academy';
+      body.innerHTML = isDeletion
+        ? '<p>Откроется чат поддержки Lumi. Подготовленный запрос нужно будет отправить вручную. Команда проверит, что запрос относится к твоему аккаунту, и сообщит о результате. Минимальные финансовые записи могут сохраняться, если это необходимо для спора или обязательного учёта.</p><label class="legal-form-check"><input type="checkbox" id="confirmDataDeletion"><span>Подтверждаю, что хочу запросить удаление пользовательских данных моего аккаунта Lumi.</span></label><button type="button" class="btn purple full" id="sendLegalRequest" style="margin-top:14px">Отправить запрос</button>'
+        : `<p>${isPayment ? 'Опиши, что произошло при оплате: тариф, примерное время покупки и что именно не работает. Не отправляй коды входа, пароли или данные банковских карт.' : 'Опиши вопрос или проблему, с которой столкнулся. Не отправляй коды входа или пароли.'}</p><label class="legal-form-label" for="supportRequestMessage">Сообщение</label><textarea id="supportRequestMessage" class="legal-form-textarea" maxlength="1500" rows="5" placeholder="Напиши сообщение команде Lumi…"></textarea><button type="button" class="btn purple full" id="sendLegalRequest" style="margin-top:12px">Отправить обращение</button>`;
+      modal.hidden = false;
+      modal.setAttribute('aria-hidden', 'false');
+      const sendButton = document.getElementById('sendLegalRequest');
+      if (sendButton) sendButton.addEventListener('click', async () => {
+        if (isDeletion && !document.getElementById('confirmDataDeletion')?.checked) {
+          showToast('Подтверди, что действительно запрашиваешь удаление данных.');
+          return;
+        }
+        const message = isDeletion
+          ? 'Прошу предоставить информацию о моих данных и удалить пользовательские данные Lumi Academy, кроме минимальных записей, которые необходимо сохранить по закону или для разрешения финансового спора.'
+          : String(document.getElementById('supportRequestMessage')?.value || '').trim();
+        if (!isDeletion && !message) { showToast('Напиши сообщение перед отправкой.'); return; }
+        sendButton.disabled = true;
+        sendButton.textContent = 'Отправляем…';
+        await sendSupportRequest(type, message);
+      });
+    }
+
+    async function sendSupportRequest(type, message) {
+      const tgApp = window.Telegram?.WebApp || tg;
+      const userText = String(message || '').trim().slice(0, 1400);
+      const prefix = type === 'deletion'
+        ? 'Здравствуйте! Я хочу запросить доступ к данным и удаление пользовательских данных моего аккаунта Lumi Academy.'
+        : type === 'payment'
+          ? 'Здравствуйте! Проблема с оплатой Lumi PRO.'
+          : 'Здравствуйте! Обращение в поддержку Lumi Academy.';
+      const safety = type === 'payment'
+        ? '\n\nНе отправляй коды входа, пароли или данные банковских карт.'
+        : '\n\nНе отправляй коды входа или пароли.';
+      const draft = `${prefix}${userText ? `\n\n${userText}` : ''}${safety}`;
+      const supportUrl = `https://t.me/LumiAcademySupportBot?text=${encodeURIComponent(draft)}`;
+      try {
+        closeLegalDocument();
+        if (tgApp && typeof tgApp.openTelegramLink === 'function') tgApp.openTelegramLink(supportUrl);
+        else window.location.href = supportUrl;
+        showToast('Сообщение подготовлено в чате поддержки. Нажми «Отправить» в Telegram.');
+      } catch (error) {
+        showToast('Не удалось открыть поддержку. Напиши @LumiAcademySupportBot вручную.');
+      }
+    }
+
     async function handleProPurchase(plan = 'month') {
       if (purchaseInFlight) return;
       if (plan !== 'week' && plan !== 'month') { showToast('Неизвестный тариф Lumi PRO.'); return; }
@@ -3329,6 +3503,8 @@
       if (typeof tg.openInvoice !== 'function') { showToast('В этом клиенте Telegram не поддерживается открытие счёта. Обнови приложение Telegram.'); return; }
       if (!workerIsConfigured()) { showToast('В начале index.html укажи настоящий URL Cloudflare Worker вместо адреса-заглушки.'); return; }
       const userId=telegramUserId(); if(!userId){showToast('Не удалось получить Telegram user.id. Запусти Mini App через бота.');return;}
+      try { await acceptCurrentTermsBeforePurchase(); }
+      catch (legalError) { showToast(legalError.message || 'Перед покупкой необходимо принять условия Lumi.'); return; }
       const button = document.getElementById(plan === 'week' ? 'buyProWeek' : 'buyProMonth');
       const originalText = button ? button.textContent : (plan === 'week' ? 'Купить на 7 дней · 50 ⭐' : 'Оформить на 30 дней · 199 ⭐');
       const setBusy = busy => { if(!button||!button.isConnected)return;button.disabled=busy;button.textContent=busy?'Создаю защищённый счёт…':originalText; };
@@ -4259,6 +4435,11 @@
     window.addEventListener('pagehide', flushCloudProgressSave);
     try {
       bootstrapLumiApp();
+      const legalRoute = new URLSearchParams(window.location.search).get('legal');
+      if (legalRoute === 'terms' || legalRoute === 'privacy') window.setTimeout(() => openLegalDocument(legalRoute), 450);
+      const legalModal = document.getElementById('legalModal');
+      if (legalModal) legalModal.addEventListener('click', event => { if (event.target === legalModal) closeLegalDocument(); });
+      document.addEventListener('keydown', event => { if (event.key === 'Escape') closeLegalDocument(); });
     } catch (error) {
       console.error('Lumi startup failed:', error);
       cloudStorageReady = false;
