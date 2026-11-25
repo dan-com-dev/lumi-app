@@ -860,14 +860,23 @@
     .streak-header-pill:not(.is-lit) .stat-icon { filter:grayscale(1); opacity:.58; }
     .streak-header-pill.is-lit { color:#fff0c1; border-color:rgba(255,177,73,.95) !important; box-shadow:0 0 15px rgba(255,132,44,.3),inset 0 0 0 1px rgba(255,255,255,.07); }
     .streak-header-pill.is-lit .stat-icon { filter:drop-shadow(0 0 7px rgba(255,166,63,.95)); }
-    .lumi-wrap .lumi-wearable { position:absolute; z-index:5; display:grid; place-items:center; line-height:1; pointer-events:none; filter:drop-shadow(0 3px 3px rgba(15,26,52,.28)); }
-    .lumi-wrap .lumi-wearable-hat { top:7%; left:50%; transform:translateX(-50%); font-size:clamp(23px,7vw,34px); }
-    .lumi-wrap .lumi-wearable-face { top:35%; left:50%; transform:translateX(-50%); font-size:clamp(20px,6.2vw,29px); }
-    .lumi-wrap .lumi-wearable-suit { bottom:16%; left:50%; transform:translateX(-50%); font-size:clamp(19px,5.7vw,27px); }
-    .lumi-wrap .lumi-wearable-accessory { bottom:22%; right:7%; font-size:clamp(19px,5.5vw,26px); }
-    .lumi-wrap.wear-suit-nebula .lumi-svg { filter:hue-rotate(205deg) saturate(1.35) drop-shadow(0 8px 9px rgba(83,68,205,.27)); }
-    .lumi-wrap.wear-suit-aurora .lumi-svg { filter:hue-rotate(95deg) saturate(1.25) drop-shadow(0 8px 9px rgba(65,205,172,.25)); }
-    .lumi-wrap.wear-suit-explorer .lumi-svg { filter:sepia(.25) saturate(1.2) hue-rotate(335deg) drop-shadow(0 8px 9px rgba(192,139,65,.2)); }
+    /* Одежда рисуется в том же SVG, что и Луми: предметы двигаются вместе с персонажем и не меняют цвет его кожи. */
+    .lumi-outfit { pointer-events:none; }
+    .lumi-outfit-hat,.lumi-outfit-face { filter:drop-shadow(0 2px 2px rgba(15,26,52,.28)); }
+    .lumi-outfit-suit,.lumi-outfit-accessory { filter:drop-shadow(0 2px 2px rgba(15,26,52,.22)); }
+    .shop-item .shop-preview-choice { display:flex; width:100%; min-height:0; height:auto; margin:0; padding:10px 8px 7px; flex-direction:column; align-items:center; justify-content:flex-start; gap:5px; border:0; border-radius:0; color:var(--ink) !important; background:transparent !important; box-shadow:none !important; text-align:center; white-space:normal; }
+    .shop-item .shop-preview-choice:disabled { opacity:1; }
+    .shop-item-mascot { display:grid; place-items:center; width:100%; min-height:82px; overflow:hidden; }
+    .shop-item-mascot .lumi-wrap { width:76px; max-width:76px; margin:0 auto; }
+    .shop-preview-choice strong { display:block; width:100%; min-width:0; color:var(--ink); font-size:11px; line-height:1.28; overflow-wrap:anywhere; }
+    .shop-preview-choice small { display:block; width:100%; min-width:0; min-height:34px; margin-top:1px; color:var(--muted); font-size:9px; line-height:1.35; overflow-wrap:anywhere; white-space:normal; }
+    .shop-preview-choice em { display:block; max-width:100%; color:#138cae; font-size:9px; line-height:1.25; font-style:normal; font-weight:900; overflow-wrap:anywhere; }
+    .wardrobe-item-art { display:grid; place-items:center; min-height:60px; width:100%; overflow:hidden; }
+    .wardrobe-item-art .lumi-wrap { width:58px; max-width:58px; }
+    .wardrobe-owned-item { min-height:112px; }
+    .wardrobe-owned-item strong { overflow-wrap:anywhere; text-align:center; }
+    .shop-wardrobe-item { min-width:0; background:var(--card); }
+    .shop-item-buy-row { min-width:0; }
     .wardrobe-mascot { display:grid; place-items:center; padding:6px 0 12px; margin:4px 0 10px; border-radius:20px; background:radial-gradient(ellipse at 50% 80%,rgba(65,191,230,.16),transparent 65%),linear-gradient(135deg,#f3fbff,#f7f3ff); }
     .wardrobe-mascot .lumi-wrap { width:min(190px,65vw); }
     .wardrobe-slot { padding:12px 0; border-top:1px solid var(--line); }
@@ -944,10 +953,14 @@
       .nav-btn { font-size:8px; }
       .nav-btn .nav-icon { width:24px; font-size:22px; }
       .shop-preview-card { grid-template-columns:minmax(0,1fr) minmax(96px,.6fr); padding:12px; }
-      .shop-preview-copy h2 { font-size:16px; }
+      .shop-preview-copy { overflow-wrap:anywhere; }
+      .shop-preview-copy h2 { font-size:16px; line-height:1.2; }
+      .shop-preview-copy p { overflow-wrap:anywhere; }
       .shop-preview-mascot .lumi-wrap { width:min(125px,100%); }
       .shop-grid { gap:7px; }
-      .shop-preview-choice { min-height:138px; padding-left:5px; padding-right:5px; }
+      .shop-item-mascot { min-height:74px; }
+      .shop-item-mascot .lumi-wrap { width:66px; max-width:66px; }
+      .shop-preview-choice { min-height:0; padding-left:5px; padding-right:5px; }
       .wardrobe-owned-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .streak-header-pill { padding:0 6px !important; }
     }
@@ -1058,6 +1071,7 @@
     const ENERGY_CYCLE_MS = ENERGY_CYCLE_SECONDS * 1000; // 10 800 000 мс — полный цикл для всех 5 зарядов
     const ENERGY_CYCLE_VERSION = 4;
     const STREAK_FREEZE_PRICE = 120;
+    const STREAK_FREEZE_PURCHASE_LIMIT = 3;
     const LUMI_WARDROBE_SLOTS = ['hat','face','suit','accessory'];
     const LUMI_WARDROBE_ITEMS = [
       {id:'gold',name:'Золотой скафандр',icon:'👑',visual:'✨',price:500,slot:'suit',category:'Костюмы',skinClass:'skin-gold',description:'Праздничный золотой скафандр'},
@@ -2111,19 +2125,23 @@
     function equipWardrobeItem(itemId) {
       const item = LUMI_WARDROBE_ITEMS.find(entry => entry.id === itemId);
       if (!item || !state.wardrobeOwned.includes(itemId)) { showToast('Сначала купи этот предмет в Магазине.'); return false; }
+      if (state.wardrobeEquipped?.[item.slot] === itemId) {
+        unequipWardrobeSlot(item.slot);
+        return true;
+      }
       state.wardrobeEquipped = { ...(state.wardrobeEquipped || {}), [item.slot]:itemId };
-      state.selectedSkin = ['gold','cyber','hero'].includes(itemId) ? itemId : 'default';
+      state.selectedSkin = 'default';
       saveState(); render(); showToast(`${item.name} надет на Луми!`);
       return true;
     }
     function unequipWardrobeSlot(slot) {
       if (!LUMI_WARDROBE_SLOTS.includes(slot)) return;
       state.wardrobeEquipped = { ...(state.wardrobeEquipped || {}), [slot]:'' };
-      state.selectedSkin = ['gold','cyber','hero'].find(id => Object.values(state.wardrobeEquipped).includes(id)) || 'default';
+      state.selectedSkin = 'default';
       saveState(); render(); showToast('Предмет снят.');
     }
     function buyStreakFreeze() {
-      if (Number(state.bonusFreezeCharges||0) >= 20) { showToast('У тебя уже максимальный запас: 20 заморозок.'); return false; }
+      if (Number(state.bonusFreezeCharges||0) >= STREAK_FREEZE_PURCHASE_LIMIT) { showToast('Можно держать не больше 3 дополнительных заморозок в запасе.'); return false; }
       const price = getShopPrice(STREAK_FREEZE_PRICE);
       if (state.crystals < price) { showToast('Не хватает кристаллов 💎'); return false; }
       state.crystals -= price;
@@ -2134,7 +2152,12 @@
     function selectShopPreview(itemId) {
       const item = LUMI_WARDROBE_ITEMS.find(entry => entry.id === itemId);
       if (!item) return;
-      shopPreviewLoadout = { ...(shopPreviewLoadout || {}), [item.slot]:itemId };
+      shopPreviewLoadout = { ...(shopPreviewLoadout || {}) };
+      if (shopPreviewLoadout[item.slot] === itemId) {
+        delete shopPreviewLoadout[item.slot];
+      } else {
+        shopPreviewLoadout[item.slot] = itemId;
+      }
       render();
     }
     function resetShopPreview() {
@@ -2324,14 +2347,12 @@
       return `${word.en} означает «${word.ru}». ${word.note}`;
     }
     function getSkinClass(extraClass = '', wardrobeOverride = null) {
+      // Старые классы оставлены только для явно запрошенных иллюстраций/экранов.
+      // Одежда гардероба больше никогда не окрашивает кожу и скафандр Луми фильтром.
       if (extraClass.includes('skin-gold')) return 'skin-gold';
       if (extraClass.includes('skin-cyber')) return 'skin-cyber';
       if (extraClass.includes('skin-hero')) return 'skin-hero';
-      if (!extraClass.includes('wardrobe-show') && !extraClass.includes('wardrobe-preview')) return '';
-      const loadout = wardrobeOverride || state.wardrobeEquipped || {};
-      const activeIds = Object.values(loadout).filter(Boolean);
-      const item = LUMI_WARDROBE_ITEMS.find(entry => activeIds.includes(entry.id) && entry.skinClass);
-      return item?.skinClass || '';
+      return '';
     }
     function saveState() {
       localStateRevision++;
@@ -2476,6 +2497,127 @@
       return String(value).replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[char]);
     }
 
+    // Каждый предмет гардероба — отдельная векторная деталь, а не эмодзи или фильтр цвета.
+    // Слои остаются внутри SVG Луми, поэтому двигаются вместе с её анимацией.
+    function wardrobeSvgLayer(itemId, n) {
+      switch (itemId) {
+        case 'hat_crown': return `<g class="lumi-outfit lumi-outfit-hat" stroke-linejoin="round">
+          <path d="M98 49 L103 27 L118 39 L130 18 L143 39 L158 27 L163 49 Q130 59 98 49Z" fill="#f6bd42" stroke="#a96a21" stroke-width="2.7"/>
+          <path d="M100 48 Q130 55 161 48 L160 56 Q130 64 101 56Z" fill="#ffdf78" stroke="#a96a21" stroke-width="2"/>
+          <path d="M103 32 L118 43 L130 23 L142 43 L157 32" fill="none" stroke="#fff2bd" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="103" cy="28" r="3.5" fill="#ff6f9c"/><circle cx="130" cy="19" r="4" fill="#65def1"/><circle cx="157" cy="28" r="3.5" fill="#bba0ff"/>
+        </g>`;
+        case 'hat_wizard': return `<g class="lumi-outfit lumi-outfit-hat" stroke-linejoin="round">
+          <path d="M96 52 Q107 32 112 18 Q120 1 133 7 Q154 18 164 52 Q130 60 96 52Z" fill="#4c397f" stroke="#2e2864" stroke-width="3"/>
+          <path d="M112 29 Q132 20 151 36" fill="none" stroke="#8f81d8" stroke-width="3" stroke-linecap="round"/>
+          <path d="M91 50 Q130 42 169 50 L166 58 Q130 66 94 58Z" fill="#7964b7" stroke="#322a68" stroke-width="2.5"/>
+          <path d="M132 13 L135 20 L143 21 L137 26 L139 34 L132 29 L125 34 L127 26 L121 21 L129 20Z" fill="#ffe58b" stroke="#fff2c2" stroke-width="1"/>
+          <circle cx="112" cy="42" r="2.2" fill="#8ff3ff"/><circle cx="151" cy="45" r="2" fill="#ffb5d3"/>
+        </g>`;
+        case 'hat_beanie': return `<g class="lumi-outfit lumi-outfit-hat" stroke-linejoin="round">
+          <path d="M96 49 Q95 21 130 19 Q165 21 164 49 Q132 59 96 49Z" fill="#e76d8e" stroke="#9f4169" stroke-width="2.7"/>
+          <path d="M96 44 Q130 52 164 44 L163 56 Q130 65 97 56Z" fill="#ffb3c5" stroke="#9f4169" stroke-width="2.5"/>
+          <path d="M110 31 Q130 23 149 31" fill="none" stroke="#ffdce6" stroke-width="3" stroke-linecap="round"/>
+          <path d="M130 18 Q119 8 130 5 Q141 8 130 18Z" fill="#ffe6ef" stroke="#b95078" stroke-width="1.7"/>
+          <circle cx="130" cy="50" r="3" fill="#fff0c8"/>
+        </g>`;
+        case 'cyber': return `<g class="lumi-outfit lumi-outfit-face" stroke-linejoin="round">
+          <path d="M84 101 Q130 88 176 101 L169 126 Q130 138 91 126Z" fill="#242044" stroke="#111a49" stroke-width="3"/>
+          <path d="M93 103 Q109 97 124 102 L122 121 Q107 127 96 120Z" fill="#31d8ec" fill-opacity=".72" stroke="#91f5ff" stroke-width="2"/>
+          <path d="M136 102 Q151 97 167 103 L164 120 Q151 127 138 121Z" fill="#9d74ff" fill-opacity=".76" stroke="#d7c7ff" stroke-width="2"/>
+          <path d="M98 106 L115 102 M142 105 L159 102" stroke="#fff" stroke-opacity=".8" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M122 110 Q130 106 138 110" fill="none" stroke="#f4d8ff" stroke-width="3"/>
+          <path d="M88 109 L78 106 M172 109 L182 106" stroke="#4fd8ef" stroke-width="3" stroke-linecap="round"/>
+        </g>`;
+        case 'face_star_glasses': return `<g class="lumi-outfit lumi-outfit-face" stroke-linejoin="round">
+          <circle cx="105" cy="112" r="17" fill="#45d8ef" fill-opacity=".25" stroke="#176f9f" stroke-width="4"/>
+          <circle cx="155" cy="112" r="17" fill="#45d8ef" fill-opacity=".25" stroke="#176f9f" stroke-width="4"/>
+          <path d="M122 110 Q130 104 138 110" fill="none" stroke="#176f9f" stroke-width="4" stroke-linecap="round"/>
+          <path d="M88 108 L78 103 M172 108 L182 103" stroke="#176f9f" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M98 103 L106 107 L102 114" fill="none" stroke="#e9ffff" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M148 103 L156 107 L152 114" fill="none" stroke="#e9ffff" stroke-width="2.2" stroke-linecap="round"/>
+        </g>`;
+        case 'face_heart_glasses': return `<g class="lumi-outfit lumi-outfit-face" stroke-linejoin="round">
+          <path d="M105 128 C100 123 87 113 91 104 C95 96 105 99 105 106 C107 98 117 96 121 104 C126 113 112 124 105 128Z" fill="#ff79ab" fill-opacity=".88" stroke="#a93f78" stroke-width="3"/>
+          <path d="M155 128 C150 123 137 113 141 104 C145 96 155 99 155 106 C157 98 167 96 171 104 C176 113 162 124 155 128Z" fill="#ff79ab" fill-opacity=".88" stroke="#a93f78" stroke-width="3"/>
+          <path d="M121 111 Q130 105 139 111" fill="none" stroke="#a93f78" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M95 105 L101 109 M145 105 L151 109" stroke="#fff1f7" stroke-width="2.2" stroke-linecap="round"/>
+        </g>`;
+        case 'face_monocle': return `<g class="lumi-outfit lumi-outfit-face" fill="none" stroke-linecap="round">
+          <circle cx="155" cy="112" r="19" stroke="#d9a64a" stroke-width="4.2"/>
+          <circle cx="155" cy="112" r="15.5" stroke="#fff0b5" stroke-width="1.8"/>
+          <path d="M171 126 Q183 137 176 148 Q170 151 174 158" stroke="#b77b35" stroke-width="2.2"/>
+          <circle cx="174" cy="159" r="3" fill="#f1c96e" stroke="#9a682e" stroke-width="1.2"/>
+          <path d="M146 99 Q152 94 160 98" stroke="#fff" stroke-opacity=".85" stroke-width="2.4"/>
+        </g>`;
+        case 'gold': return `<g class="lumi-outfit lumi-outfit-suit" stroke-linejoin="round">
+          <path d="M99 181 Q130 170 161 181 L164 209 Q148 225 130 226 Q112 225 96 209Z" fill="#e9b64c" stroke="#94602c" stroke-width="3"/>
+          <path d="M101 184 Q130 193 159 184 L155 195 Q130 204 105 195Z" fill="#fff0a7" stroke="#ba842d" stroke-width="1.8"/>
+          <path d="M103 204 Q130 213 157 204 L154 216 Q130 228 106 216Z" fill="#bd7c31" stroke="#87552a" stroke-width="1.8"/>
+          <path d="M111 185 L111 216 M149 185 L149 216" stroke="#fff0b5" stroke-width="2.5"/>
+          <rect x="119" y="193" width="22" height="18" rx="5" fill="#4c9ed2" stroke="#fff0bd" stroke-width="2"/>
+          <path d="M130 195 L133 201 L139 202 L134 206 L135 211 L130 208 L125 211 L126 206 L121 202 L127 201Z" fill="#ffe98f"/>
+          <path d="M96 187 Q103 179 112 181 L110 195 Q99 197 96 187Z M164 187 Q157 179 148 181 L150 195 Q161 197 164 187Z" fill="#f8d77b" stroke="#94602c" stroke-width="2"/>
+        </g>`;
+        case 'hero': return `<g class="lumi-outfit lumi-outfit-suit" stroke-linejoin="round">
+          <path d="M102 176 Q88 177 81 194 L74 224 Q91 233 111 224 L119 185Z" fill="#d94f73" stroke="#8f2f60" stroke-width="2.8"/>
+          <path d="M158 176 Q172 177 179 194 L186 224 Q169 233 149 224 L141 185Z" fill="#d94f73" stroke="#8f2f60" stroke-width="2.8"/>
+          <path d="M83 202 L80 222 Q93 228 105 222 L110 190Z M177 202 L180 222 Q167 228 155 222 L150 190Z" fill="#ffbd68" fill-opacity=".75"/>
+          <path d="M112 178 Q130 184 148 178" fill="none" stroke="#ffe2a1" stroke-width="3" stroke-linecap="round"/>
+          <path d="M130 170 L137 178 L130 187 L123 178Z" fill="#ffdc75" stroke="#9b4977" stroke-width="2"/>
+          <path d="M130 188 L133 195 L140 196 L135 201 L136 208 L130 204 L124 208 L125 201 L120 196 L127 195Z" fill="#fff0a6"/>
+        </g>`;
+        case 'suit_nebula': return `<g class="lumi-outfit lumi-outfit-suit" stroke-linejoin="round">
+          <path d="M99 181 Q130 169 161 181 L164 209 Q148 225 130 226 Q112 225 96 209Z" fill="#51418f" stroke="#282c68" stroke-width="3"/>
+          <path d="M101 185 Q130 195 159 185 L155 197 Q130 207 105 197Z" fill="#8a6ed0" stroke="#c5a6ff" stroke-width="1.8"/>
+          <path d="M106 204 Q130 216 154 204 L151 218 Q130 228 109 218Z" fill="#302f70"/>
+          <path d="M112 185 Q108 201 118 218 M148 185 Q152 201 142 218" fill="none" stroke="#b69bff" stroke-width="2.4"/>
+          <path d="M130 193 L133 199 L140 200 L135 205 L136 211 L130 208 L124 211 L125 205 L120 200 L127 199Z" fill="#fff1a8"/>
+          <circle cx="111" cy="202" r="2.4" fill="#7af3ef"/><circle cx="150" cy="211" r="2" fill="#faabd6"/><circle cx="145" cy="189" r="1.9" fill="#d9c7ff"/>
+        </g>`;
+        case 'suit_aurora': return `<g class="lumi-outfit lumi-outfit-suit" stroke-linejoin="round">
+          <path d="M99 181 Q130 169 161 181 L164 209 Q148 225 130 226 Q112 225 96 209Z" fill="#218f91" stroke="#126575" stroke-width="3"/>
+          <path d="M100 188 Q119 178 130 188 Q143 199 160 188 L157 199 Q139 208 126 197 Q112 187 102 201Z" fill="#7df0d0" stroke="#d2fff1" stroke-width="1.5"/>
+          <path d="M103 208 Q123 196 136 208 Q148 218 157 208 L153 218 Q138 229 125 218 Q112 210 106 222Z" fill="#5b8de1"/>
+          <path d="M130 187 L130 222" stroke="#d9fff3" stroke-width="2.2" stroke-opacity=".7"/>
+          <rect x="116" y="198" width="28" height="13" rx="5" fill="#eaffed" stroke="#146b79" stroke-width="1.8"/>
+          <circle cx="130" cy="204.5" r="3.2" fill="#f4c861"/>
+        </g>`;
+        case 'suit_explorer': return `<g class="lumi-outfit lumi-outfit-suit" stroke-linejoin="round">
+          <path d="M99 181 Q130 169 161 181 L164 209 Q148 225 130 226 Q112 225 96 209Z" fill="#b9824b" stroke="#704d38" stroke-width="3"/>
+          <path d="M101 184 Q130 193 159 184 L156 195 Q130 203 104 195Z" fill="#e3bd83" stroke="#8a5c38" stroke-width="1.8"/>
+          <path d="M108 196 L108 219 M152 196 L152 219" stroke="#f5d8a4" stroke-width="3"/>
+          <rect x="108" y="202" width="15" height="13" rx="3" fill="#e3c28d" stroke="#6f4a32" stroke-width="2"/>
+          <rect x="137" y="202" width="15" height="13" rx="3" fill="#e3c28d" stroke="#6f4a32" stroke-width="2"/>
+          <path d="M114 206 L118 206 M143 206 L147 206" stroke="#765035" stroke-width="1.8" stroke-linecap="round"/>
+          <rect x="123" y="188" width="14" height="9" rx="3" fill="#5d9bb4" stroke="#f7dfb0" stroke-width="1.5"/>
+        </g>`;
+        case 'acc_jetpack': return `<g class="lumi-outfit lumi-outfit-accessory" stroke-linejoin="round">
+          <rect x="75" y="181" width="17" height="39" rx="7" fill="#b5c7d8" stroke="#4a7396" stroke-width="2.5"/>
+          <rect x="168" y="181" width="17" height="39" rx="7" fill="#b5c7d8" stroke="#4a7396" stroke-width="2.5"/>
+          <rect x="78" y="187" width="11" height="18" rx="4" fill="#5acde6" stroke="#e7fbff" stroke-width="1.4"/>
+          <rect x="171" y="187" width="11" height="18" rx="4" fill="#5acde6" stroke="#e7fbff" stroke-width="1.4"/>
+          <path d="M78 220 L82 230 L88 220 M171 220 L175 230 L182 220" fill="#ff9e59" stroke="#b95c3b" stroke-width="1.8"/>
+          <path d="M92 186 Q130 174 168 186" fill="none" stroke="#e4f6ff" stroke-width="3"/>
+          <circle cx="83.5" cy="211" r="2.2" fill="#f3d16d"/><circle cx="176.5" cy="211" r="2.2" fill="#f3d16d"/>
+        </g>`;
+        case 'acc_star_satellite': return `<g class="lumi-outfit lumi-outfit-accessory" stroke-linejoin="round">
+          <path d="M179 174 Q192 159 207 169 Q219 180 211 194 Q202 206 188 197 Q177 190 179 174Z" fill="#d9eff7" stroke="#5688aa" stroke-width="2.5"/>
+          <rect x="185" y="169" width="9" height="16" rx="2" transform="rotate(-22 189.5 177)" fill="#4589d4" stroke="#d6f1ff" stroke-width="1.5"/>
+          <rect x="202" y="185" width="9" height="16" rx="2" transform="rotate(28 206.5 193)" fill="#4589d4" stroke="#d6f1ff" stroke-width="1.5"/>
+          <path d="M193 179 L200 174 L205 184 L199 192 L190 190Z" fill="#f4c65f" stroke="#8e682f" stroke-width="2"/>
+          <circle cx="198" cy="183" r="3" fill="#fff5b0"/><path d="M182 201 Q174 207 170 213" fill="none" stroke="#7bc9ec" stroke-width="2" stroke-dasharray="3 3"/>
+        </g>`;
+        case 'acc_bow': return `<g class="lumi-outfit lumi-outfit-accessory" stroke-linejoin="round">
+          <path d="M129 175 Q113 160 108 171 Q105 183 127 184Z" fill="#ff84b9" stroke="#a64282" stroke-width="2.4"/>
+          <path d="M131 175 Q147 160 152 171 Q155 183 133 184Z" fill="#ff84b9" stroke="#a64282" stroke-width="2.4"/>
+          <path d="M130 170 L136 178 L130 186 L124 178Z" fill="#ffd66f" stroke="#9d5a78" stroke-width="2"/>
+          <path d="M111 172 Q118 169 123 177 M149 172 Q142 169 137 177" fill="none" stroke="#ffe5f1" stroke-width="2"/>
+        </g>`;
+        default: return '';
+      }
+    }
+
     // Original Lumi character: a hand-drawn vector axolotl astronaut with a distinct silhouette.
     // The art stays inline so the mascot is crisp at every screen size and keeps its old state hooks.
     let lumiInstance = 0;
@@ -2485,10 +2627,12 @@
       const wardrobe = showWardrobe ? (wardrobeOverride || state.wardrobeEquipped || {}) : null;
       const skinClass = getSkinClass(extraClass, wardrobe);
       const wardrobeItems = showWardrobe ? LUMI_WARDROBE_SLOTS.map(slot => LUMI_WARDROBE_ITEMS.find(item => item.id === wardrobe?.[slot])).filter(Boolean) : [];
-      const wearClass = wardrobeItems.map(item => item.wearClass || '').filter(Boolean).join(' ');
-      const wearableMarkup = wardrobeItems.map(item => `<span class="lumi-wearable lumi-wearable-${item.slot}" aria-hidden="true">${item.visual || item.icon}</span>`).join('');
+      const headLayerOrder = {hat:0,face:1};
+      const bodyLayerOrder = {hero:0,acc_jetpack:1,gold:2,suit_nebula:2,suit_aurora:2,suit_explorer:2,acc_star_satellite:3,acc_bow:4};
+      const headWearableMarkup = wardrobeItems.filter(item => item.slot === 'hat' || item.slot === 'face').sort((a,b)=>(headLayerOrder[a.slot]||0)-(headLayerOrder[b.slot]||0)).map(item => wardrobeSvgLayer(item.id,n)).join('');
+      const bodyWearableMarkup = wardrobeItems.filter(item => item.slot === 'suit' || item.slot === 'accessory').sort((a,b)=>(bodyLayerOrder[a.id]??2)-(bodyLayerOrder[b.id]??2)).map(item => wardrobeSvgLayer(item.id,n)).join('');
       const decoration = '';
-      return `<div class="lumi-wrap ${skinClass} ${wearClass} ${extraClass}" aria-label="Луми, голубой космический аксолотль" role="img">
+      return `<div class="lumi-wrap ${skinClass} ${extraClass}" aria-label="Луми, голубой космический аксолотль" role="img">
         <span class="sparkle s1">✦</span><span class="sparkle s2">✧</span><span class="sparkle s3">✦</span><span class="bubble"></span><span class="bubble b2"></span>
         <svg class="lumi-svg" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
@@ -2557,6 +2701,7 @@
             <path class="lumi-smile" d="M113 153 Q130 169 147 153" fill="none" stroke="#173c70" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M84 127 l-4 3 M91 130 l-4 3 M169 130 l4 3 M176 127 l4 3" stroke="#3a91bf" stroke-width="2" stroke-linecap="round" opacity=".7"/>
             <circle cx="130" cy="124" r="2.3" fill="#2d82b3"/>
+            ${headWearableMarkup}
           </g>
 
           <!-- Neon-turquoise life-support collar between head and suit -->
@@ -2571,6 +2716,8 @@
             <path d="M94 125 l5 -2 M100 129 l5 -2 M155 129 l5 2 M161 125 l5 2" stroke="#4d8fb9" stroke-width="1.4" stroke-linecap="round"/>
           </g>
 
+          ${bodyWearableMarkup}
+
           <!-- Bubble reflections and outer glass rim -->
           <path d="M45 92 C53 52 82 25 112 20" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="5.5" stroke-linecap="round"/>
           <path d="M207 69 Q220 90 220 115" fill="none" stroke="#fff" stroke-opacity=".72" stroke-width="3" stroke-linecap="round"/>
@@ -2578,7 +2725,7 @@
           <circle cx="204" cy="150" r="2.5" fill="#fff" opacity=".85"/>
           <ellipse cx="130" cy="130" rx="112" ry="115" fill="none" stroke="#71c9ed" stroke-width="3"/>
         </svg>
-        ${decoration ? `<span class="lumi-skin-decoration" aria-hidden="true">${decoration}</span>` : ''}${wearableMarkup}
+        ${decoration ? `<span class="lumi-skin-decoration" aria-hidden="true">${decoration}</span>` : ''}
       </div>`;
     }
 
@@ -3384,10 +3531,8 @@
             <h1 class="home-name">ЛУМИ</h1>
             <p class="home-tagline">Твой космический напарник</p>
             <div class="home-divider"><i></i><span>✦</span><i></i></div>
-            <div class="home-actions">
-              <button type="button" class="home-action primary" data-home-action="continue"><span class="home-action-icon">📖</span><span class="home-action-copy"><strong>Продолжить обучение</strong><small>${done} из ${visibleLessonCount} уроков пройдено</small></span><span class="home-action-arrow">›</span></button>
-              <button type="button" class="home-action planets" data-home-action="planets"><span class="home-action-icon">🪐</span><span class="home-action-copy"><strong>Планеты</strong><small>${allPlanets.length} миров Академии</small></span><span class="home-action-arrow">›</span></button>
-              <button type="button" class="home-action textbook" data-home-action="book"><span class="home-action-icon">📚</span><span class="home-action-copy"><strong>Учебник</strong><small>${Object.keys(wordCatalog).length} слов для повторения</small></span><span class="home-action-arrow">›</span></button>
+            <div class="home-actions home-actions-map-only">
+              <button type="button" class="home-action planets" data-home-action="planets"><span class="home-action-icon">🪐</span><span class="home-action-copy"><strong>Карта планет</strong><small>${allPlanets.length} миров Академии · выбери следующий урок</small></span><span class="home-action-arrow">›</span></button>
             </div>
           </div>
         </section>
@@ -3497,14 +3642,15 @@
         const owned=state.wardrobeOwned.includes(item.id);
         const price=getShopPrice(item.price);
         const previewed=shopPreviewLoadout?.[item.slot]===item.id;
-        return `<article class="shop-item shop-wardrobe-item ${previewed?'previewed':''}"><button type="button" class="shop-preview-choice" data-shop-preview="${item.id}" aria-pressed="${previewed?'true':'false'}"><span class="shop-icon">${item.icon}</span><strong>${item.name}</strong><small>${item.description}</small><em>${previewed?'✓ Сейчас примеряется':'Нажми, чтобы примерить'}</em></button><div class="shop-item-buy-row"><span class="shop-item-price">${owned?'В коллекции':`${price} 💎${isProEnabled()?` <s>${item.price} 💎</s>`:''}`}</span><button type="button" data-buy-wardrobe="${item.id}" ${owned || state.crystals<price?'disabled':''}>${owned?'Куплено':state.crystals<price?'Не хватает 💎':`Купить · ${price} 💎`}</button></div></article>`;
+        const itemLook=lumiArt('shop-item-mascot wardrobe-show',{[item.slot]:item.id});
+        return `<article class="shop-item shop-wardrobe-item ${previewed?'previewed':''}"><button type="button" class="shop-preview-choice" data-shop-preview="${item.id}" aria-pressed="${previewed?'true':'false'}"><span class="shop-item-mascot">${itemLook}</span><strong>${item.name}</strong><small>${item.description}</small><em>${previewed?'✓ Примеряется · нажми, чтобы снять':'Нажми, чтобы примерить'}</em></button><div class="shop-item-buy-row"><span class="shop-item-price">${owned?'В коллекции':`${price} 💎${isProEnabled()?` <s>${item.price} 💎</s>`:''}`}</span><button type="button" data-buy-wardrobe="${item.id}" ${owned || state.crystals<price?'disabled':''}>${owned?'Куплено':state.crystals<price?'Не хватает 💎':`Купить · ${price} 💎`}</button></div></article>`;
       }).join('');
       const freezePrice=getShopPrice(STREAK_FREEZE_PRICE);
       return `<div class="page shop-page"><div class="page-head shop-page-head"><div><div class="eyebrow">КОСМИЧЕСКИЙ БУТИК</div><h1>Магазин Луми ✨</h1><p>Примеряй предметы на Луми, выбирай любимые и покупай за кристаллы.</p></div><div class="shop-balance">💎 <strong>${state.crystals}</strong></div></div>
         <section class="card shop-preview-card"><div class="shop-preview-copy"><span class="eyebrow">ПРИМЕРОЧНАЯ</span><h2>Посмотри, как сидит образ</h2><p class="small muted">Выбери вещь ниже — Луми примерит её здесь. Примерка временная и не меняет твой профиль.</p><button type="button" class="btn secondary" data-shop-preview-clear>Сбросить примерку</button></div><div class="shop-preview-mascot">${lumiArt('wardrobe-preview',shopPreviewLoadout)}</div><p class="shop-preview-note">Покупки надеваются только в Профиле → Гардероб.</p></section>
         <div class="shop-category-tabs" role="tablist" aria-label="Категории магазина">${categories.map(category=>`<button type="button" role="tab" aria-selected="${activeShopCategory===category.id?'true':'false'}" class="shop-category-tab ${activeShopCategory===category.id?'active':''}" data-shop-category="${category.id}">${category.label}</button>`).join('')}</div>
         <section class="card shop-catalog-card"><div class="section-row"><h2>${categories.find(category=>category.id===activeShopCategory)?.label==='Все'?'Одежда и образы':categories.find(category=>category.id===activeShopCategory)?.label}</h2><span class="small muted">${filtered.length} предметов</span></div><div class="shop-grid">${cards || '<p class="small muted">В этой категории пока нет предметов.</p>'}</div><p class="economy-note">В одной категории можно надеть только одну вещь. Предметы из разных категорий сочетаются.</p></section>
-        <section class="card shop-freeze-card"><div class="shop-freeze-icon">❄️</div><div class="shop-freeze-copy"><div class="eyebrow">ЗАЩИТА СЕРИИ</div><h2>Заморозка огонька</h2><p class="small muted">Сохрани один пропущенный день серии. Одна покупка = один заряд. Бесплатная заморозка и крио-защита PRO сохраняются.</p><small>В запасе: <strong>${Number(state.bonusFreezeCharges||0)}</strong> · максимум 20</small></div><button type="button" class="btn ${state.crystals<freezePrice||state.bonusFreezeCharges>=20?'secondary':'purple'}" data-buy-freeze ${state.crystals<freezePrice||state.bonusFreezeCharges>=20?'disabled':''}>${state.bonusFreezeCharges>=20?'Максимум':`Купить · ${freezePrice} 💎${isProEnabled()?` (−50%)`:''}`}</button></section>
+        <section class="card shop-freeze-card"><div class="shop-freeze-icon">❄️</div><div class="shop-freeze-copy"><div class="eyebrow">ЗАЩИТА СЕРИИ</div><h2>Заморозка огонька</h2><p class="small muted">Сохрани один пропущенный день серии. Одна покупка = один заряд. Бесплатная заморозка и крио-защита PRO сохраняются.</p><small>В запасе: <strong>${Number(state.bonusFreezeCharges||0)}</strong> · лимит покупки: 3</small></div><button type="button" class="btn ${state.crystals<freezePrice||state.bonusFreezeCharges>=STREAK_FREEZE_PURCHASE_LIMIT?'secondary':'purple'}" data-buy-freeze ${state.crystals<freezePrice||state.bonusFreezeCharges>=STREAK_FREEZE_PURCHASE_LIMIT?'disabled':''}>${state.bonusFreezeCharges>=STREAK_FREEZE_PURCHASE_LIMIT?'Лимит достигнут':`Купить · ${freezePrice} 💎${isProEnabled()?` (−50%)`:''}`}</button></section>
         ${renderThemeShop()}
         <p class="shop-footer-note">Lumi PRO не выдаёт вещи бесплатно: он снижает цены в магазине вдвое. Купленные предметы остаются в твоей коллекции.</p>
       </div>`;
@@ -3534,7 +3680,7 @@
         {slot:'accessory',title:'Аксессуары',hint:'Спутник, джетпак и другие детали'}
       ];
       return `<section class="card skin-section wardrobe-profile"><div class="section-row"><h2>Гардероб Луми</h2><span class="small muted">${state.wardrobeOwned.length} предметов</span></div><p class="small muted">Одежда отображается на Луми только в Профиле. В каждой категории можно надеть один предмет; вещи из разных категорий сочетаются.</p><div class="wardrobe-mascot">${lumiArt('wardrobe-show')}</div>
-        ${groups.map(group => {const items=LUMI_WARDROBE_ITEMS.filter(item=>item.slot===group.slot && state.wardrobeOwned.includes(item.id));const active=state.wardrobeEquipped?.[group.slot]||'';return `<section class="wardrobe-slot"><div class="wardrobe-slot-head"><div><strong>${group.title}</strong><small>${group.hint}</small></div>${active?`<button class="tiny-link" data-unequip-slot="${group.slot}">Снять</button>`:''}</div>${items.length?`<div class="wardrobe-owned-grid">${items.map(item=>`<button type="button" class="wardrobe-owned-item ${active===item.id?'selected':''}" data-equip-item="${item.id}"><span>${item.icon}</span><strong>${item.name}</strong><small>${active===item.id?'✓ Надето':'Надеть'}</small></button>`).join('')}</div>`:`<p class="small muted wardrobe-empty">Пока пусто. Найди вещь в <button type="button" class="inline-link" data-tab-go="shop">Магазине</button>.</p>`}</section>`;}).join('')}
+        ${groups.map(group => {const items=LUMI_WARDROBE_ITEMS.filter(item=>item.slot===group.slot && state.wardrobeOwned.includes(item.id));const active=state.wardrobeEquipped?.[group.slot]||'';return `<section class="wardrobe-slot"><div class="wardrobe-slot-head"><div><strong>${group.title}</strong><small>${group.hint}</small></div>${active?`<button class="tiny-link" data-unequip-slot="${group.slot}">Снять</button>`:''}</div>${items.length?`<div class="wardrobe-owned-grid">${items.map(item=>`<button type="button" class="wardrobe-owned-item ${active===item.id?'selected':''}" data-equip-item="${item.id}"><span class="wardrobe-item-art">${lumiArt('wardrobe-item-art wardrobe-show',{[item.slot]:item.id})}</span><strong>${item.name}</strong><small>${active===item.id?'✓ Надето · снять':'Надеть'}</small></button>`).join('')}</div>`:`<p class="small muted wardrobe-empty">Пока пусто. Найди вещь в <button type="button" class="inline-link" data-tab-go="shop">Магазине</button>.</p>`}</section>`;}).join('')}
       </section>`;
     }
     function renderProfile() {
