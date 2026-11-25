@@ -903,6 +903,10 @@
     .shop-preview-note { grid-column:1/-1; margin:0; color:var(--muted); font-size:10px; text-align:center; }
     .shop-category-tabs { display:flex; gap:7px; overflow-x:auto; padding:3px 1px 9px; margin-top:10px; scrollbar-width:none; }
     .shop-category-tabs::-webkit-scrollbar { display:none; }
+    .shop-set-action { display:flex; flex-direction:column; align-items:center; gap:5px; padding:7px 8px 10px; text-align:center; }
+    .shop-set-button { width:min(270px,100%); min-height:43px; padding:9px 16px; font-size:12px; }
+    .shop-set-button:disabled { opacity:.58; cursor:not-allowed; }
+    .shop-set-action small { max-width:440px; color:var(--muted); font-size:10px; line-height:1.4; }
     .shop-category-tab { flex:0 0 auto; min-height:36px; padding:7px 12px; border:1px solid rgba(115,142,187,.3); border-radius:20px; color:var(--muted); background:rgba(15,32,75,.48); font-size:10px; font-weight:900; cursor:pointer; }
     .shop-category-tab.active { border-color:#51d8f4; color:#06284d; background:linear-gradient(135deg,#8af1ff,#c7f7ff); box-shadow:0 0 14px rgba(48,198,231,.18); }
     .shop-catalog-card { padding:13px; }
@@ -1074,9 +1078,9 @@
     const STREAK_FREEZE_PURCHASE_LIMIT = 3;
     const LUMI_WARDROBE_SLOTS = ['hat','face','suit','accessory'];
     const LUMI_WARDROBE_ITEMS = [
-      {id:'gold',name:'Золотой скафандр',icon:'👑',visual:'✨',price:500,slot:'suit',category:'Костюмы',skinClass:'skin-gold',description:'Праздничный золотой скафандр'},
-      {id:'cyber',name:'Кибер-визор',icon:'🕶️',visual:'🕶️',price:300,slot:'face',category:'Очки и украшения',skinClass:'skin-cyber',description:'Неоновый визор для космических миссий'},
-      {id:'hero',name:'Плащ супергероя',icon:'🦸',visual:'🦸',price:700,slot:'suit',category:'Костюмы',skinClass:'skin-hero',description:'Образ защитника галактики'},
+      {id:'gold',name:'Золотой скафандр',icon:'👑',visual:'✨',price:500,slot:'suit',proExclusive:true,category:'Костюмы',skinClass:'skin-gold',description:'Праздничный золотой скафандр'},
+      {id:'cyber',name:'Кибер-визор',icon:'🕶️',visual:'🕶️',price:300,slot:'face',proExclusive:true,category:'Очки и украшения',skinClass:'skin-cyber',description:'Неоновый визор для космических миссий'},
+      {id:'hero',name:'Плащ супергероя',icon:'🦸',visual:'🦸',price:700,slot:'suit',proExclusive:true,category:'Костюмы',skinClass:'skin-hero',description:'Образ защитника галактики'},
       {id:'hat_crown',name:'Корона Новой звезды',icon:'👑',visual:'👑',price:180,slot:'hat',category:'Головные уборы',description:'Корона для капитана созвездия'},
       {id:'hat_wizard',name:'Шляпа звездочёта',icon:'🧙',visual:'🧙',price:150,slot:'hat',category:'Головные уборы',description:'Шляпа с магией далёких миров'},
       {id:'hat_beanie',name:'Тёплая шапка',icon:'🧢',visual:'🧢',price:90,slot:'hat',category:'Головные уборы',description:'Уютная шапка для холодных планет'},
@@ -1338,13 +1342,13 @@
         for (const slot of LUMI_WARDROBE_SLOTS) {
           const candidate = typeof rawWardrobe[slot] === 'string' ? rawWardrobe[slot] : (slot === legacySlot ? legacyEquippedSkin : '');
           const item = LUMI_WARDROBE_ITEMS.find(entry => entry.id === candidate && entry.slot === slot);
-          merged.wardrobeEquipped[slot] = item && merged.wardrobeOwned.includes(item.id) ? item.id : '';
+          merged.wardrobeEquipped[slot] = item && (merged.wardrobeOwned.includes(item.id) || item.proExclusive === true) ? item.id : '';
         }
-        merged.selectedSkin = ['gold','cyber','hero'].find(id => Object.values(merged.wardrobeEquipped).includes(id)) || 'default';
+        merged.selectedSkin = ['gold','cyber','hero'].find(id => merged.wardrobeOwned.includes(id) && Object.values(merged.wardrobeEquipped).includes(id)) || 'default';
         const validThemes = ['aurora','ocean','lavender','sunset','forest','midnight','rose','galaxy'];
         merged.ownedThemes = safeList(merged.ownedThemes).filter(id => validThemes.includes(id));
         for (const id of ['aurora','ocean','lavender']) if (!merged.ownedThemes.includes(id)) merged.ownedThemes.push(id);
-        if (!validThemes.includes(merged.selectedTheme) || !merged.ownedThemes.includes(merged.selectedTheme)) merged.selectedTheme = 'aurora';
+        if (!validThemes.includes(merged.selectedTheme) || (!merged.ownedThemes.includes(merged.selectedTheme) && !['sunset','forest','midnight','rose','galaxy'].includes(merged.selectedTheme))) merged.selectedTheme = 'aurora';
         merged.claimedAchievements = safeList(merged.claimedAchievements).slice(0,100);
         merged.levelRewardsClaimed = Array.isArray(merged.levelRewardsClaimed) ? [...new Set(merged.levelRewardsClaimed.map(v => safeInteger(v,0,1,100000)))] : [];
         if (!merged.levelRewardsClaimed.length) merged.levelRewardsClaimed = Array.from({length:Math.max(0,Math.floor(safeInteger(merged.xp,0)/50))},(_,i)=>i+2);
@@ -1596,10 +1600,12 @@
       for (const slot of LUMI_WARDROBE_SLOTS) {
         const preferredItem = preferred.wardrobeEquipped?.[slot];
         const secondaryItem = secondary.wardrobeEquipped?.[slot];
-        const selected = preferredItem && merged.wardrobeOwned.includes(preferredItem) ? preferredItem : secondaryItem;
-        merged.wardrobeEquipped[slot] = selected && merged.wardrobeOwned.includes(selected) ? selected : '';
+        const preferredCandidate = LUMI_WARDROBE_ITEMS.find(item => item.id === preferredItem && item.slot === slot);
+        const secondaryCandidate = LUMI_WARDROBE_ITEMS.find(item => item.id === secondaryItem && item.slot === slot);
+        const selected = preferredCandidate && (merged.wardrobeOwned.includes(preferredItem) || preferredCandidate.proExclusive === true) ? preferredItem : secondaryCandidate && (merged.wardrobeOwned.includes(secondaryItem) || secondaryCandidate.proExclusive === true) ? secondaryItem : '';
+        merged.wardrobeEquipped[slot] = selected;
       }
-      merged.selectedSkin = ['gold','cyber','hero'].find(id => Object.values(merged.wardrobeEquipped).includes(id)) || 'default';
+      merged.selectedSkin = ['gold','cyber','hero'].find(id => merged.wardrobeOwned.includes(id) && Object.values(merged.wardrobeEquipped).includes(id)) || 'default';
       const dedupeRows = (rows, keyOf, limit) => {
         const map = new Map();
         for (const row of rows) {
@@ -2041,7 +2047,7 @@
     }
 
     function applySelectedTheme() {
-      const chosen = LUMI_THEMES.some(item=>item.id===state.selectedTheme && (item.free || isProEnabled())) ? state.selectedTheme : 'aurora';
+      const chosen = LUMI_THEMES.some(item=>item.id===state.selectedTheme && (item.free || state.ownedThemes.includes(item.id) || isProEnabled())) ? state.selectedTheme : 'aurora';
       document.documentElement.dataset.theme = chosen;
     }
     function addCrystals(amount) { state.crystals = Math.max(0, Math.floor(state.crystals + amount)); }
@@ -2114,6 +2120,7 @@
     function buyWardrobeItem(itemId) {
       const item = LUMI_WARDROBE_ITEMS.find(entry => entry.id === itemId);
       if (!item || state.wardrobeOwned.includes(itemId)) return false;
+      if (item.proExclusive && isProEnabled()) { showToast('Этот образ уже включён в твой активный Lumi PRO.'); return false; }
       const price = getShopPrice(item.price);
       if (state.crystals < price) { showToast('Не хватает кристаллов 💎'); return false; }
       state.crystals -= price;
@@ -2124,7 +2131,7 @@
     }
     function equipWardrobeItem(itemId) {
       const item = LUMI_WARDROBE_ITEMS.find(entry => entry.id === itemId);
-      if (!item || !state.wardrobeOwned.includes(itemId)) { showToast('Сначала купи этот предмет в Магазине.'); return false; }
+      if (!item || !isWardrobeItemAvailable(item)) { showToast('Сначала купи этот предмет в Магазине или активируй Lumi PRO.'); return false; }
       if (state.wardrobeEquipped?.[item.slot] === itemId) {
         unequipWardrobeSlot(item.slot);
         return true;
@@ -2161,13 +2168,37 @@
       render();
     }
     function resetShopPreview() {
-      shopPreviewLoadout = { ...(state.wardrobeEquipped || {}) };
+      shopPreviewLoadout = getEffectiveWardrobeLoadout();
       render();
+    }
+    function getShopPreviewSetItems() {
+      return LUMI_WARDROBE_SLOTS.map(slot => LUMI_WARDROBE_ITEMS.find(item => item.id === shopPreviewLoadout?.[slot] && item.slot === slot)).filter(Boolean);
+    }
+    function getShopPreviewSetPurchase() {
+      const items = getShopPreviewSetItems();
+      const toBuy = items.filter(item => !state.wardrobeOwned.includes(item.id) && !(item.proExclusive === true && isProEnabled()));
+      const total = toBuy.reduce((sum, item) => sum + getShopPrice(item.price), 0);
+      return { items, toBuy, total };
+    }
+    function buyShopPreviewSet() {
+      const {items, toBuy, total} = getShopPreviewSetPurchase();
+      if (items.length < 2) { showToast('Для покупки сета выбери хотя бы два предмета.'); return false; }
+      if (!toBuy.length) { showToast('Все предметы этого сета уже доступны.'); return false; }
+      if (state.crystals < total) { showToast(`Для покупки сета нужно ещё ${total - state.crystals} 💎.`); return false; }
+      state.crystals -= total;
+      for (const item of toBuy) {
+        if (!state.wardrobeOwned.includes(item.id)) state.wardrobeOwned.push(item.id);
+        if (['gold','cyber','hero'].includes(item.id) && !state.ownedSkins.includes(item.id)) state.ownedSkins.push(item.id);
+      }
+      saveState(); render();
+      showToast(`Сет куплен: ${toBuy.length} ${plural(toBuy.length,'предмет','предмета','предметов')} за ${total} 💎. Надеть можно в Профиле.`);
+      return true;
     }
     function selectTheme(themeId) {
       const theme = LUMI_THEMES.find(item=>item.id===themeId);
       if (!theme) return;
-      if (!state.ownedThemes.includes(themeId)) {
+      const temporaryProAccess = !theme.free && isProEnabled() && !state.ownedThemes.includes(themeId);
+      if (!state.ownedThemes.includes(themeId) && !temporaryProAccess) {
         const price = getShopPrice(theme.price || 0);
         if (price > 0 && state.crystals < price) { showToast('Не хватает кристаллов 💎'); return; }
         state.crystals -= price;
@@ -2193,6 +2224,35 @@
       return state.proActive === true && proAccount.revoked !== true && expiresAt > 0 && expiresAt > serverNow;
     }
     function isProEnabled() { return isServerPaidProEnabled() || (DEMO_PRO_ALLOWED && state.demoPro === true) || isTrialProEnabled(); }
+    function isWardrobeItemAvailable(itemOrId) {
+      const item = typeof itemOrId === 'string' ? LUMI_WARDROBE_ITEMS.find(entry => entry.id === itemOrId) : itemOrId;
+      return Boolean(item && (state.wardrobeOwned.includes(item.id) || (item.proExclusive === true && isProEnabled())));
+    }
+    function getEffectiveWardrobeLoadout(source = state.wardrobeEquipped || {}) {
+      const effective = {};
+      for (const slot of LUMI_WARDROBE_SLOTS) {
+        const id = typeof source?.[slot] === 'string' ? source[slot] : '';
+        const item = LUMI_WARDROBE_ITEMS.find(entry => entry.id === id && entry.slot === slot);
+        if (item && isWardrobeItemAvailable(item)) effective[slot] = item.id;
+      }
+      return effective;
+    }
+    function stripExpiredProWardrobeItems() {
+      if (isProEnabled()) return false;
+      let changed = false;
+      for (const slot of LUMI_WARDROBE_SLOTS) {
+        const id = state.wardrobeEquipped?.[slot];
+        const item = LUMI_WARDROBE_ITEMS.find(entry => entry.id === id && entry.slot === slot);
+        if (item?.proExclusive && !state.wardrobeOwned.includes(item.id)) {
+          state.wardrobeEquipped = { ...(state.wardrobeEquipped || {}), [slot]: '' };
+          changed = true;
+        }
+      }
+      if (['gold','cyber','hero'].includes(state.selectedSkin) && !state.wardrobeOwned.includes(state.selectedSkin)) {
+        state.selectedSkin = 'default'; changed = true;
+      }
+      return changed;
+    }
     function isSkinAvailable(skinId) {
       return state.wardrobeOwned.includes(skinId);
     }
@@ -2378,10 +2438,12 @@
       const previousTheme = state.selectedTheme;
       const previousSkin = state.selectedSkin;
       state.proActive = authoritativeProStatus === true;
+      let wardrobeChanged = false;
       if (!isProEnabled()) {
         if (['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme) && !state.ownedThemes.includes(state.selectedTheme)) state.selectedTheme = 'aurora';
+        wardrobeChanged = stripExpiredProWardrobeItems();
       }
-      const changed = previousAccess !== isProEnabled() || previousTheme !== state.selectedTheme || previousSkin !== state.selectedSkin;
+      const changed = previousAccess !== isProEnabled() || previousTheme !== state.selectedTheme || previousSkin !== state.selectedSkin || wardrobeChanged;
       lastProAccessState = isProEnabled();
       if (changed) saveAccessStateLocally();
       return changed;
@@ -2624,7 +2686,7 @@
     function lumiArt(extraClass = '', wardrobeOverride = null) {
       const n = ++lumiInstance;
       const showWardrobe = extraClass.includes('wardrobe-show') || extraClass.includes('wardrobe-preview');
-      const wardrobe = showWardrobe ? (wardrobeOverride || state.wardrobeEquipped || {}) : null;
+      const wardrobe = showWardrobe ? (wardrobeOverride ? { ...wardrobeOverride } : getEffectiveWardrobeLoadout(state.wardrobeEquipped || {})) : null;
       const skinClass = getSkinClass(extraClass, wardrobe);
       const wardrobeItems = showWardrobe ? LUMI_WARDROBE_SLOTS.map(slot => LUMI_WARDROBE_ITEMS.find(item => item.id === wardrobe?.[slot])).filter(Boolean) : [];
       const headLayerOrder = {hat:0,face:1};
@@ -3142,7 +3204,39 @@
       if(skipped) haptic('soft');
     }
 
+    function closeExpiredProSessions() {
+      if (isProEnabled()) return false;
+      let closed = false;
+      if (lessonSession?.lesson?.isPro && !lessonSession.rewarded) {
+        lessonSession = null;
+        currentTab = 'map';
+        closed = true;
+      }
+      if (dialogSession && !dialogSession.freeTrial && !dialogSession.finished) {
+        stopDialogTimer();
+        dialogSession = null;
+        currentTab = 'pro';
+        closed = true;
+      }
+      if (reviewSession?.proOnly) {
+        reviewSession = null;
+        currentTab = 'book';
+        closed = true;
+      }
+      if (closed) showToast('Срок Lumi PRO истёк. Доступ к PRO-занятиям завершён.');
+      return closed;
+    }
+
+    const proSessionClickGuard = document.getElementById('screen');
+    if (proSessionClickGuard) proSessionClickGuard.addEventListener('click', event => {
+      if (!closeExpiredProSessions()) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      render();
+    }, true);
+
     function render() {
+      closeExpiredProSessions();
       applySelectedTheme();
       refreshEnergy();
       updateTopStats();
@@ -3626,7 +3720,9 @@
       return `<section class="card economy-section"><div class="section-row"><h2>Магазин Луми</h2><strong>💎 ${state.crystals}</strong></div><p class="small muted">Покупай косметические образы за кристаллы. Купленные предметы останутся с тобой.${isProEnabled()?' Сейчас все образы также открыты по PRO — кристаллы тратить не нужно.':''}</p><div class="shop-grid">${LUMI_SKINS.map(skin=>{const owned=state.ownedSkins.includes(skin.id),proUnlocked=isProEnabled()&&!owned;return `<div class="shop-item"><span class="shop-icon">${skin.icon}</span><strong>${skin.name}</strong><small>${owned?'Уже куплено':proUnlocked?'Открыто в Lumi PRO':`Цена: ${skin.price} 💎`}</small><button data-shop-skin="${skin.id}" ${owned || proUnlocked || state.crystals<skin.price?'disabled':''}>${owned?'Куплено':proUnlocked?'Доступно в PRO':state.crystals<skin.price?'Не хватает 💎':`Купить · ${skin.price} 💎`}</button></div>`;}).join('')}</div><p class="economy-note">Награды: +10 💎 за первый проход урока, +15 💎 за дневную цель, бонусы за достижения и повышение уровня.</p></section>`;
     }
     function renderThemeShop() {
-      return `<section class="card theme-section"><div class="section-row"><h2>Оформление Академии</h2><span class="small muted">3 бесплатные темы</span></div><p class="small muted">Выбирай атмосферу Академии. Lumi PRO снижает цену каждой платной темы на 50%.</p><div class="theme-grid">${LUMI_THEMES.map(theme=>{const owned=state.ownedThemes.includes(theme.id);const price=getShopPrice(theme.price||0);return `<div class="theme-choice ${state.selectedTheme===theme.id?'selected':''}"><span class="theme-icon">${theme.icon}</span><strong>${theme.name}</strong><div class="theme-swatch">${theme.colors.map(color=>`<i style="background:${color}"></i>`).join('')}</div><small>${owned?theme.free?'Бесплатная тема':'Куплено':`Цена: ${price} 💎`}${isProEnabled()&&!theme.free&&!owned?` · <s>${theme.price} 💎</s>`:''}</small><button data-theme-select="${theme.id}" ${!owned && !theme.free && state.crystals<price?'disabled':''}>${state.selectedTheme===theme.id?'Выбрана':owned?'Применить':theme.free?'Открыть':'Купить · '+price+' 💎'}</button></div>`;}).join('')}</div></section>`;
+      const proActive = isProEnabled();
+      const proThemeCount = LUMI_THEMES.filter(theme => !theme.free).length;
+      return `<section class="card theme-section"><div class="section-row"><h2>Оформление Академии</h2><span class="small muted">3 бесплатные · ${proThemeCount} PRO</span></div><p class="small muted">Пять дополнительных тем доступны на время Lumi PRO. Купленные темы остаются навсегда; на остальные покупки PRO даёт скидку 50%.</p><div class="theme-grid">${LUMI_THEMES.map(theme=>{const owned=state.ownedThemes.includes(theme.id);const proAccess=proActive&&!theme.free&&!owned;const price=getShopPrice(theme.price||0);return `<div class="theme-choice ${state.selectedTheme===theme.id?'selected':''}"><span class="theme-icon">${theme.icon}</span><strong>${theme.name}</strong><div class="theme-swatch">${theme.colors.map(color=>`<i style="background:${color}"></i>`).join('')}</div><small>${owned?theme.free?'Бесплатная тема':'Куплено навсегда':proAccess?'Включено в Lumi PRO':`Цена: ${price} 💎${proActive?` · <s>${theme.price} 💎</s>`:''}`}</small><button data-theme-select="${theme.id}" ${!owned && !theme.free && !proAccess && state.crystals<price?'disabled':''}>${state.selectedTheme===theme.id?'Выбрана':owned||proAccess?'Применить':theme.free?'Открыть':'Купить · '+price+' 💎'}</button></div>`;}).join('')}</div></section>`;
     }
     function renderShop() {
       if (!shopPreviewReady) { shopPreviewLoadout = { ...(state.wardrobeEquipped || {}) }; shopPreviewReady = true; }
@@ -3638,21 +3734,26 @@
         {id:'accessory',label:'Аксессуары'}
       ];
       const filtered = activeShopCategory === 'all' ? LUMI_WARDROBE_ITEMS : LUMI_WARDROBE_ITEMS.filter(item=>item.slot===activeShopCategory);
+      const previewLoadout = { ...(shopPreviewLoadout || {}) };
+      const setPurchase = getShopPreviewSetPurchase();
       const cards = filtered.map(item=>{
         const owned=state.wardrobeOwned.includes(item.id);
+        const proAccess=item.proExclusive===true && isProEnabled() && !owned;
         const price=getShopPrice(item.price);
-        const previewed=shopPreviewLoadout?.[item.slot]===item.id;
+        const previewed=previewLoadout?.[item.slot]===item.id;
         const itemLook=lumiArt('shop-item-mascot wardrobe-show',{[item.slot]:item.id});
-        return `<article class="shop-item shop-wardrobe-item ${previewed?'previewed':''}"><button type="button" class="shop-preview-choice" data-shop-preview="${item.id}" aria-pressed="${previewed?'true':'false'}"><span class="shop-item-mascot">${itemLook}</span><strong>${item.name}</strong><small>${item.description}</small><em>${previewed?'✓ Примеряется · нажми, чтобы снять':'Нажми, чтобы примерить'}</em></button><div class="shop-item-buy-row"><span class="shop-item-price">${owned?'В коллекции':`${price} 💎${isProEnabled()?` <s>${item.price} 💎</s>`:''}`}</span><button type="button" data-buy-wardrobe="${item.id}" ${owned || state.crystals<price?'disabled':''}>${owned?'Куплено':state.crystals<price?'Не хватает 💎':`Купить · ${price} 💎`}</button></div></article>`;
+        return `<article class="shop-item shop-wardrobe-item ${previewed?'previewed':''}"><button type="button" class="shop-preview-choice" data-shop-preview="${item.id}" aria-pressed="${previewed?'true':'false'}"><span class="shop-item-mascot">${itemLook}</span><strong>${item.name}</strong><small>${item.description}</small><em>${previewed?'✓ Примеряется · нажми, чтобы снять':'Нажми, чтобы примерить'}</em></button><div class="shop-item-buy-row"><span class="shop-item-price">${owned?'В коллекции':proAccess?'Включено в PRO':`${price} 💎${isProEnabled()?` <s>${item.price} 💎</s>`:''}`}</span><button type="button" data-buy-wardrobe="${item.id}" ${owned || proAccess || state.crystals<price?'disabled':''}>${owned?'Куплено':proAccess?'Доступно в PRO':state.crystals<price?'Не хватает 💎':`Купить · ${price} 💎`}</button></div></article>`;
       }).join('');
       const freezePrice=getShopPrice(STREAK_FREEZE_PRICE);
+      const setButton = setPurchase.items.length >= 2 ? `<div class="shop-set-action"><button type="button" class="btn purple shop-set-button" data-buy-shop-set ${!setPurchase.toBuy.length || state.crystals<setPurchase.total?'disabled':''}>${setPurchase.toBuy.length?`Купить сет · ${setPurchase.total} 💎`:'Все предметы сета доступны'}</button><small>${setPurchase.toBuy.length?`${setPurchase.items.length} предмета · стоимость уже учитывает скидку PRO. Покупка добавит вещи в коллекцию, но не наденет их.`:'Выбранные предметы уже куплены или доступны по PRO.'}</small></div>` : '';
       return `<div class="page shop-page"><div class="page-head shop-page-head"><div><div class="eyebrow">КОСМИЧЕСКИЙ БУТИК</div><h1>Магазин Луми ✨</h1><p>Примеряй предметы на Луми, выбирай любимые и покупай за кристаллы.</p></div><div class="shop-balance">💎 <strong>${state.crystals}</strong></div></div>
-        <section class="card shop-preview-card"><div class="shop-preview-copy"><span class="eyebrow">ПРИМЕРОЧНАЯ</span><h2>Посмотри, как сидит образ</h2><p class="small muted">Выбери вещь ниже — Луми примерит её здесь. Примерка временная и не меняет твой профиль.</p><button type="button" class="btn secondary" data-shop-preview-clear>Сбросить примерку</button></div><div class="shop-preview-mascot">${lumiArt('wardrobe-preview',shopPreviewLoadout)}</div><p class="shop-preview-note">Покупки надеваются только в Профиле → Гардероб.</p></section>
+        <section class="card shop-preview-card"><div class="shop-preview-copy"><span class="eyebrow">ПРИМЕРОЧНАЯ</span><h2>Посмотри, как сидит образ</h2><p class="small muted">Выбери вещь ниже — Луми примерит её здесь. Примерка временная и не меняет твой профиль.</p><button type="button" class="btn secondary" data-shop-preview-clear>Сбросить примерку</button></div><div class="shop-preview-mascot">${lumiArt('wardrobe-preview',previewLoadout)}</div><p class="shop-preview-note">Покупки надеваются только в Профиле → Гардероб.</p></section>
         <div class="shop-category-tabs" role="tablist" aria-label="Категории магазина">${categories.map(category=>`<button type="button" role="tab" aria-selected="${activeShopCategory===category.id?'true':'false'}" class="shop-category-tab ${activeShopCategory===category.id?'active':''}" data-shop-category="${category.id}">${category.label}</button>`).join('')}</div>
+        ${setButton}
         <section class="card shop-catalog-card"><div class="section-row"><h2>${categories.find(category=>category.id===activeShopCategory)?.label==='Все'?'Одежда и образы':categories.find(category=>category.id===activeShopCategory)?.label}</h2><span class="small muted">${filtered.length} предметов</span></div><div class="shop-grid">${cards || '<p class="small muted">В этой категории пока нет предметов.</p>'}</div><p class="economy-note">В одной категории можно надеть только одну вещь. Предметы из разных категорий сочетаются.</p></section>
         <section class="card shop-freeze-card"><div class="shop-freeze-icon">❄️</div><div class="shop-freeze-copy"><div class="eyebrow">ЗАЩИТА СЕРИИ</div><h2>Заморозка огонька</h2><p class="small muted">Сохрани один пропущенный день серии. Одна покупка = один заряд. Бесплатная заморозка и крио-защита PRO сохраняются.</p><small>В запасе: <strong>${Number(state.bonusFreezeCharges||0)}</strong> · лимит покупки: 3</small></div><button type="button" class="btn ${state.crystals<freezePrice||state.bonusFreezeCharges>=STREAK_FREEZE_PURCHASE_LIMIT?'secondary':'purple'}" data-buy-freeze ${state.crystals<freezePrice||state.bonusFreezeCharges>=STREAK_FREEZE_PURCHASE_LIMIT?'disabled':''}>${state.bonusFreezeCharges>=STREAK_FREEZE_PURCHASE_LIMIT?'Лимит достигнут':`Купить · ${freezePrice} 💎${isProEnabled()?` (−50%)`:''}`}</button></section>
         ${renderThemeShop()}
-        <p class="shop-footer-note">Lumi PRO не выдаёт вещи бесплатно: он снижает цены в магазине вдвое. Купленные предметы остаются в твоей коллекции.</p>
+        <p class="shop-footer-note">Lumi PRO открывает 5 дополнительных тем и 3 премиальных образа на время подписки, а на остальные покупки даёт скидку 50%. Купленные предметы остаются в твоей коллекции.</p>
       </div>`;
     }
     function renderAchievements() {
@@ -3679,11 +3780,14 @@
         {slot:'suit',title:'Костюм',hint:'Один костюм или плащ'},
         {slot:'accessory',title:'Аксессуары',hint:'Спутник, джетпак и другие детали'}
       ];
-      return `<section class="card skin-section wardrobe-profile"><div class="section-row"><h2>Гардероб Луми</h2><span class="small muted">${state.wardrobeOwned.length} предметов</span></div><p class="small muted">Одежда отображается на Луми только в Профиле. В каждой категории можно надеть один предмет; вещи из разных категорий сочетаются.</p><div class="wardrobe-mascot">${lumiArt('wardrobe-show')}</div>
-        ${groups.map(group => {const items=LUMI_WARDROBE_ITEMS.filter(item=>item.slot===group.slot && state.wardrobeOwned.includes(item.id));const active=state.wardrobeEquipped?.[group.slot]||'';return `<section class="wardrobe-slot"><div class="wardrobe-slot-head"><div><strong>${group.title}</strong><small>${group.hint}</small></div>${active?`<button class="tiny-link" data-unequip-slot="${group.slot}">Снять</button>`:''}</div>${items.length?`<div class="wardrobe-owned-grid">${items.map(item=>`<button type="button" class="wardrobe-owned-item ${active===item.id?'selected':''}" data-equip-item="${item.id}"><span class="wardrobe-item-art">${lumiArt('wardrobe-item-art wardrobe-show',{[item.slot]:item.id})}</span><strong>${item.name}</strong><small>${active===item.id?'✓ Надето · снять':'Надеть'}</small></button>`).join('')}</div>`:`<p class="small muted wardrobe-empty">Пока пусто. Найди вещь в <button type="button" class="inline-link" data-tab-go="shop">Магазине</button>.</p>`}</section>`;}).join('')}
+      const loadout = getEffectiveWardrobeLoadout();
+      const availableItems = LUMI_WARDROBE_ITEMS.filter(isWardrobeItemAvailable);
+      return `<section class="card skin-section wardrobe-profile"><div class="section-row"><h2>Гардероб Луми</h2><span class="small muted">${availableItems.length} предметов доступно</span></div><p class="small muted">Одежда отображается на Луми только в Профиле. В каждой категории можно надеть один предмет; вещи из разных категорий сочетаются.${isProEnabled()?' Три премиальных образа включены в активный Lumi PRO.':''}</p><div class="wardrobe-mascot">${lumiArt('wardrobe-show',loadout)}</div>
+        ${groups.map(group => {const items=availableItems.filter(item=>item.slot===group.slot);const active=loadout?.[group.slot]||'';return `<section class="wardrobe-slot"><div class="wardrobe-slot-head"><div><strong>${group.title}</strong><small>${group.hint}</small></div>${active?`<button class="tiny-link" data-unequip-slot="${group.slot}">Снять</button>`:''}</div>${items.length?`<div class="wardrobe-owned-grid">${items.map(item=>{const temporaryPro=item.proExclusive===true&&!state.wardrobeOwned.includes(item.id);return `<button type="button" class="wardrobe-owned-item ${active===item.id?'selected':''}" data-equip-item="${item.id}"><span class="wardrobe-item-art">${lumiArt('wardrobe-item-art wardrobe-show',{[item.slot]:item.id})}</span><strong>${item.name}</strong><small>${active===item.id?'✓ Надето · снять':temporaryPro?'Включено в PRO · надеть':'Надеть'}</small></button>`;}).join('')}</div>`:`<p class="small muted wardrobe-empty">Пока пусто. Найди вещь в <button type="button" class="inline-link" data-tab-go="shop">Магазине</button>.</p>`}</section>`;}).join('')}
       </section>`;
     }
     function renderProfile() {
+      const paidProActive = isServerPaidProEnabled();
       const days = ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'];
       const today = new Date();
       const dayIndex = (today.getDay() + 6) % 7;
@@ -3697,7 +3801,7 @@
       });
       return `<div class="page">
         <div class="page-head"><div class="eyebrow">ТВОЙ КОСМИЧЕСКИЙ ЖУРНАЛ</div><h1>Профиль 👩‍🚀</h1><p>Каждый маленький шаг — уже достижение.</p></div>
-        <section class="card profile-hero"><div class="avatar-orb">🧑‍🚀</div><div style="min-width:0;flex:1"><h2>Кадет Академии ${isProEnabled()?'<span class="profile-drone" title="Спутник-дрон Луми активен">🛸</span>':''}</h2>${isTrialProEnabled()&&!state.proActive?'<span class="pro-plan-status">🎁 ПРОБНЫЙ PRO</span>':''}<p>Уровень ${Math.floor(state.xp / 50) + 1} · ${state.xp} XP накоплено ${isProEnabled()?'<span class="profile-xp-badge">⚡ 2× XP активно</span>':''}</p><div class="progress-mini" style="width:140px;max-width:100%"><span style="width:${(state.xp % 50) / 50 * 100}%"></span></div></div></section>
+        <section class="card profile-hero"><div class="avatar-orb">🧑‍🚀</div><div style="min-width:0;flex:1"><h2>Кадет Академии ${isProEnabled()?'<span class="profile-drone" title="Спутник-дрон Луми активен">🛸</span>':''}</h2>${isTrialProEnabled()&&!paidProActive?'<span class="pro-plan-status">🎁 ПРОБНЫЙ PRO</span>':''}<p>Уровень ${Math.floor(state.xp / 50) + 1} · ${state.xp} XP накоплено ${isProEnabled()?'<span class="profile-xp-badge">⚡ 2× XP активно</span>':''}</p><div class="progress-mini" style="width:140px;max-width:100%"><span style="width:${(state.xp % 50) / 50 * 100}%"></span></div></div></section>
         <div class="storage-sync-note" id="cloudStorageStatusNote" role="status">${storageStatusText()}</div>
         <div class="stats-grid">
           <div class="card metric"><div class="metric-icon">🔥</div><strong>${state.streak}</strong><span>ДНЕЙ ПОДРЯД</span></div>
@@ -3713,8 +3817,8 @@
           <div class="cryo-status">${isProEnabled()?'❄️ Крио-защита Луми активна: серия выдерживает до 3 пропущенных дней подряд без ограничения числа использований.':`${state.freeFreezeUsed?'Базовая заморозка использована.':'У тебя есть 1 бесплатная заморозка.'}${state.bonusFreezeCharges>0?` Дополнительных от Луми: ${state.bonusFreezeCharges} ❄️.`:''}`}</div>
         </section>
         <section class="card profile-daily-goal" style="padding:14px"><div class="section-row"><h3 style="margin:0">Твоя цель на день</h3><button class="tiny-link" id="changeGoalProfile">Изменить</button></div><strong style="font-size:23px">${state.goal} минут <span class="muted small">активного обучения</span></strong><div class="goal-track"><div class="goal-fill" id="profileDailyGoalFill" style="width:${Math.min(100,Math.round(state.dailyMinutes/state.goal*100))}%"></div></div><p class="small muted" style="margin:7px 0 0"><span id="profileDailyGoalProgress">${Math.min(state.dailyMinutes,state.goal)} / ${state.goal} мин</span> · <span id="profileDailyGoalStatus">${state.dailyGoalClaimedDate===localDateKey()?'Огонёк уже горит! 🔥':'Выполни цель, чтобы зажечь огонёк и продолжить серию.'}</span></p></section>
-        ${DEMO_PRO_ALLOWED ? `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : isTrialProEnabled() ? '🎁 Подарочный PRO активен' : state.demoPro ? '🧪 Включён ДЕМО-PRO' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Статус подписки подтверждён сервером Telegram.' : isTrialProEnabled() ? `Пробный доступ действует до ${formatProDate(state.trial_pro_until)}.` : state.demoPro ? 'Все премиум-функции включены только на этом устройстве для проверки.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><div class="eyebrow">ТЕСТОВЫЙ ДОСТУП</div><h3 style="margin:5px 0">Проверить все платные функции</h3><p class="small muted" style="margin:0">Демо-PRO открывает секретные планеты, бесконечную энергию, двойной XP, продвинутый учебник и скидку 50% в магазине. Оплата не требуется.</p><button class="btn ${state.demoPro?'secondary':'purple'} full" id="toggleDemoPro">${state.demoPro?'Выключить ДЕМО-PRO':'Включить ДЕМО-PRO (для теста)'}</button></section>` : `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${state.proActive ? '⭐ Lumi PRO активен' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${state.proActive ? 'Подписка подтверждена сервером Telegram.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><button class="btn purple full" data-tab-go="pro">Посмотреть возможности Lumi PRO ⭐</button></section>`}
-        <section class="card" style="padding:14px;margin-top:13px"><div class="section-row"><h3 style="margin:0">⭐ Lumi PRO и спутник</h3><strong>${state.proActive?(proAccount.lastPlan==='week'?'ТАРИФ · 7 ДНЕЙ':`Месяцев в PRO: ${Math.max(1,proAccount.months||1)}`):state.demoPro?'ДЕМО-PRO':isTrialProEnabled()?'ПРОБНЫЙ PRO':'FREE'}</strong></div>${state.proActive?`<p class="small muted" style="margin:6px 0 0">Оплаченная подписка подтверждена сервером и действует до ${formatProDate(proAccount.expiresAt)}. Статус продления: ${proAccount.billingState==='payment_failed'?'платёж не прошёл':proAccount.autoRenew===false?'отключено':'включено'}. Мини-дрон Луми 🛸 активен.</p>`:isTrialProEnabled()?`<p class="small muted" style="margin:6px 0 0">🎁 Подарочный Lumi PRO действует до ${formatProDate(state.trial_pro_until)}. Все закрытые планеты, интерактивные диалоги, двойной XP и бесконечная энергия открыты на время пробного доступа.</p>`:state.demoPro?'<p class="small muted" style="margin:6px 0 0">Все премиум-функции включены только на этом устройстве для тестирования.</p>':proAccount.wasPro?'<div class="profile-expired-note">Луми немного грустит: подписка закончилась, а мини-дрон и крио-защита ушли в спящий режим. Возобнови Lumi PRO, чтобы снова отправиться в полёт вместе с ними.</div><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Вернуть спутника и защиту ⭐</button>':'<p class="small muted" style="margin:6px 0 0">Подключи Lumi PRO, чтобы открыть мини-дрона-спутника, крио-защиту и новые режимы.</p><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Узнать о Lumi PRO</button>'}</section>
+        ${DEMO_PRO_ALLOWED ? `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${paidProActive ? '⭐ Lumi PRO активен' : isTrialProEnabled() ? '🎁 Подарочный PRO активен' : state.demoPro ? '🧪 Включён ДЕМО-PRO' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${paidProActive ? 'Статус подписки подтверждён сервером Telegram.' : isTrialProEnabled() ? `Пробный доступ действует до ${formatProDate(state.trial_pro_until)}.` : state.demoPro ? 'Все премиум-функции включены только на этом устройстве для проверки.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><div class="eyebrow">ТЕСТОВЫЙ ДОСТУП</div><h3 style="margin:5px 0">Проверить все платные функции</h3><p class="small muted" style="margin:0">Демо-PRO открывает секретные планеты и уроки, бесконечную энергию, двойной XP и очки Лиги, расширенный учебник, диалоги, крио-защиту, 5 тем и 3 премиальных образа. Также действует скидка 50% на покупки. Оплата не требуется.</p><button class="btn ${state.demoPro?'secondary':'purple'} full" id="toggleDemoPro">${state.demoPro?'Выключить ДЕМО-PRO':'Включить ДЕМО-PRO (для теста)'}</button></section>` : `<section class="card demo-pro-card"><div class="eyebrow">ТВОЙ ТАРИФ</div><h3 style="margin:5px 0">${paidProActive ? '⭐ Lumi PRO активен' : 'Бесплатный кадет'}</h3><p class="small muted" style="margin:0 0 8px">${paidProActive ? 'Подписка подтверждена сервером Telegram.' : `Сейчас доступно 5 сердечек и ${planets.length} бесплатных планет.`}</p><button class="btn purple full" data-tab-go="pro">Посмотреть возможности Lumi PRO ⭐</button></section>`}
+        <section class="card" style="padding:14px;margin-top:13px"><div class="section-row"><h3 style="margin:0">⭐ Lumi PRO и спутник</h3><strong>${paidProActive?(proAccount.lastPlan==='week'?'ТАРИФ · 7 ДНЕЙ':`Месяцев в PRO: ${Math.max(1,proAccount.months||1)}`):state.demoPro?'ДЕМО-PRO':isTrialProEnabled()?'ПРОБНЫЙ PRO':'FREE'}</strong></div>${paidProActive?`<p class="small muted" style="margin:6px 0 0">Оплаченная подписка подтверждена сервером и действует до ${formatProDate(proAccount.expiresAt)}. Статус продления: ${proAccount.billingState==='payment_failed'?'платёж не прошёл':proAccount.autoRenew===false?'отключено':'включено'}. Мини-дрон Луми 🛸 активен.</p>`:isTrialProEnabled()?`<p class="small muted" style="margin:6px 0 0">🎁 Подарочный Lumi PRO действует до ${formatProDate(state.trial_pro_until)}. Все закрытые планеты, интерактивные диалоги, двойной XP и бесконечная энергия открыты на время пробного доступа.</p>`:(DEMO_PRO_ALLOWED && state.demoPro)?'<p class="small muted" style="margin:6px 0 0">Все премиум-функции включены только на этом устройстве для тестирования.</p>':proAccount.wasPro?'<div class="profile-expired-note">Луми немного грустит: подписка закончилась, а мини-дрон и крио-защита ушли в спящий режим. Возобнови Lumi PRO, чтобы снова отправиться в полёт вместе с ними.</div><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Вернуть спутника и защиту ⭐</button>':'<p class="small muted" style="margin:6px 0 0">Подключи Lumi PRO, чтобы открыть мини-дрона-спутника, крио-защиту и новые режимы.</p><button class="btn purple full" data-tab-go="pro" style="margin-top:9px">Узнать о Lumi PRO</button>'}</section>
         <section class="card tutorial-settings"><div class="eyebrow">ПОМОЩЬ ОТ ЛУМИ</div><h3 style="margin:5px 0">Хочешь освежить правила?</h3><p class="small muted" style="margin:0 0 9px">Я снова покажу карту, учебник, огонёк, профиль, магазин и возможности PRO — всего пять шагов.</p><button class="btn secondary full" id="restartLumiTutorial">Пройти обучение с Луми заново</button></section>
         <section class="card support-card"><div class="eyebrow">МЫ НА СВЯЗИ</div><h3 style="margin:5px 0">Нужна помощь?</h3><p class="small muted" style="margin:0 0 9px">Напиши команде Lumi Academy, если у тебя возник вопрос или ты заметил проблему.</p><button type="button" class="btn secondary full" id="openSupport">Написать в поддержку</button></section>
         <section class="card legal-settings-card"><div class="eyebrow">ПРАВА И ДАННЫЕ</div><h3 style="margin:5px 0">Документы и конфиденциальность</h3><p class="small muted" style="margin:0">Условия использования, информация об обработке данных и запросы по твоему аккаунту.</p><div class="legal-links"><button type="button" data-legal-open="terms">Условия использования</button><button type="button" data-legal-open="privacy">Политика конфиденциальности</button></div><button type="button" class="btn secondary full" id="requestDataDeletion" style="margin-top:10px">Запросить удаление моих данных</button></section>
@@ -3733,8 +3837,9 @@
     }
 
     function renderPro() {
+      const paidProActive = isServerPaidProEnabled();
       return `<div class="page">
-        <section class="card pro-hero"><div class="pro-hero-layout"><div class="pro-copy"><div class="eyebrow">КОСМИЧЕСКИЙ ПРЕМИУМ</div><h1>Lumi PRO ⭐</h1><p>Открой секретные миры, забудь об ограничениях и прокачивай английский с Луми.</p><span class="pro-plan-status">${state.proActive ? '⭐ ОПЛАЧЕННЫЙ PRO АКТИВЕН' : isTrialProEnabled() ? '🎁 ПРОБНЫЙ PRO АКТИВЕН' : state.demoPro ? '🧪 ДЕМО-PRO АКТИВЕН' : '✦ Премиум-режим Академии'}</span></div><div class="pro-mascot">${lumiArt('skin-gold')}</div></div></section>
+        <section class="card pro-hero"><div class="pro-hero-layout"><div class="pro-copy"><div class="eyebrow">КОСМИЧЕСКИЙ ПРЕМИУМ</div><h1>Lumi PRO ⭐</h1><p>Открой секретные миры, забудь об ограничениях и прокачивай английский с Луми.</p><span class="pro-plan-status">${paidProActive ? '⭐ ОПЛАЧЕННЫЙ PRO АКТИВЕН' : isTrialProEnabled() ? '🎁 ПРОБНЫЙ PRO АКТИВЕН' : (DEMO_PRO_ALLOWED && state.demoPro) ? '🧪 ДЕМО-PRO АКТИВЕН' : '✦ Премиум-режим Академии'}</span></div><div class="pro-mascot">${lumiArt('skin-gold')}</div></div></section>
         <div class="tariff-grid">
           <section class="card tariff-card"><h3>🪐 Бесплатно</h3><p>• ${planets.length} тематических планет и ${planets.reduce((n,p)=>n+p.lessons.length,0)} уроков</p><p>• 5 энергетических сердечек</p><p>• Все 5 зарядов восстанавливаются за 3 часа после первой потери</p><p>• Базовый учебник и повторение</p></section>
           <section class="card tariff-card pro-choice"><h3>⭐ Lumi PRO</h3><p>• ${proPlanets.length} эксклюзивных планет и ${proPlanets.reduce((n,p)=>n+p.lessons.length,0)} уроков</p><p>• Бесконечная энергия</p><p>• 2× XP и скидка 50% в магазине</p><p>• Грамматика и тренажёр ошибок</p></section>
@@ -3745,7 +3850,9 @@
           <div class="benefit"><b>🧠</b><span><strong>Расширенный учебник</strong><br>Грамматические лайфхаки и тренажёр сложных ошибок.</span></div>
           <div class="benefit"><b>⚡</b><span><strong>Удвоенный опыт и 2× очки Лиги</strong><br>Вдвое быстрее повышай уровень и поднимайся в Звёздной Лиге.</span></div>
           <div class="benefit"><b>❄️</b><span><strong>Бесконечная крио-защита Луми</strong><br>Сохраняй серию при пропуске до трёх дней подряд. Над огоньком появляется ледяная неоновая рамка.</span></div>
-          <div class="benefit"><b>💬</b><span><strong>Интерактивные диалоги с Луми</strong><br>Кофейня в Лондоне, онлайн-игра и аэропорт. Ответы на время и личные рекорды.</span></div>
+          <div class="benefit"><b>💬</b><span><strong>3 интерактивных диалога с Луми</strong><br>Кофейня в Лондоне, онлайн-игра и аэропорт. Ответы на время и личные рекорды.</span></div>
+          <div class="benefit"><b>🎨</b><span><strong>5 дополнительных тем оформления</strong><br>Все пять тем доступны, пока действует Lumi PRO; купленные отдельно темы остаются навсегда.</span></div>
+          <div class="benefit"><b>👑</b><span><strong>3 премиальных образа Луми</strong><br>Золотой скафандр, кибер-визор и плащ супергероя доступны на время PRO.</span></div>
           <div class="benefit"><b>🛸</b><span><strong>Спутник-дрон и стаж PRO</strong><br>Показываем месяцы подписки и активного мини-дрона рядом с профилем.</span></div>
           <div class="benefit"><b>👑</b><span><strong>Золотая рамка и корона в Лиге</strong><br>Выделяйся среди кадетов Академии.</span></div>
         </section>
@@ -3753,16 +3860,21 @@
           ${proPlanets.map(planet => `<div class="card pro-feature"><b>${planet.icon}</b><strong>${escapeHtml(planet.name)}</strong><span>${escapeHtml(planet.subtitle)} · ${planet.lessons.length} урока</span></div>`).join('')}
         </div>
         ${renderLiveDialogs()}
-        <section class="card price-card"><div class="eyebrow">ПОКУПКА TELEGRAM STARS</div><h2 style="margin-top:6px">Выбери тариф Lumi PRO</h2>${isTrialProEnabled()&&!state.proActive?`<p class="small muted">Подарочный доступ действует до <strong>${formatProDate(state.trial_pro_until)}</strong>. Платный тариф можно оформить отдельно.</p>`:''}${(state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000))?`<p class="small muted">Оплаченный PRO уже активен до <strong>${formatProDate(proAccount.expiresAt)}</strong>. Можно добавить ещё 7 дней — они начнутся после текущего срока.</p>`:''}<div class="price-options"><div class="price-option"><h3>🚀 На неделю</h3><div class="price">⭐ 50 <span style="font-size:11px">Stars</span></div><p class="price-caption">Разовая оплата. PRO на 7 дней без автопродления.</p><button class="btn purple full" id="buyProWeek">${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'Добавить 7 дней · 50 ⭐':'Купить на 7 дней · 50 ⭐'}</button></div><div class="price-option"><h3>🌌 На 30 дней</h3><div class="price">⭐ 199 <span style="font-size:11px">Stars</span></div><p class="price-caption">Повторяющийся платёж каждые 30 дней через Telegram Stars.</p><button class="btn purple full" id="buyProMonth" ${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'disabled':''}>${state.proActive&&!state.demoPro&&Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)?'PRO уже активен ⭐':'Оформить на 30 дней · 199 ⭐'}</button></div></div><div class="legal-consent"><input type="checkbox" id="proTermsConsent"><div class="legal-consent-copy"><strong>Подтверждение перед оплатой</strong><span>Я прочитал(а) и принимаю условия использования Lumi Academy и ознакомился(ась) с политикой конфиденциальности.</span><div class="legal-links"><button type="button" data-legal-open="terms">Открыть условия</button><button type="button" data-legal-open="privacy">Открыть политику</button></div></div></div><div class="legal-consent"><input type="checkbox" id="proAgeConsent"><div class="legal-consent-copy"><strong>Возраст и право на покупку</strong><span>Я могу самостоятельно совершить эту покупку по законам моей страны либо получил(а) согласие родителя или опекуна, если оно требуется.</span></div></div><div class="legal-config-warning" id="legalConfigStatus">Перед покупкой нужно подтвердить условия и возрастное право на покупку. Если реквизиты оператора ещё не настроены, платные покупки будут временно недоступны.</div></section>
-        ${state.proActive && proAccount.autoRenew && proAccount.canCancelRenewal ? `<section class="card renewal-control"><div class="eyebrow">АВТОПРОДЛЕНИЕ</div><p class="small muted">Следующее списание отключается, но текущий оплаченный PRO останется активен до ${formatProDate(proAccount.expiresAt)}.</p><button class="btn secondary full" id="cancelProRenewal">Отключить автопродление</button></section>` : state.proActive && proAccount.autoRenew === false && proAccount.billingState === 'canceled' ? `<section class="card renewal-control"><div class="eyebrow">АВТОПРОДЛЕНИЕ ОТКЛЮЧЕНО</div><p class="small muted">Новых списаний не будет. Lumi PRO остаётся активен до ${formatProDate(proAccount.expiresAt)}.</p></section>` : ''}
+        <section class="card price-card"><div class="eyebrow">ПОКУПКА TELEGRAM STARS</div><h2 style="margin-top:6px">Выбери тариф Lumi PRO</h2>${isTrialProEnabled()&&!paidProActive?`<p class="small muted">Подарочный доступ действует до <strong>${formatProDate(state.trial_pro_until)}</strong>. Платный тариф можно оформить отдельно.</p>`:''}${paidProActive?`<p class="small muted">Оплаченный PRO уже активен до <strong>${formatProDate(proAccount.expiresAt)}</strong>. Можно добавить ещё 7 дней — они начнутся после текущего срока.</p>`:''}<div class="price-options"><div class="price-option"><h3>🚀 На неделю</h3><div class="price">⭐ 50 <span style="font-size:11px">Stars</span></div><p class="price-caption">Разовая оплата. PRO на 7 дней без автопродления.</p><button class="btn purple full" id="buyProWeek">${paidProActive?'Добавить 7 дней · 50 ⭐':'Купить на 7 дней · 50 ⭐'}</button></div><div class="price-option"><h3>🌌 На 30 дней</h3><div class="price">⭐ 199 <span style="font-size:11px">Stars</span></div><p class="price-caption">Повторяющийся платёж каждые 30 дней через Telegram Stars.</p><button class="btn purple full" id="buyProMonth" ${paidProActive?'disabled':''}>${paidProActive?'PRO уже активен ⭐':'Оформить на 30 дней · 199 ⭐'}</button></div></div><div class="legal-consent"><input type="checkbox" id="proTermsConsent"><div class="legal-consent-copy"><strong>Подтверждение перед оплатой</strong><span>Я прочитал(а) и принимаю условия использования Lumi Academy и ознакомился(ась) с политикой конфиденциальности.</span><div class="legal-links"><button type="button" data-legal-open="terms">Открыть условия</button><button type="button" data-legal-open="privacy">Открыть политику</button></div></div></div><div class="legal-consent"><input type="checkbox" id="proAgeConsent"><div class="legal-consent-copy"><strong>Возраст и право на покупку</strong><span>Я могу самостоятельно совершить эту покупку по законам моей страны либо получил(а) согласие родителя или опекуна, если оно требуется.</span></div></div><div class="legal-config-warning" id="legalConfigStatus">Перед покупкой нужно подтвердить условия и возрастное право на покупку. Если реквизиты оператора ещё не настроены, платные покупки будут временно недоступны.</div></section>
+        ${paidProActive && proAccount.autoRenew && proAccount.canCancelRenewal ? `<section class="card renewal-control"><div class="eyebrow">АВТОПРОДЛЕНИЕ</div><p class="small muted">Следующее списание отключается, но текущий оплаченный PRO останется активен до ${formatProDate(proAccount.expiresAt)}.</p><button class="btn secondary full" id="cancelProRenewal">Отключить автопродление</button></section>` : paidProActive && proAccount.autoRenew === false && proAccount.billingState === 'canceled' ? `<section class="card renewal-control"><div class="eyebrow">АВТОПРОДЛЕНИЕ ОТКЛЮЧЕНО</div><p class="small muted">Новых списаний не будет. Lumi PRO остаётся активен до ${formatProDate(proAccount.expiresAt)}.</p></section>` : ''}
         <section class="card pro-explainer"><strong>🔐 Как защищена покупка</strong><p class="small muted">Ссылка на оплату создаётся Cloudflare Worker с помощью Bot API. Доступ включается только после серверного подтверждения успешного платежа.</p></section>
-        ${state.demoPro ? '<button class="btn green full" id="disableDemoPro" style="margin-top:12px">Выключить тестовый PRO</button>' : ''}
+        ${DEMO_PRO_ALLOWED && state.demoPro ? '<button class="btn green full" id="disableDemoPro" style="margin-top:12px">Выключить тестовый PRO</button>' : ''}
         <p class="small muted" style="text-align:center;margin:13px 6px 0">В браузерном предпросмотре используй ДЕМО-PRO в профиле. Для реальных Stars нужен настроенный Worker и webhook бота.</p>
       </div>`;
     }
 
     function stopDialogTimer() { if(dialogTimer){window.clearInterval(dialogTimer);dialogTimer=null;} }
     function renderDialogSession() {
+      if (dialogSession && !dialogSession.freeTrial && !isProEnabled() && !dialogSession.finished) {
+        closeExpiredProSessions();
+        render();
+        return;
+      }
       const screen=document.getElementById('screen');
       if(!dialogSession){screen.innerHTML=renderPro();bindPageEvents();return;}
       if(dialogSession.finished){
@@ -3792,6 +3904,11 @@
       dialogSession={scenarioId,turns,index:0,correct:0,answered:false,selected:null,timedOut:false,startedAt:Date.now(),turnStartedAt:Date.now(),deadline:Date.now()+20000,totalElapsed:0,finished:false,freeTrial:trialAllowed};
       renderDialogSession();
       dialogTimer=window.setInterval(()=>{
+        if (dialogSession && !dialogSession.freeTrial && !isProEnabled() && !dialogSession.finished) {
+          closeExpiredProSessions();
+          render();
+          return;
+        }
         if(!dialogSession||dialogSession.answered||dialogSession.finished)return;
         const remaining=Math.max(0,Math.ceil((dialogSession.deadline-Date.now())/1000));
         const timer=document.getElementById('dialogTimer'); if(timer){timer.textContent=remaining+'с';timer.classList.toggle('urgent',remaining<=5);}
@@ -3799,6 +3916,11 @@
       },250);
     }
     function answerDialog(index) {
+      if (dialogSession && !dialogSession.freeTrial && !isProEnabled() && !dialogSession.finished) {
+        closeExpiredProSessions();
+        render();
+        return;
+      }
       if(!dialogSession||dialogSession.answered||dialogSession.finished)return;
       stopDialogTimer();
       const turn=dialogSession.turns[dialogSession.index];
@@ -3811,6 +3933,11 @@
       renderDialogSession();
     }
     function advanceDialog() {
+      if (dialogSession && !dialogSession.freeTrial && !isProEnabled() && !dialogSession.finished) {
+        closeExpiredProSessions();
+        render();
+        return;
+      }
       if(!dialogSession||!dialogSession.answered)return;
       if(dialogSession.index>=dialogSession.turns.length-1){finishDialog();return;}
       dialogSession.index++;dialogSession.answered=false;dialogSession.selected=null;dialogSession.timedOut=false;dialogSession.turnStartedAt=Date.now();dialogSession.deadline=Date.now()+20000;
@@ -3818,6 +3945,11 @@
       dialogTimer=window.setInterval(()=>{if(!dialogSession||dialogSession.answered)return;const remaining=Math.max(0,Math.ceil((dialogSession.deadline-Date.now())/1000));const timer=document.getElementById('dialogTimer');if(timer){timer.textContent=remaining+'с';timer.classList.toggle('urgent',remaining<=5);}if(remaining<=0)answerDialog(-1);},250);
     }
     function finishDialog() {
+      if (dialogSession && !dialogSession.freeTrial && !isProEnabled() && !dialogSession.finished) {
+        closeExpiredProSessions();
+        render();
+        return;
+      }
       if(!dialogSession)return;stopDialogTimer();
       const session=dialogSession;session.finished=true;session.elapsedSeconds=Math.max(1,Math.round((Date.now()-session.startedAt)/1000));
       const record=state.dialogRecords[session.scenarioId]||{bestTime:0,bestCorrect:0,runs:0};
@@ -3912,19 +4044,21 @@
       if (toggleDemo) toggleDemo.addEventListener('click', () => {
         tap(); state.demoPro = !state.demoPro;
         if (!isProEnabled()) {
-          if (['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme='aurora';
+          if (['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme) && !state.ownedThemes.includes(state.selectedTheme)) state.selectedTheme='aurora';
           if (state.selectedSkin !== 'default' && !state.ownedSkins.includes(state.selectedSkin)) state.selectedSkin='default';
         }
         saveState(); render(); showToast(state.demoPro ? 'ДЕМО-PRO активирован! Все миры открыты ⭐' : 'Тестовый PRO выключен');
       });
       const disableDemo = DEMO_PRO_ALLOWED ? document.getElementById('disableDemoPro') : null;
-      if (disableDemo) disableDemo.addEventListener('click', () => { tap(); state.demoPro=false; if(!isProEnabled()){if(['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme='aurora';if(state.selectedSkin!=='default'&&!state.ownedSkins.includes(state.selectedSkin))state.selectedSkin='default';} saveState(); render(); showToast('ДЕМО-PRO выключен'); });
+      if (disableDemo) disableDemo.addEventListener('click', () => { tap(); state.demoPro=false; if(!isProEnabled()){if(['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)&&!state.ownedThemes.includes(state.selectedTheme))state.selectedTheme='aurora';if(state.selectedSkin!=='default'&&!state.ownedSkins.includes(state.selectedSkin))state.selectedSkin='default';stripExpiredProWardrobeItems();} saveState(); render(); showToast('ДЕМО-PRO выключен'); });
       document.querySelectorAll('[data-equip-item]').forEach(button => button.addEventListener('click', () => { tap(); equipWardrobeItem(button.dataset.equipItem); }));
       document.querySelectorAll('[data-unequip-slot]').forEach(button => button.addEventListener('click', () => { tap(); unequipWardrobeSlot(button.dataset.unequipSlot); }));
       document.querySelectorAll('[data-shop-category]').forEach(button => button.addEventListener('click', () => { tap(); activeShopCategory=button.dataset.shopCategory; render(); }));
       document.querySelectorAll('[data-shop-preview]').forEach(button => button.addEventListener('click', () => { tap(); selectShopPreview(button.dataset.shopPreview); }));
       const clearShopPreview = document.querySelector('[data-shop-preview-clear]');
       if (clearShopPreview) clearShopPreview.addEventListener('click', () => { tap(); resetShopPreview(); });
+      const buyShopSetButton = document.querySelector('[data-buy-shop-set]');
+      if (buyShopSetButton) buyShopSetButton.addEventListener('click', () => { tap(); buyShopPreviewSet(); });
       document.querySelectorAll('[data-buy-wardrobe]').forEach(button => button.addEventListener('click', event => { event.stopPropagation(); tap(); buyWardrobeItem(button.dataset.buyWardrobe); }));
       const buyFreezeButton = document.querySelector('[data-buy-freeze]');
       if (buyFreezeButton) buyFreezeButton.addEventListener('click', () => { tap(); buyStreakFreeze(); });
@@ -3957,13 +4091,16 @@
       const screen = document.getElementById('screen');
       if (!reviewSession || !screen) return;
       screen.querySelectorAll('[data-review-option]').forEach(button => button.addEventListener('click', () => {
-        if (reviewSession.checked) return;
+        if (reviewSession?.proOnly && !isProEnabled()) { closeExpiredProSessions(); render(); return; }
+        if (!reviewSession || reviewSession.checked) return;
         tap(); reviewSession.selected = Number(button.dataset.reviewOption);
         screen.querySelectorAll('[data-review-option]').forEach(item => item.classList.toggle('selected',item===button));
         const action = document.getElementById('reviewAction'); if (action) action.disabled = false;
       }));
       const action = document.getElementById('reviewAction');
       if (action) action.addEventListener('click', () => {
+        if (reviewSession?.proOnly && !isProEnabled()) { closeExpiredProSessions(); render(); return; }
+        if (!reviewSession) return;
         if (!reviewSession.checked) {
           if (reviewSession.selected === null) return;
           reviewSession.checked = true;
@@ -3998,7 +4135,7 @@
       tap();
       for (let i=ids.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [ids[i],ids[j]]=[ids[j],ids[i]]; }
       ids.splice(10);
-      reviewSession = { wordIds:ids, index:0, selected:null, checked:false, answer:0, correct:0, correctWordIds:[], answered:0, options:[] };
+      reviewSession = { wordIds:ids, index:0, selected:null, checked:false, answer:0, correct:0, correctWordIds:[], answered:0, options:[], proOnly:hardOnly };
       reviewSession.options = makeReviewOptions(ids[0]);
       render();
       const review = document.querySelector('.review-card'); if (review) review.scrollIntoView({block:'nearest',behavior:'smooth'});
@@ -4218,7 +4355,7 @@
       if (purchaseInFlight) return;
       if (plan !== 'week' && plan !== 'month') { showToast('Неизвестный тариф Lumi PRO.'); return; }
       tap();
-      if (plan === 'month' && state.proActive&&!state.demoPro && Number(proAccount.expiresAt)>Math.floor(Date.now()/1000)) { showToast(`Lumi PRO уже активен до ${formatProDate(proAccount.expiresAt)}. Можно добавить 7 дней или оформить месяц после окончания срока.`); return; }
+      if (plan === 'month' && isServerPaidProEnabled()) { showToast(`Lumi PRO уже активен до ${formatProDate(proAccount.expiresAt)}. Можно добавить 7 дней или оформить месяц после окончания срока.`); return; }
       if (!tg) { showToast('Покупка Stars доступна при запуске приложения внутри Telegram.'); return; }
       if (typeof tg.openInvoice !== 'function') { showToast('В этом клиенте Telegram не поддерживается открытие счёта. Обнови приложение Telegram.'); return; }
       if (!workerIsConfigured()) { showToast('В начале index.html укажи настоящий URL Cloudflare Worker вместо адреса-заглушки.'); return; }
@@ -4414,6 +4551,11 @@
     }
 
     function renderLesson(resetScroll = false) {
+      if (lessonSession?.lesson?.isPro && !isProEnabled() && !lessonSession.rewarded) {
+        closeExpiredProSessions();
+        render();
+        return;
+      }
       const session = lessonSession;
       if (!session) return;
       if (session.stage === 'result') { renderLessonResult(); return; }
@@ -5014,6 +5156,11 @@
 
     function renderLessonResult() {
       const session=lessonSession;
+      if (session?.lesson?.isPro && !isProEnabled() && !session.rewarded) {
+        closeExpiredProSessions();
+        render();
+        return;
+      }
       const screen=document.getElementById('screen');
       screen.scrollTop=0;
       const lesson=session.lesson;
@@ -5130,8 +5277,9 @@
         if (previousAccess !== currentAccess) {
           lastProAccessState = currentAccess;
           if (!currentAccess) {
-            if (['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme)) state.selectedTheme='aurora';
+            if (['sunset','forest','midnight','rose','galaxy'].includes(state.selectedTheme) && !state.ownedThemes.includes(state.selectedTheme)) state.selectedTheme='aurora';
             if (state.selectedSkin !== 'default' && !state.ownedSkins.includes(state.selectedSkin)) state.selectedSkin='default';
+            stripExpiredProWardrobeItems();
           }
           saveAccessStateLocally();
           applySelectedTheme();
